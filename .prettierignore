@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+build
+coverage
+package-lock.json
+next-env.d.ts
+.screenshots
+# hand-formatted: one token per line with its usage note
+src/styles/tokens.css
