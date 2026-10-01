@@ -1,0 +1,183 @@
+/* =====================================================================
+   OLIVIA ENERGY — DESIGN TOKENS (single source of truth)
+
+   Consumed two ways:
+   1. Tailwind v4 reads this @theme block and generates utilities
+      (bg-primary, text-display-lg, py-section, rounded-xs, ease-out …).
+   2. Every token is also emitted as a CSS custom property on :root, so
+      plain CSS (prose.css) and JavaScript (AnimatedNumber) read the same
+      values. Nothing is duplicated anywhere else.
+
+   A trailing comment on a token line is its usage note. /styleguide
+   parses this file and renders it, so the page can never drift from
+   what ships.
+   ===================================================================== */
+@theme {
+  /* Remove Tailwind's stock palette, fonts, sizes, radii, shadows and
+     easings so the house vocabulary is the only one that exists. */
+  --color-*: initial;
+  --font-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --ease-*: initial;
+
+  /* ---------------------------------------------------------------- */
+  /* Colour · brand green. Sampled from the mark (src/lib/brand/mark.ts). */
+  /* Step 500 is the mark itself (#04923F). Steps are even OKLCH        */
+  /* lightness; hue drifts ~8° cooler toward the dark end so the deep   */
+  /* greens read as forest rather than olive.                           */
+  /* ---------------------------------------------------------------- */
+  --color-green-50: #ebfded; /* Tinted backgrounds behind green text */
+  --color-green-100: #d4f9d8; /* Selection, soft highlights */
+  --color-green-200: #acedb6; /* Chart tints, decorative rules on inverse */
+  --color-green-300: #79d88d; /* Chart series, icons on inverse */
+  --color-green-400: #42b861; /* Chart series only */
+  --color-green-500: #04923f; /* The mark. Illustration and iconography, never text on light */
+  --color-green-600: #007839; /* Focus ring, large text on light (AA) */
+  --color-green-700: #006032; /* PRIMARY. Buttons, links, marks (AAA on canvas) */
+  --color-green-800: #004a27; /* Primary hover, text on green-50 */
+  --color-green-900: #00371d; /* Deep fills, text on green-100 */
+  --color-green-950: #002210; /* Inverse surfaces: footer, dark sections */
+
+  /* ---------------------------------------------------------------- */
+  /* Colour · warm neutrals (OKLCH hue 80). Off-whites through ink.     */
+  /* ---------------------------------------------------------------- */
+  --color-neutral-0: #fffdfa; /* Surface: cards, panels, inputs */
+  --color-neutral-50: #faf7f3; /* Canvas: page background */
+  --color-neutral-100: #f2efe9; /* Muted surface: tags, code, table stripes */
+  --color-neutral-200: #e3dfd8; /* Hairlines and card borders */
+  --color-neutral-300: #cecac3; /* Strong hairlines, table heads, outline cards */
+  --color-neutral-400: #8b8882; /* Disabled text, placeholder icons, input borders (3:1 on surface) */
+  --color-neutral-500: #6f6c66; /* Subtle text: meta, labels, captions (AA at 12px on every surface) */
+  --color-neutral-600: #67635c; /* Muted text: ledes, captions (AA) */
+  --color-neutral-700: #504c46; /* Secondary text where more weight is needed */
+  --color-neutral-800: #3b3732; /* Rare: dark UI chrome */
+  --color-neutral-900: #292622; /* Rare: near-ink fills */
+  --color-neutral-950: #161310; /* Ink: primary text */
+
+  /* ---------------------------------------------------------------- */
+  /* Colour · accent. The legacy red, sampled from the logo. ONE token. */
+  /* Budget: at most one use per page — a small mark or an active       */
+  /* state. Never a fill larger than 24px, never a paragraph, never a   */
+  /* button. If a page needs two reds, the page is wrong.               */
+  /* ---------------------------------------------------------------- */
+  --color-accent: #c5372b; /* Small marks and active states only. Once per page */
+
+  /* ---------------------------------------------------------------- */
+  /* Colour · semantic. Components use these, never raw steps.          */
+  /* ---------------------------------------------------------------- */
+  --color-canvas: var(--color-neutral-50); /* Page background */
+  --color-surface: var(--color-neutral-0); /* Cards, panels, inputs */
+  --color-surface-muted: var(--color-neutral-100); /* Quiet fills: tags, code, table stripes */
+  --color-ink: var(--color-neutral-950); /* Primary text */
+  --color-ink-muted: var(--color-neutral-600); /* Secondary text: ledes, captions, notes */
+  --color-ink-subtle: var(--color-neutral-500); /* Tertiary: meta, token labels; non-essential text only */
+  --color-line: var(--color-neutral-200); /* Hairlines, dividers, card borders */
+  --color-line-strong: var(--color-neutral-400); /* Section rules, table heads, outline cards, input borders */
+  --color-primary: var(--color-green-700); /* Buttons, links, eyebrow marks */
+  --color-primary-hover: var(--color-green-800); /* Hover and pressed state of primary */
+  --color-primary-fg: var(--color-neutral-0); /* Text on primary */
+  --color-primary-soft: var(--color-green-50); /* Tinted fill behind primary text (tags, callouts) */
+  --color-primary-soft-fg: var(--color-green-800); /* Text on primary-soft */
+  --color-inverse: var(--color-green-950); /* Dark sections, footer */
+  --color-inverse-fg: var(--color-neutral-50); /* Text on inverse */
+  --color-inverse-muted: var(--color-neutral-300); /* Secondary text on inverse */
+  --color-focus: var(--color-green-600); /* Focus rings */
+  --color-selection: var(--color-green-100); /* ::selection background */
+
+  /* ---------------------------------------------------------------- */
+  /* Typography · families. Variables set by next/font in app/fonts.ts */
+  /* ---------------------------------------------------------------- */
+  --font-display: var(--font-newsreader), "Iowan Old Style", Georgia, serif; /* Headlines, pull quotes, stat numerals. Weights 400–500 only */
+  --font-display-italic: var(--font-newsreader-italic), "Iowan Old Style", Georgia, serif; /* True serif italic for pull quotes and citations. Pair with `italic`; loads only where used */
+  --font-sans: var(--font-instrument-sans), system-ui, "Helvetica Neue", Arial, sans-serif; /* UI, body, labels. Weights 400–600 */
+  --font-sans-italic: var(--font-instrument-sans-italic), system-ui, "Helvetica Neue", Arial, sans-serif; /* Sans italic for emphasis inside prose. Pair with `italic`; loads only where used */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* Code, token names, data keys */
+
+  --tracking-tight: -0.015em; /* Display headings */
+  --tracking-caps: 0.14em; /* Uppercase labels: eyebrows, tags, table heads */
+
+  /* Typography · text scale (fixed sizes for UI and body) */
+  --text-xs: 0.75rem; /* Eyebrows, tags, meta */
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem; /* UI controls, captions, table cells */
+  --text-sm--line-height: 1.5;
+  --text-base: 1.0625rem; /* Body copy (17px) */
+  --text-base--line-height: 1.65;
+  --text-lg: 1.1875rem; /* Ledes and intro paragraphs */
+  --text-lg--line-height: 1.6;
+  --text-xl: 1.375rem; /* Large body, sans card titles */
+  --text-xl--line-height: 1.45;
+
+  /* Typography · display scale (fluid between 390px and 1440px) */
+  --text-display-xs: clamp(1.375rem, 1.2rem + 0.6vw, 1.625rem); /* Card and demo titles */
+  --text-display-xs--line-height: 1.25;
+  --text-display-xs--letter-spacing: -0.005em;
+  --text-display-sm: clamp(1.75rem, 1.45rem + 1.1vw, 2.25rem); /* H3, article H2 */
+  --text-display-sm--line-height: 1.2;
+  --text-display-sm--letter-spacing: -0.01em;
+  --text-display-md: clamp(2.125rem, 1.7rem + 1.7vw, 3rem); /* Section titles (H2), stat figures */
+  --text-display-md--line-height: 1.12;
+  --text-display-md--letter-spacing: -0.015em;
+  --text-display-lg: clamp(2.625rem, 1.9rem + 2.9vw, 4.25rem); /* Page titles (H1) */
+  --text-display-lg--line-height: 1.06;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-xl: clamp(3.125rem, 2rem + 4.6vw, 5.75rem); /* Hero statements only, one per page */
+  --text-display-xl--line-height: 1.02;
+  --text-display-xl--letter-spacing: -0.025em;
+
+  /* ---------------------------------------------------------------- */
+  /* Spacing. Base unit 4px; utilities are multiples (p-4 = 16px).      */
+  /* Named tokens are fluid and used for page rhythm.                   */
+  /* ---------------------------------------------------------------- */
+  --spacing: 0.25rem; /* Base unit (4px). p-1 = 4px, gap-6 = 24px */
+  --spacing-gutter: clamp(1.25rem, 4vw, 2.5rem); /* Page side padding: 20px → 40px */
+  --spacing-section-sm: clamp(3rem, 6vw, 5rem); /* Between sub-sections: 48px → 80px */
+  --spacing-section: clamp(4.5rem, 9vw, 8rem); /* Between page sections: 72px → 128px */
+  --spacing-section-lg: clamp(6rem, 12vw, 11rem); /* Hero and chapter breaks: 96px → 176px */
+  --spacing-header: clamp(4rem, 3.5rem + 1.5vw, 4.5rem); /* Fixed site header: 64px → 72px. <main> is offset by it (pt-header); a hero pulls under it with -mt-header */
+
+  /* Layout widths → max-w-text, max-w-narrow, max-w-page, max-w-wide */
+  --container-text: 42rem; /* 672px: reading measure (~65ch) */
+  --container-narrow: 56rem; /* 896px: headings, forms, single column */
+  --container-page: 76rem; /* 1216px: default grid */
+  --container-wide: 88rem; /* 1408px: full-bleed data, galleries, chrome */
+
+  /* ---------------------------------------------------------------- */
+  /* Radii. Small on purpose: institutional, not consumer.              */
+  /* ---------------------------------------------------------------- */
+  --radius-none: 0px; /* Images in prose, inverse sections */
+  --radius-xs: 2px; /* Buttons, tags, swatches, inputs */
+  --radius-sm: 4px; /* Cards, panels */
+  --radius-md: 8px; /* Modals, large media */
+  --radius-lg: 12px; /* Rare: hero media */
+
+  /* ---------------------------------------------------------------- */
+  /* Elevation. Warm ink at low alpha; hairlines are the default edge.  */
+  /* ---------------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px rgb(22 19 16 / 0.05); /* Inputs, pressed controls */
+  --shadow-sm: 0 1px 2px rgb(22 19 16 / 0.05), 0 2px 6px rgb(22 19 16 / 0.05); /* Hovered cards */
+  --shadow-md: 0 2px 4px rgb(22 19 16 / 0.04), 0 8px 20px -4px rgb(22 19 16 / 0.08); /* Elevated cards, popovers */
+  --shadow-lg: 0 4px 8px rgb(22 19 16 / 0.05), 0 20px 40px -8px rgb(22 19 16 / 0.12); /* Modals, drawers */
+
+  /* ---------------------------------------------------------------- */
+  /* Motion. Short, decelerating, never bouncy. Every value here is     */
+  /* subject to prefers-reduced-motion (see globals.css and components).*/
+  /* ---------------------------------------------------------------- */
+  --duration-instant: 80ms; /* Colour changes on hover */
+  --duration-fast: 160ms; /* Buttons, links, small state changes */
+  --duration-page: 200ms; /* Route transitions: fade and 8px lift on entry */
+  --duration-base: 240ms; /* Cards, panels, most UI */
+  --duration-slow: 400ms; /* Overlays, drawers, accordions */
+  --duration-slower: 640ms; /* Large surfaces, demonstrations */
+  --duration-reveal: 400ms; /* Scroll reveals */
+  --duration-counter: 1400ms; /* AnimatedNumber count-up */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* Default for UI state changes */
+  --ease-emphasized: cubic-bezier(0.32, 0.72, 0, 1); /* Larger movements: overlays, drawers */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* Reveals and counters: decelerate into place */
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45); /* Exits only */
+  --ease-linear: linear; /* Progress indicators */
+  --motion-reveal-distance: 8px; /* Reveal lift distance */
+  --motion-stagger: 90ms; /* Delay between sibling reveals */
+}

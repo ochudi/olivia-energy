@@ -1,0 +1,290 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/prose.css";
+
+/* ------------------------------------------------------------------ */
+/* Motion utilities. Durations are not a Tailwind theme namespace, so   */
+/* they are exposed here as utilities that read the tokens directly.   */
+/* ------------------------------------------------------------------ */
+@utility duration-instant {
+  transition-duration: var(--duration-instant);
+}
+@utility duration-fast {
+  transition-duration: var(--duration-fast);
+}
+@utility duration-page {
+  transition-duration: var(--duration-page);
+}
+@utility duration-base {
+  transition-duration: var(--duration-base);
+}
+@utility duration-slow {
+  transition-duration: var(--duration-slow);
+}
+@utility duration-slower {
+  transition-duration: var(--duration-slower);
+}
+@utility duration-reveal {
+  transition-duration: var(--duration-reveal);
+}
+@utility duration-counter {
+  transition-duration: var(--duration-counter);
+}
+
+/* Route transition. The (site) template re-mounts on every navigation, so
+   a mount animation is a page transition. Opacity and transform only, so
+   it can never cause layout shift; reduced motion collapses it (below). */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-page-enter {
+  animation: page-enter var(--duration-page) var(--ease-out) both;
+}
+
+/* Form field error. A short fade-and-rise so the message announces
+   itself without a layout jump; reduced motion collapses it like every
+   other animation (see the global rule below). */
+@keyframes field-error-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility hit-area {
+  /* Extends a text link's tap target to at least 24px without moving it. */
+  padding-block: 0.25rem;
+  margin-block: -0.25rem;
+}
+
+@utility animate-field-error {
+  animation: field-error-enter var(--duration-fast) var(--ease-out) both;
+}
+
+/* Height for the large button (52px) — outside the 4px scale on purpose. */
+@utility h-13 {
+  height: 3.25rem;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    background-color: var(--color-canvas);
+  }
+
+  body {
+    font-feature-settings: "kern", "liga", "calt";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background-color: var(--color-selection);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Inverse tone. Add data-tone="inverse" to any dark surface (footer, */
+  /* dark hero, inverse card, the mobile menu) and every semantic token */
+  /* remaps inside it. Components keep using bg-surface, text-ink,      */
+  /* border-line, bg-primary … and need no dark variants of their own.  */
+  /* The site header joins the list when it sits transparent over a     */
+  /* dark hero, or while the mobile menu is open.                       */
+  /* ---------------------------------------------------------------- */
+  [data-tone="inverse"],
+  .site-header[data-menu-open="true"],
+  body:has(main [data-hero="dark"])
+    .site-header[data-scrolled="false"][data-menu-open="false"] {
+    --color-canvas: var(--color-inverse);
+    --color-surface: color-mix(
+      in oklab,
+      var(--color-inverse-fg) 6%,
+      var(--color-inverse)
+    );
+    --color-surface-muted: color-mix(
+      in oklab,
+      var(--color-inverse-fg) 10%,
+      var(--color-inverse)
+    );
+    --color-ink: var(--color-inverse-fg);
+    --color-ink-muted: var(--color-inverse-muted);
+    --color-ink-subtle: var(--color-neutral-400);
+    --color-line: color-mix(in oklab, var(--color-inverse-fg) 14%, transparent);
+    --color-line-strong: color-mix(
+      in oklab,
+      var(--color-inverse-fg) 28%,
+      transparent
+    );
+    --color-primary: var(--color-neutral-50);
+    --color-primary-hover: var(--color-neutral-200);
+    --color-primary-fg: var(--color-green-950);
+    --color-primary-soft: color-mix(
+      in oklab,
+      var(--color-green-300) 14%,
+      transparent
+    );
+    --color-primary-soft-fg: var(--color-green-200);
+    --color-focus: var(--color-green-300);
+    --color-selection: var(--color-green-800);
+    /* The full-colour mark (<Logo tone="color">) goes one-colour here: its
+       three fills read these, so it takes the surface's ink. */
+    --brand-mark-lime: currentColor;
+    --brand-mark-red: currentColor;
+    --brand-mark-green: currentColor;
+  }
+
+  /* Belt-and-braces reduced motion: components already check in JS, and
+     this guarantees any stray CSS transition collapses to nothing. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- */
+  /* Site header. Fixed; solid by default. Over a hero (the page's      */
+  /* first section carries data-hero="light|dark") it is transparent   */
+  /* until the page scrolls. The bottom border is always present so     */
+  /* the height never changes.                                          */
+  /* ---------------------------------------------------------------- */
+  .site-header {
+    color: var(--color-ink);
+    background-color: var(--color-canvas);
+    border-bottom: 1px solid var(--color-line);
+    transition:
+      background-color var(--duration-base) var(--ease-standard),
+      border-color var(--duration-base) var(--ease-standard),
+      color var(--duration-base) var(--ease-standard);
+  }
+
+  body:has(main [data-hero])
+    .site-header[data-scrolled="false"][data-menu-open="false"] {
+    background-color: transparent;
+    border-bottom-color: transparent;
+  }
+
+  .site-header[data-menu-open="true"] {
+    background-color: var(--color-inverse);
+    border-bottom-color: transparent;
+  }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- */
+  /* Draw-in underline. A single background layer under the text that  */
+  /* grows from 0 to full width on hover/focus — used by ghost buttons  */
+  /* and inline text links in place of a static text-decoration.       */
+  /* ---------------------------------------------------------------- */
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-size: 0% 1px;
+    transition: background-size var(--duration-base) var(--ease-out);
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- */
+  /* Tiptap editor (admin). The body is styled by .prose; these cover  */
+  /* the editor-only states.                                           */
+  /* ---------------------------------------------------------------- */
+  .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: var(--color-ink-subtle);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+  .ProseMirror img.ProseMirror-selectednode {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- */
+  /* Mobile menu (site header). The sheet fades in over --duration-base */
+  /* and out over --duration-fast; items lift in with the stagger token. */
+  /* Pure CSS, so no animation library ships with the public site; the   */
+  /* global reduced-motion rule collapses all of it.                     */
+  /* ---------------------------------------------------------------- */
+  @keyframes menu-enter {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes menu-exit {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes menu-item-enter {
+    from {
+      opacity: 0;
+      transform: translateY(var(--motion-reveal-distance, 8px));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .site-menu {
+    animation: menu-enter var(--duration-base) var(--ease-standard) both;
+  }
+  .site-menu[data-state="exiting"] {
+    animation: menu-exit var(--duration-fast) var(--ease-standard) both;
+    pointer-events: none;
+  }
+  .site-menu-item {
+    animation: menu-item-enter var(--duration-slow) var(--ease-out) both;
+    animation-delay: calc(60ms + var(--i, 0) * var(--motion-stagger, 90ms));
+  }
+  .site-menu[data-state="exiting"] .site-menu-item {
+    animation: none;
+  }
+}
