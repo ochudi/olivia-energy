@@ -23,11 +23,16 @@ export const getAdminSession = cache(async (): Promise<AdminSession | null> => {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .maybeSingle();
+  // No row is the normal answer for a non-member. An error is a setup fault
+  // (schema not exposed, missing grant) that would otherwise look the same.
+  if (error) {
+    console.error("[admin] profile lookup failed:", error.code, error.message);
+  }
   return {
     userId: user.id,
     email: user.email ?? null,

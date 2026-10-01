@@ -2,9 +2,11 @@
  * What We Do page copy: the positioning statement, two sentences and five
  * bullets per service line, the "Who we serve" grid and the "What makes us
  * different" list. This is positioning. The facts it relies on are the
- * retail outlets opened in Ogun State in 2020 (Brand Spur), the founder's
- * published research (OpenAlex), and, as the client's brief states them,
- * registration in the United States and Nigeria and NIPEX registration.
+ * retail outlets opened in Ogun State in 2020 (Brand Spur), the company
+ * record and the founder's published research (OpenAlex). Two claims from
+ * the client's brief, a United States registration and NIPEX registration,
+ * are left out until the client supplies the entity name and the numbers;
+ * the NIPEX line then goes in Admin → Settings.
  *
  * Service names, order and slugs come from ./site so the home index,
  * the footer and this page can never disagree.
@@ -15,7 +17,7 @@ export const INTRO = {
   eyebrow: "What we do",
   title: "What clients hire us to do.",
   positioning:
-    "Olivia Energy is an independent energy advisory and research practice registered in the United States and Nigeria. We work with the producers, distributors, investors and public institutions that operate, finance and regulate energy in both markets, and we bring to that work our own experience of fuel retail in Nigeria and published research in energy and environmental economics.",
+    "Olivia Energy is an independent energy consultancy working in the United States and Nigeria. We advise the producers, distributors, investors and public institutions that operate, finance and regulate oil, gas and power in both markets, and we bring to that work our own experience of fuel retail in Nigeria and published research in energy and environmental economics.",
 } as const;
 
 export type ServiceLine = {
@@ -30,7 +32,7 @@ export const SERVICE_LINES: readonly ServiceLine[] = [
   {
     slug: "strategy",
     description:
-      "We help energy businesses decide where to compete and how, in markets we know from the inside. The work runs from a first assessment of a market to a full entry or expansion plan, and it ends in a decision rather than a deck.",
+      "We help energy businesses decide where to compete and how. The work runs from a first assessment of a market to a full entry or expansion plan.",
     bullets: [
       "Market assessment and sizing",
       "Entry and expansion strategy",
@@ -42,7 +44,7 @@ export const SERVICE_LINES: readonly ServiceLine[] = [
   {
     slug: "regulatory",
     description:
-      "Energy is a licensed business in both of our markets, and the rules move. We help clients obtain and keep the permissions they need, and we give regulators and policymakers an operator's reading of what they propose.",
+      "Energy is a licensed business in both of our markets, and the rules move. We help clients obtain and keep the permissions they need, and we give regulators and policymakers an operator’s reading of what they propose.",
     bullets: [
       "Licensing and permit applications",
       "Compliance reviews and audits",
@@ -90,7 +92,7 @@ export const SERVICE_LINES: readonly ServiceLine[] = [
   {
     slug: "research",
     description:
-      "Our research is led by a Ph.D. economist whose work on energy use and environmental quality in Africa is published in academic journals. We take on commissioned studies, market reports and policy briefings, and publish our own analysis of the questions that matter in the markets we serve.",
+      "Our research is led by a PhD economist whose work on energy use and environmental quality in Africa is published in academic journals. We take on commissioned studies, market reports and policy briefings, and publish our own analysis of the questions that matter in the markets we serve.",
     bullets: [
       "Commissioned studies and market reports",
       "Economic and econometric analysis",
@@ -120,7 +122,7 @@ export const WHO_WE_SERVE: readonly ClientSegment[] = [
   },
   {
     title: "Investors and lenders",
-    body: "Funds, banks and development finance institutions that need an operator's view before they commit capital.",
+    body: "Funds, banks and development finance institutions that need an operator’s view before they commit capital.",
   },
   {
     title: "Power developers",
@@ -150,10 +152,10 @@ export const DIFFERENTIATORS: readonly Differentiator[] = [
   },
   {
     title: "Research you can check.",
-    body: "Every recommendation cites the evidence behind it, and the founder's research is published in academic journals, where others can test it.",
+    body: "Every recommendation cites the evidence behind it, and the founder’s research is published in academic journals, where others can test it.",
   },
   {
-    title: "Registered in both markets.",
-    body: "Olivia Energy is registered in the United States and Nigeria and is a NIPEX registered partner. What we learn in one market informs the work in the other.",
+    title: "Working in both markets.",
+    body: "Olivia Energy is incorporated in Nigeria and its founder is based in Fort Worth, Texas. What we learn in one market informs the work in the other.",
   },
 ];

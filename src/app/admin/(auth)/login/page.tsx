@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Sign in" };
 const NOTICES: Record<string, string> = {
   unconfigured:
     "Supabase is not configured on this deployment. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.",
-  link: "That sign-in link is invalid or has expired. Ask an admin to invite you again.",
+  link: "That link is invalid, has expired or was already used. Use “Forgot your password?” below for a new one, or ask an admin to invite you again.",
 };
 
 export default async function Page({

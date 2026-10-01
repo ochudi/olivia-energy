@@ -29,8 +29,9 @@
     "db:start": "supabase start -x studio,imgproxy,mailpit,edge-runtime,logflare,vector,supavisor,realtime,postgres-meta",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
-    "db:types": "supabase gen types typescript --local --schema public > src/lib/supabase/database.types.ts && prettier --write src/lib/supabase/database.types.ts",
+    "db:types": "supabase gen types typescript --local --schema olivia_energy > src/lib/supabase/database.types.ts && prettier --write src/lib/supabase/database.types.ts",
     "db:test": "node scripts/rls-test.mjs --local",
+    "db:hosted-sql": "node scripts/hosted-sql.mjs",
     "admin:create": "node scripts/create-admin.mjs --local",
     "lighthouse": "node scripts/lighthouse.mjs / /what-we-do --mobile-only"
   },

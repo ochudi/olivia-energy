@@ -5,6 +5,7 @@ import { PHOTOS } from "@/content/images";
 import { formatDate, readingMinutes } from "@/lib/insights/text";
 import { getMediaUrl, type Article } from "@/lib/supabase/queries";
 import { postCategoryLabel } from "@/lib/supabase/types";
+import { FOUNDER } from "@/content/about";
 import { articleByline } from "./byline";
 import { CoverImage } from "./cover-image";
 
@@ -14,6 +15,7 @@ import { CoverImage } from "./cover-image";
  * from one left edge.
  */
 export function ArticleHeader({ post }: { post: Article }) {
+  const byline = articleByline(post);
   const cover = getMediaUrl(post.cover_path);
   const coverAlt =
     Object.values(PHOTOS).find((photo) => photo.src === cover)?.alt ?? "";
@@ -40,7 +42,20 @@ export function ArticleHeader({ post }: { post: Article }) {
           </p>
         ) : null}
         <p className="border-line text-ink-muted max-w-text mt-8 border-t pt-5 text-sm">
-          <span className="text-ink font-medium">By {articleByline(post)}</span>
+          <span className="text-ink font-medium">
+            By{" "}
+            {byline === FOUNDER.name ? (
+              <Link
+                href="/about#founder"
+                rel="author"
+                className="link-underline hit-area hover:text-primary"
+              >
+                {byline}
+              </Link>
+            ) : (
+              byline
+            )}
+          </span>
           <span aria-hidden> · </span>
           <time
             dateTime={post.published_at ?? undefined}

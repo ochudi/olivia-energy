@@ -2,8 +2,11 @@
  * RLS proof. Runs against a Supabase project with the anon key (what the
  * public site and browser use) and checks that every policy in
  * supabase/migrations behaves as documented. Fixtures are created and
- * removed with the service-role key; an admin and an editor user are
- * created in Auth for the authenticated checks.
+ * removed with the service-role key; an admin, an editor and an "outsider"
+ * (an Auth user with no profile, which is what a user of another
+ * application sharing the project looks like) are created in Auth for the
+ * authenticated checks. Meant for the local stack: it creates and deletes
+ * Auth users, so do not point it at a project that holds real accounts.
  *
  *   npm run db:test            # local stack (reads `supabase status`)
  *   node scripts/rls-test.mjs  # any project via env:
@@ -52,7 +55,12 @@ if (!cfg.url || !cfg.anonKey || !cfg.serviceKey) {
   process.exit(2);
 }
 
+// Mirrors src/lib/supabase/schema.ts.
+const DB_SCHEMA = "olivia_energy";
+const MEDIA_BUCKET = "olivia-energy-media";
+
 const noSession = {
+  db: { schema: DB_SCHEMA },
   auth: {
     persistSession: false,
     autoRefreshToken: false,
@@ -68,6 +76,7 @@ const FX = {
   scheduled: "rls-test-scheduled",
   adminEmail: "rls-admin@example.com",
   editorEmail: "rls-editor@example.com",
+  outsiderEmail: "rls-outsider@example.com",
   password: "rls-test-password-1234",
   messageEmail: "rls-test@example.com",
   object: "rls-test/upload.png",
@@ -107,11 +116,13 @@ async function ensureUser(email, role) {
     email_confirm: true,
   });
   if (error) throw error;
-  const { error: roleError } = await service
-    .from("profiles")
-    .update({ role })
-    .eq("id", data.user.id);
-  if (roleError) throw roleError;
+  // Profiles are written explicitly; there is no trigger on auth.users.
+  if (role) {
+    const { error: roleError } = await service
+      .from("profiles")
+      .upsert({ id: data.user.id, email, role });
+    if (roleError) throw roleError;
+  }
   return data.user;
 }
 
@@ -140,11 +151,11 @@ async function cleanup() {
   await service.from("contact_messages").delete().eq("email", FX.messageEmail);
   await service.from("settings").delete().eq("key", "rls_test");
   await service.storage
-    .from("media")
+    .from(MEDIA_BUCKET)
     .remove([FX.object, "rls-test/anon.png", "rls-test/admin.png"]);
   const { data: list } = await service.auth.admin.listUsers({ perPage: 1000 });
   for (const u of list?.users ?? [])
-    if ([FX.adminEmail, FX.editorEmail].includes(u.email))
+    if ([FX.adminEmail, FX.editorEmail, FX.outsiderEmail].includes(u.email))
       await service.auth.admin.deleteUser(u.id);
 }
 
@@ -182,15 +193,25 @@ try {
   if (msgError) throw msgError;
   const admin = await ensureUser(FX.adminEmail, "admin");
   await ensureUser(FX.editorEmail, "editor");
+  const outsiderUser = await ensureUser(FX.outsiderEmail, null);
   const { data: adminProfile } = await service
     .from("profiles")
     .select("role")
     .eq("id", admin.id)
     .single();
   check(
-    "trigger: profile auto-created for new Auth user with role",
+    "profiles: admin profile written with role admin",
     adminProfile?.role === "admin",
     `role=${adminProfile?.role}`,
+  );
+  const { data: outsiderProfile } = await service
+    .from("profiles")
+    .select("id")
+    .eq("id", outsiderUser.id);
+  check(
+    "profiles: a new Auth user gets no profile on its own",
+    (outsiderProfile ?? []).length === 0,
+    `${outsiderProfile?.length} rows`,
   );
 
   // ------------------------------------------------------------------- anon
@@ -233,7 +254,7 @@ try {
     );
   }
   {
-    // Since the launch-hardening migration the public key cannot write to
+    // The public key has no insert privilege, so it cannot write to
     // the inbox at all; the contact form inserts with the service role after
     // Turnstile has verified the sender.
     const { error } = await anon.from("contact_messages").insert({
@@ -338,15 +359,82 @@ try {
   }
   {
     const { error } = await anon.storage
-      .from("media")
+      .from(MEDIA_BUCKET)
       .upload("rls-test/anon.png", png(), PNG_OPTS);
     check("anon: storage upload to media FAILS", !!error, codeOf(error));
   }
   {
-    const { error } = await anon.storage.from("media").list("rls-test");
+    const { error } = await anon.storage.from(MEDIA_BUCKET).list("rls-test");
     check(
       "anon: storage list media succeeds (public read)",
       !error,
+      codeOf(error),
+    );
+  }
+
+  // ------------------------------------------- authenticated, no profile at all
+  console.log("\n— authenticated, no profile (another application's user) —");
+  const outsider = await signIn(FX.outsiderEmail);
+  {
+    const { data, error } = await outsider
+      .from("contact_messages")
+      .select("id");
+    check(
+      "outsider: select contact_messages returns no rows",
+      !error && (data ?? []).length === 0,
+      codeOf(error) || `${data?.length} rows`,
+    );
+  }
+  {
+    const { data, error } = await outsider.from("profiles").select("id");
+    check(
+      "outsider: sees no profiles",
+      !error && (data ?? []).length === 0,
+      codeOf(error) || `${data?.length} rows`,
+    );
+  }
+  {
+    const { data } = await outsider.from("posts").select("slug");
+    check(
+      "outsider: does not see drafts",
+      !(data ?? []).some((r) => r.slug === FX.draft),
+    );
+  }
+  {
+    const { error } = await outsider.from("posts").insert({
+      slug: "rls-test-outsider-insert",
+      title: "x",
+      category: "power",
+    });
+    check("outsider: insert posts FAILS", isDenied(error), codeOf(error));
+  }
+  {
+    const { error } = await outsider
+      .from("profiles")
+      .insert({ id: outsiderUser.id, email: FX.outsiderEmail, role: "admin" });
+    check(
+      "outsider: cannot write itself an admin profile",
+      isDenied(error),
+      codeOf(error),
+    );
+  }
+  {
+    const { error } = await outsider
+      .from("settings")
+      .upsert({ key: "rls_test", value: "x" });
+    check("outsider: write settings FAILS", isDenied(error), codeOf(error));
+  }
+  {
+    const { error } = await outsider.storage
+      .from(MEDIA_BUCKET)
+      .upload("rls-test/outsider.png", png(), PNG_OPTS);
+    check("outsider: upload to media FAILS", !!error, codeOf(error));
+  }
+  {
+    const { data, error } = await outsider.rpc("is_admin");
+    check(
+      "outsider: is_admin() is false",
+      !error && data === false,
       codeOf(error),
     );
   }
@@ -403,7 +491,7 @@ try {
   }
   {
     const { error } = await editor.storage
-      .from("media")
+      .from(MEDIA_BUCKET)
       .upload("rls-test/anon.png", png(), PNG_OPTS);
     check("editor: storage upload FAILS", !!error, codeOf(error));
   }
@@ -470,11 +558,11 @@ try {
   }
   {
     const { error } = await adminClient.storage
-      .from("media")
+      .from(MEDIA_BUCKET)
       .upload("rls-test/admin.png", png(), PNG_OPTS);
     check("admin: storage upload to media succeeds", !error, codeOf(error));
     const res = await fetch(
-      `${cfg.url}/storage/v1/object/public/media/rls-test/admin.png`,
+      `${cfg.url}/storage/v1/object/public/${MEDIA_BUCKET}/rls-test/admin.png`,
     );
     check(
       "public: media object readable without a key",
@@ -482,7 +570,7 @@ try {
       `HTTP ${res.status}`,
     );
     const { error: delError } = await adminClient.storage
-      .from("media")
+      .from(MEDIA_BUCKET)
       .remove(["rls-test/admin.png"]);
     check("admin: storage delete succeeds", !delError, codeOf(delError));
   }

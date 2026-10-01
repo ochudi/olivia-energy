@@ -42,4 +42,4 @@ nohup /opt/homebrew/bin/postgrest "$HERE/postgrest.conf" >"$STATE/postgrest.log"
 sleep 2
 MEDIA_DIR="$STATE/media" nohup node "$HERE/proxy.mjs" >"$STATE/proxy.log" 2>&1 &
 sleep 1
-curl -sf "http://127.0.0.1:54321/rest/v1/settings?select=key&limit=1" -H "apikey: harness" >/dev/null && echo "harness ready on http://127.0.0.1:54321 (Postgres 54322, PostgREST 3010)"
+curl -sf "http://127.0.0.1:54321/rest/v1/settings?select=key&limit=1" -H "apikey: harness" -H "Accept-Profile: olivia_energy" >/dev/null && echo "harness ready on http://127.0.0.1:54321 (Postgres 54322, PostgREST 3010)"

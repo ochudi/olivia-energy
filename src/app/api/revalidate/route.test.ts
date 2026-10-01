@@ -49,6 +49,17 @@ describe("POST /api/revalidate", () => {
     expect((await post({ table: "profiles" })).status).toBe(400);
   });
 
+  it("refuses a webhook payload from another schema's table of the same name", async () => {
+    const response = await post({
+      type: "UPDATE",
+      schema: "public",
+      table: "posts",
+      record: { slug: "someone-elses-post" },
+    });
+    expect(response.status).toBe(400);
+    expect(mocks.revalidatePosts).not.toHaveBeenCalled();
+  });
+
   it("purges the tags a Supabase webhook payload implies, including a renamed slug", async () => {
     const response = await post({
       type: "UPDATE",

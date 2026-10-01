@@ -11,7 +11,7 @@
 -- site-relative paths through unchanged.
 -- =====================================================================
 
-insert into public.posts (slug, title, excerpt, cover_path, body, category, tags, status, published_at, seo_title, seo_description, author_id)
+insert into olivia_energy.posts (slug, title, excerpt, cover_path, body, category, tags, status, published_at, seo_title, seo_description, author_id)
 values (
   $t$nigeria-downstream-after-deregulation$t$,
   $t$Nigeria's downstream after deregulation: what operators should watch$t$,
@@ -24,11 +24,11 @@ values (
   '2026-09-29 12:00:00+01'::timestamptz,
   $t$Nigeria's downstream after deregulation: what to watch$t$,
   $t$Five exposures downstream operators now carry in Nigeria's market-priced fuel sector: pass-through, currency, refining, logistics and credit.$t$,
-  (select id from public.profiles where role = 'admin' order by created_at limit 1)
+  (select id from olivia_energy.profiles where role = 'admin' order by created_at limit 1)
 )
 on conflict (slug) do nothing;
 
-insert into public.posts (slug, title, excerpt, cover_path, body, category, tags, status, published_at, seo_title, seo_description, author_id)
+insert into olivia_energy.posts (slug, title, excerpt, cover_path, body, category, tags, status, published_at, seo_title, seo_description, author_id)
 values (
   $t$commercial-solar-nigeria-2026-economics$t$,
   $t$The economics of commercial solar in Nigeria in 2026$t$,
@@ -41,11 +41,11 @@ values (
   '2026-09-08 09:00:00+01'::timestamptz,
   $t$The economics of commercial solar in Nigeria in 2026$t$,
   $t$What decides a commercial solar investment in Nigeria: the cost of self-generation, load profile, currency, financing structure and service.$t$,
-  (select id from public.profiles where role = 'admin' order by created_at limit 1)
+  (select id from olivia_energy.profiles where role = 'admin' order by created_at limit 1)
 )
 on conflict (slug) do nothing;
 
-insert into public.posts (slug, title, excerpt, cover_path, body, category, tags, status, published_at, seo_title, seo_description, author_id)
+insert into olivia_energy.posts (slug, title, excerpt, cover_path, body, category, tags, status, published_at, seo_title, seo_description, author_id)
 values (
   $t$data-centres-africa-power-demand$t$,
   $t$Data centres and Africa's next power demand curve$t$,
@@ -58,11 +58,11 @@ values (
   '2026-06-23 09:00:00+01'::timestamptz,
   $t$Data centres and Africa's next power demand curve$t$,
   $t$Data centres add large, steady loads in a few places. What that means for grids, gas-to-power, renewables and tariff design across African markets.$t$,
-  (select id from public.profiles where role = 'admin' order by created_at limit 1)
+  (select id from olivia_energy.profiles where role = 'admin' order by created_at limit 1)
 )
 on conflict (slug) do nothing;
 
-insert into public.posts (slug, title, excerpt, cover_path, body, category, tags, status, published_at, seo_title, seo_description, author_id)
+insert into olivia_energy.posts (slug, title, excerpt, cover_path, body, category, tags, status, published_at, seo_title, seo_description, author_id)
 values (
   $t$esg-reporting-african-energy-firms$t$,
   $t$ESG reporting for African energy firms: where to start$t$,
@@ -75,6 +75,6 @@ values (
   '2026-09-25 09:00:00+01'::timestamptz,
   $t$ESG reporting for African energy firms: where to start$t$,
   $t$A first ESG reporting programme for oil, gas, power and renewables firms: materiality, data ownership, emissions scopes, assurance and six starting steps.$t$,
-  (select id from public.profiles where role = 'admin' order by created_at limit 1)
+  (select id from olivia_energy.profiles where role = 'admin' order by created_at limit 1)
 )
 on conflict (slug) do nothing;

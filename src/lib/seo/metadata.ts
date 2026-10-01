@@ -10,6 +10,11 @@ export type PageMetadataInput = {
   path: string;
 };
 
+/** Feed autodiscovery; page-level `alternates` replace the layout's. */
+export const feedAlternate = {
+  "application/rss+xml": [{ url: SEO.feed.path, title: SEO.feed.title }],
+};
+
 type GenerateMetadata = (
   props: unknown,
   parent: ResolvingMetadata,
@@ -34,11 +39,11 @@ export function pageMetadata({
     return {
       title: { absolute: title },
       description,
-      alternates: { canonical: path },
+      alternates: { canonical: path, types: feedAlternate },
       openGraph: {
         type: "website",
         siteName: SITE.name,
-        locale: "en_US",
+        locale: "en_GB",
         title,
         description,
         url: path,
@@ -46,6 +51,7 @@ export function pageMetadata({
       },
       twitter: {
         card: "summary_large_image",
+        site: SEO.twitterSite,
         title,
         description,
         images: resolved.twitter?.images ?? [],

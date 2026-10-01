@@ -1,5 +1,13 @@
-import type { Article, Organization, Person, WebSite, Graph } from "schema-dts";
-import { FOUNDER } from "@/content/about";
+import type {
+  Article,
+  BreadcrumbList,
+  Graph,
+  Organization,
+  Person,
+  WebSite,
+  WithContext,
+} from "schema-dts";
+import { FOUNDER, REGISTRATIONS } from "@/content/about";
 import { SEO } from "@/content/seo";
 import { SITE } from "@/content/site";
 import type { SiteSettings } from "@/lib/supabase/types";
@@ -31,18 +39,22 @@ function countryCode(country: string): string {
 }
 
 /**
- * Settings hold an address as free lines. A single line is read as the
- * locality ("Fort Worth, Texas"); with more, the last line is the locality
- * and the rest the street.
+ * Settings hold an address as free lines. The last line is the place, read
+ * as "locality, region" when it has a comma ("Fort Worth, Texas"); any
+ * lines before it are the street.
  */
 function postalAddress(address: SiteSettings["addresses"][number]) {
   const lines = address.lines.map((line) => line.trim()).filter(Boolean);
-  const locality = lines.at(-1);
+  const [locality, ...region] = (lines.at(-1) ?? "")
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
   const street = lines.slice(0, -1);
   return {
     "@type": "PostalAddress" as const,
     ...(street.length ? { streetAddress: street.join(", ") } : {}),
     ...(locality ? { addressLocality: locality } : {}),
+    ...(region.length ? { addressRegion: region.join(", ") } : {}),
     addressCountry: countryCode(address.country),
   };
 }
@@ -62,10 +74,18 @@ function profileUrls(socials: SiteSettings["socials"]): string[] {
 /** Organization, WebSite and the founder as a Person, from settings. */
 export function siteGraph(settings: SiteSettings): Graph {
   const ids = schemaIds();
+  const registration = REGISTRATIONS[0];
   const organization: Organization = {
     "@type": "Organization",
     "@id": ids.organization,
     name: SITE.name,
+    legalName: registration.label,
+    foundingDate: registration.founded,
+    identifier: {
+      "@type": "PropertyValue",
+      propertyID: "CAC RC",
+      value: registration.number,
+    },
     url: siteUrl(),
     logo: absoluteUrl("/brand/logo-512.png"),
     description: SEO.home.description,
@@ -82,15 +102,18 @@ export function siteGraph(settings: SiteSettings): Graph {
     "@type": "WebSite",
     "@id": ids.website,
     name: SITE.name,
-    alternateName: SEO.tagline,
+    // Search engines treat this as a candidate site name, so it is the
+    // longer form of the name rather than a tagline.
+    alternateName: "Olivia Energy and Power",
     url: siteUrl(),
-    inLanguage: "en",
+    inLanguage: "en-GB",
     publisher: { "@id": ids.organization },
   };
   const founder: Person = {
     "@type": "Person",
     "@id": ids.founder,
     name: FOUNDER.name,
+    alternateName: [...FOUNDER.alternateNames],
     jobTitle: FOUNDER.role,
     url: absoluteUrl("/about#founder"),
     ...(FOUNDER.portrait.src
@@ -102,7 +125,15 @@ export function siteGraph(settings: SiteSettings): Graph {
       name: credential,
     })),
     knowsAbout: [...SEO.knowsAbout],
-    ...(settings.scholar_url ? { sameAs: [settings.scholar_url] } : {}),
+    alumniOf: FOUNDER.alumniOf.map((name) => ({
+      "@type": "CollegeOrUniversity",
+      name,
+    })),
+    memberOf: { "@type": "Organization", name: FOUNDER.memberOf },
+    sameAs: [
+      ...(settings.scholar_url ? [settings.scholar_url] : []),
+      ...FOUNDER.profiles,
+    ],
   };
   return {
     "@context": "https://schema.org",
@@ -134,4 +165,25 @@ export function authorNode(name: string | null | undefined): Article["author"] {
       url: absoluteUrl("/about#founder"),
     };
   return { "@type": "Person", name };
+}
+
+/** True when a byline on a paper is the founder under one of his name forms. */
+export function isFounderName(name: string): boolean {
+  return /^Olugbenga\b.*\bOlaoye$/.test(name.trim());
+}
+
+/** A BreadcrumbList for a page, from its trail of names and site paths. */
+export function breadcrumbList(
+  trail: readonly { name: string; path: string }[],
+): WithContext<BreadcrumbList> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: trail.map((crumb, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: crumb.name,
+      item: absoluteUrl(crumb.path),
+    })),
+  };
 }

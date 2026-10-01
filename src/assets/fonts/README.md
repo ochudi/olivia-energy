@@ -10,9 +10,10 @@ Two kinds of files live here.
   site sets), which halves it from 132 KB to 65 KB while keeping both axes
   variable. Regenerate with `scripts/font-subset.py`. Newsreader is licensed
   under the SIL Open Font License 1.1 (github.com/googlefonts/newsreader).
-- Instrument Sans (roman and italic) and the Newsreader italic still come
-  from `next/font/google`, which subsets and self-hosts them at build time;
-  the italics are not preloaded because they appear only in prose.
+- Instrument Sans (roman and italic) still comes from `next/font/google`,
+  which subsets and self-hosts it at build time; the Newsreader italic is
+  the local file described below. The italics are not preloaded because
+  they appear only in prose.
 
 ## Social-image fonts (read by `next/og`)
 

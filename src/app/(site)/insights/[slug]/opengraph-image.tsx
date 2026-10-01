@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { ImageResponse } from "next/og";
+import { articleByline } from "@/components/insights/byline";
 import { INSIGHTS } from "@/content/insights";
 import { SITE } from "@/content/site";
 import {
@@ -75,7 +76,7 @@ export default async function Image({
   const title = post?.title ?? INSIGHTS.name;
   const category = post ? postCategoryLabel(post.category) : INSIGHTS.eyebrow;
   const meta = post
-    ? `${formatDate(post.published_at)} · ${readingMinutes(post.word_count)} min read`
+    ? `${articleByline(post)} · ${formatDate(post.published_at)} · ${readingMinutes(post.word_count)} min read`
     : "";
   const titleSize = title.length > 110 ? 44 : title.length > 70 ? 54 : 66;
   const host = new URL(siteUrl()).host;
@@ -132,7 +133,7 @@ export default async function Image({
         </div>
         <span
           style={{
-            color: GREEN_300,
+            color: NEUTRAL_300,
             letterSpacing: "0.14em",
             textTransform: "uppercase",
             fontSize: 18,
@@ -152,7 +153,8 @@ export default async function Image({
             display: "flex",
             alignItems: "center",
             gap: 14,
-            color: GREEN_300,
+            // Labels on the inverse ground are neutral; green is for the rule.
+            color: NEUTRAL_300,
             letterSpacing: "0.14em",
             textTransform: "uppercase",
             fontSize: 18,

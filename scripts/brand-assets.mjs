@@ -17,6 +17,7 @@
  *   public/brand/kit/mark.svg, kit/mark-mono.svg   copies for the client kit
  *   src/app/icon.svg                   favicon construction (16–32px)
  *   src/app/apple-icon.png             same as apple-touch-icon.png
+ *   src/app/favicon.ico                the favicon at 16, 32 and 48, for clients that ask for /favicon.ico
  *
  * mark.ts is TypeScript; it has no imports, so it is transpiled in memory
  * with the project's own compiler and imported from a data: URL.
@@ -148,5 +149,36 @@ await png(
 const touch = composed({ w: 180, markH: 116, ground: WHITE });
 await png(touch, "public/brand/apple-touch-icon.png");
 await png(touch, "src/app/apple-icon.png");
+
+// favicon.ico: older browsers and many link-preview fetchers request this
+// path whatever the page declares. An .ico is a small directory of images;
+// PNG payloads are allowed, so the favicon construction is rendered at three
+// sizes and wrapped.
+const iconSvg = await fs.readFile(path.join(root, "src/app/icon.svg"));
+const icoSizes = [16, 32, 48];
+const icoImages = await Promise.all(
+  icoSizes.map((size) =>
+    sharp(iconSvg, { density: 384 }).resize(size, size).png().toBuffer(),
+  ),
+);
+const icoHeader = Buffer.alloc(6 + 16 * icoSizes.length);
+icoHeader.writeUInt16LE(1, 2); // type: icon
+icoHeader.writeUInt16LE(icoSizes.length, 4);
+let icoOffset = icoHeader.length;
+icoSizes.forEach((size, index) => {
+  const entry = 6 + 16 * index;
+  icoHeader.writeUInt8(size, entry); // width
+  icoHeader.writeUInt8(size, entry + 1); // height
+  icoHeader.writeUInt16LE(1, entry + 4); // colour planes
+  icoHeader.writeUInt16LE(32, entry + 6); // bits per pixel
+  icoHeader.writeUInt32LE(icoImages[index].length, entry + 8);
+  icoHeader.writeUInt32LE(icoOffset, entry + 12);
+  icoOffset += icoImages[index].length;
+});
+await fs.writeFile(
+  path.join(root, "src/app/favicon.ico"),
+  Buffer.concat([icoHeader, ...icoImages]),
+);
+console.log("src/app/favicon.ico");
 
 console.log("Done.");

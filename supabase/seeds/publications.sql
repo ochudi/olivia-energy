@@ -23,7 +23,7 @@
 -- and neither OpenAlex nor ORCID lists it for the founder.
 -- =====================================================================
 
-insert into public.publications
+insert into olivia_energy.publications
   (title, authors, venue, year, url, summary, featured, sort)
 select v.title, v.authors, v.venue, v.year, v.url, v.summary, v.featured, v.sort
 from (
@@ -120,5 +120,5 @@ from (
     )
 ) as v(title, authors, venue, year, url, summary, featured, sort)
 where not exists (
-  select 1 from public.publications p where p.url = v.url
+  select 1 from olivia_energy.publications p where p.url = v.url
 );

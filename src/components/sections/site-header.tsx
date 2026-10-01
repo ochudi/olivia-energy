@@ -32,6 +32,12 @@ function isCurrent(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+/** "page" on the page itself; "true" on its section's link from a child page. */
+function ariaCurrent(pathname: string, href: string) {
+  if (!isCurrent(pathname, href)) return undefined;
+  return pathname === href ? "page" : "true";
+}
+
 /**
  * SiteHeader — fixed chrome for every public page.
  *
@@ -189,7 +195,7 @@ export function SiteHeader() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    aria-current={current ? "page" : undefined}
+                    aria-current={ariaCurrent(pathname, item.href)}
                     className={cn(
                       "duration-fast ease-standard active:text-ink/60 relative inline-flex items-center rounded-xs font-medium tracking-[0.005em] transition-colors",
                       RING,
@@ -296,7 +302,7 @@ function MobileMenu({
                 >
                   <Link
                     href={item.href}
-                    aria-current={current ? "page" : undefined}
+                    aria-current={ariaCurrent(pathname, item.href)}
                     className={cn(
                       "font-display text-display-md hover:text-primary active:duration-instant duration-fast ease-standard flex items-baseline gap-5 rounded-xs py-4 tracking-tight transition-[color,opacity] active:opacity-70",
                       RING,

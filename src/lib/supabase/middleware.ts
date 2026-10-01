@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "./database.types";
+import { DB_SCHEMA } from "./schema";
 
 /**
  * Refreshes the auth session on the way through middleware and returns the
@@ -14,6 +15,7 @@ export async function updateSession(request: NextRequest) {
   if (!url || !anonKey) return { response, user: null, configured: false };
 
   const supabase = createServerClient<Database>(url, anonKey, {
+    db: { schema: DB_SCHEMA },
     cookieOptions: {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

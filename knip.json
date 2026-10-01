@@ -2,6 +2,5 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": ["scripts/**", "src/lib/supabase/database.types.ts"],
   "ignoreExportsUsedInFile": true,
-  "ignoreBinaries": ["supabase"],
-  "ignoreDependencies": ["postcss"]
+  "ignoreBinaries": ["supabase"]
 }

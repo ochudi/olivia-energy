@@ -22,7 +22,7 @@ export const SITE = {
 export type NavLink = { label: string; href: string };
 
 export const NAV: readonly NavLink[] = [
-  { label: "What We Do", href: "/what-we-do" },
+  { label: "What we do", href: "/what-we-do" },
   { label: "About", href: "/about" },
   { label: "Insights", href: "/insights" },
   { label: "Publications", href: "/publications" },

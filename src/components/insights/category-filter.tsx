@@ -35,8 +35,9 @@ export function CategoryFilter({ active, counts, total }: CategoryFilterProps) {
       on: active === category,
       count: counts[category] ?? 0,
     })),
-    // "All" always shows; every other chip hides once its count is zero.
-  ].filter((item) => item.href === "/insights" || item.count > 0);
+    // "All" always shows, and so does the category being viewed; every
+    // other chip hides once its count is zero.
+  ].filter((item) => item.href === "/insights" || item.on || item.count > 0);
 
   return (
     <nav aria-label={INSIGHTS.filterLabel}>

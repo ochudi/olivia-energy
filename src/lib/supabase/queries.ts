@@ -1,7 +1,9 @@
 import { unstable_cache } from "next/cache";
+import { typeset } from "@/lib/insights/text";
 import { isSupabaseConfigured } from "./env";
 import { raise } from "./errors";
 import { getPublicSupabase } from "./public";
+import { MEDIA_BUCKET } from "./schema";
 import { CACHE_TAGS, REVALIDATE_SECONDS } from "./tags";
 import {
   parseSettings,
@@ -53,6 +55,26 @@ async function safeAwait<T>(run: () => PromiseLike<T> | T): Promise<T> {
   }
 }
 
+/**
+ * Typographic quotation marks in the text an editor typed into single-line
+ * fields. Done here, once, so the cards, the article header, the social
+ * card, the metadata and the structured data all read the same.
+ */
+function typesetPost<
+  T extends Pick<
+    PostSummary,
+    "title" | "excerpt" | "seo_title" | "seo_description"
+  >,
+>(post: T): T {
+  return {
+    ...post,
+    title: typeset(post.title),
+    excerpt: post.excerpt && typeset(post.excerpt),
+    seo_title: post.seo_title && typeset(post.seo_title),
+    seo_description: post.seo_description && typeset(post.seo_description),
+  };
+}
+
 const POST_SUMMARY_COLUMNS =
   "id, slug, title, excerpt, cover_path, category, tags, status, published_at, author_id, seo_title, seo_description, word_count, created_at, updated_at";
 
@@ -76,7 +98,7 @@ export const getPublishedPosts = unstable_cache(
     if (options.limit) query = query.limit(options.limit);
     const { data, error } = await safeAwait(() => query);
     if (error) raise(error);
-    return data;
+    return data.map(typesetPost);
   },
   ["posts"],
   { tags: [CACHE_TAGS.posts], revalidate: REVALIDATE_SECONDS },
@@ -115,7 +137,7 @@ export function getPostBySlug(slug: string): Promise<Article | null> {
         if (authorError) raise(authorError);
         if (row?.id) author = { id: row.id, name: row.full_name };
       }
-      return { ...data, author };
+      return { ...typesetPost(data), author };
     },
     ["post", slug],
     {
@@ -208,6 +230,6 @@ export function getMediaUrl(path: string | null | undefined): string | null {
   if (!path) return null;
   if (/^https?:\/\//.test(path) || path.startsWith("/")) return path;
   if (unconfigured()) return null;
-  return getPublicSupabase().storage.from("media").getPublicUrl(path).data
+  return getPublicSupabase().storage.from(MEDIA_BUCKET).getPublicUrl(path).data
     .publicUrl;
 }

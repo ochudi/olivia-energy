@@ -6,7 +6,7 @@ list and site settings up to date, answering messages from the contact form,
 and managing who has access. No technical knowledge is needed.
 
 The admin lives at **yourdomain/admin** (for example
-`https://www.oliviaenergyandpower.com/admin`). It works in any modern browser, on a
+`https://oliviaenergyandpower.com/admin`). It works in any modern browser, on a
 laptop or a phone.
 
 ## Signing in
@@ -137,7 +137,7 @@ Everything on this screen is shown somewhere on the public site:
 - **Tagline**: the line under the wordmark in the footer.
 - **Contact email**: shown on the Contact page and in the footer. Messages
   from the contact form are sent to this address.
-- **NIPEX wording**: the registration line in the footer and on About.
+- **NIPEX wording**: the registration line in the footer.
 - **Social profiles**: LinkedIn, Instagram and X links, and the founder's
   Google Scholar profile (linked from Publications; leave it empty to hide
   the link).
@@ -150,8 +150,8 @@ homepage** is checked. Leave it off while any number is still provisional —
 flipping it on is the last step, once every figure is confirmed.
 
 The NIPEX line only appears once you type something into **NIPEX wording**.
-Leave it empty and the footer and the About page quietly leave the line out
-until the registration number is ready.
+Leave it empty and the footer leaves the line out until the registration
+number is ready.
 
 Click **Save settings**. The site updates on its next load.
 
@@ -170,6 +170,9 @@ a message to open it.
   it back.
 - **Delete** removes it; there is no undo.
 
+Delete a message twelve months after your last exchange about it. The privacy
+notice on the site promises this, and nothing deletes messages automatically.
+
 The form has spam protection, and each email address can send at most three
 messages an hour. The words "turnstile passed" under a message mean the
 sender passed the human check.
@@ -184,9 +187,12 @@ until an admin promotes them: they can sign in but see a "no access"
 screen, so nobody gains publishing rights by accident.
 
 To add a colleague, enter their email address and click **Send invite**. They
-receive an email with a link that lets them set a password; the link expires
-after a while, so ask them to use it promptly. You can change a member's
-role or remove them; you cannot remove or demote yourself.
+receive an email with a link that lets them choose a password; the link works
+once and expires after a while, so ask them to use it promptly. If email
+delivery has not been set up yet, the page shows the link instead: copy it and
+send it to them yourself. You can change a member's role or remove them
+(removing takes away their access to this admin); you cannot remove or demote
+yourself.
 
 ## When something looks wrong
 

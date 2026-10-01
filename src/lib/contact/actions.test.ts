@@ -119,9 +119,22 @@ describe("submitContact", () => {
     expect(mocks.sendContactEmail).not.toHaveBeenCalled();
   });
 
-  it("reports other database failures as a server error", async () => {
+  it("still delivers by email, and succeeds, when the database cannot store the message", async () => {
     mocks.insert.mockResolvedValue({
       error: { code: "42501", message: "permission denied" },
+    });
+    const state = await submitContact(idle, form(valid));
+    expect(state.status).toBe("success");
+    expect(mocks.sendContactEmail).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports a server error when the message reached neither the inbox nor the mailbox", async () => {
+    mocks.insert.mockResolvedValue({
+      error: { code: "42501", message: "permission denied" },
+    });
+    mocks.sendContactEmail.mockResolvedValue({
+      ok: false,
+      reason: "unconfigured",
     });
     const state = await submitContact(idle, form(valid));
     expect(state).toMatchObject({ status: "error", reason: "server" });

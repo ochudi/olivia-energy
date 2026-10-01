@@ -1,4 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
+import { DB_SCHEMA } from "@/lib/supabase/schema";
 import {
   revalidatePosts,
   revalidatePublications,
@@ -16,10 +17,11 @@ import {
  *  • an explicit request
  *      { table: "posts", slug?: string } | { table: "publications" } | { table: "settings" }
  *
- * Configure the webhook in Supabase → Database → Webhooks on insert, update
- * and delete of posts, publications and settings, pointing at this route
- * with the header above. Publishing from the admin then reaches the site
- * within the same second.
+ * The admin already purges the cache on every save, so the webhook is only
+ * needed for edits made outside it (the Supabase table editor, SQL). If you
+ * add one, pick the tables in the olivia_energy schema: a payload that names
+ * any other schema is refused, since the project may hold other
+ * applications' tables with the same names.
  */
 export async function POST(request: Request) {
   const secret = process.env.REVALIDATE_SECRET;
@@ -41,11 +43,19 @@ export async function POST(request: Request) {
     return Response.json({ error: "Body must be JSON" }, { status: 400 });
   }
   const payload = (body ?? {}) as {
+    schema?: string;
     table?: string;
     slug?: string;
     record?: { slug?: string } | null;
     old_record?: { slug?: string } | null;
   };
+
+  if (payload.schema !== undefined && payload.schema !== DB_SCHEMA) {
+    return Response.json(
+      { error: `schema must be ${DB_SCHEMA}` },
+      { status: 400 },
+    );
+  }
 
   const revalidated: string[] = [];
   switch (payload.table) {

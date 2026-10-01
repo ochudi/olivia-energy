@@ -3,6 +3,7 @@
 import { createBrowserClient } from "@supabase/ssr";
 import type { Database } from "./database.types";
 import { getPublicSupabaseEnv } from "./env";
+import { DB_SCHEMA } from "./schema";
 
 /**
  * Browser client (anon key + the user's session cookie). Use in Client
@@ -12,6 +13,7 @@ import { getPublicSupabaseEnv } from "./env";
 export function createBrowserSupabase() {
   const { url, anonKey } = getPublicSupabaseEnv();
   return createBrowserClient<Database>(url, anonKey, {
+    db: { schema: DB_SCHEMA },
     cookieOptions: {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

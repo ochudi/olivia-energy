@@ -36,7 +36,7 @@ export const NOT_FOUND_LINKS: ReadonlyArray<{
   {
     href: "/about",
     description:
-      "An operating record in Nigeria's downstream, and the practice today.",
+      "An operating record in Nigeria’s downstream, and the practice today.",
   },
   {
     href: "/insights",

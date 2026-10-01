@@ -1,9 +1,16 @@
 /**
  * Create (or promote) an admin user. Admin users live in Supabase Auth; the
- * profiles table holds the role that RLS checks.
+ * profiles table holds the role that RLS checks. An account that already
+ * exists in the project keeps its password and simply gains the role, unless
+ * --set-password is passed, which replaces the password with the one given
+ * (also the way back in for an admin who forgot theirs before email is set
+ * up). On a project shared with other applications that person's password
+ * changes for those too.
  *
  *   npm run admin:create -- admin@example.com 'a strong password'         # local stack
  *   node scripts/create-admin.mjs admin@example.com 'a strong password'   # env-configured project
+ *   node --env-file=.env.hosted scripts/create-admin.mjs admin@example.com 'a strong password'
+ *   node --env-file=.env.hosted scripts/create-admin.mjs admin@example.com 'a new password' --set-password
  *
  * Reads NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY, or the local
  * stack's values when --local is passed. The service-role key never leaves
@@ -16,7 +23,7 @@ const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const [email, password] = args;
 if (!email) {
   console.error(
-    "Usage: node scripts/create-admin.mjs <email> [password] [--local]",
+    "Usage: node scripts/create-admin.mjs <email> [password] [--local] [--set-password]",
   );
   process.exit(2);
 }
@@ -50,7 +57,9 @@ if (!url || !serviceKey) {
   process.exit(2);
 }
 
+// Mirrors DB_SCHEMA in src/lib/supabase/schema.ts.
 const supabase = createClient(url, serviceKey, {
+  db: { schema: "olivia_energy" },
   auth: {
     persistSession: false,
     autoRefreshToken: false,
@@ -58,13 +67,17 @@ const supabase = createClient(url, serviceKey, {
   },
 });
 
-const { data: list, error: listError } = await supabase.auth.admin.listUsers({
-  perPage: 1000,
-});
-if (listError) throw listError;
-let user = list.users.find(
-  (u) => u.email?.toLowerCase() === email.toLowerCase(),
-);
+// The project may hold other applications' users, so page through all of them.
+let user;
+for (let page = 1; !user; page += 1) {
+  const { data: list, error: listError } = await supabase.auth.admin.listUsers({
+    page,
+    perPage: 1000,
+  });
+  if (listError) throw listError;
+  user = list.users.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+  if (list.users.length < 1000) break;
+}
 
 if (!user) {
   if (!password) {
@@ -80,11 +93,29 @@ if (!user) {
   user = data.user;
   console.log(`Created Auth user ${email} (${user.id})`);
 } else {
-  console.log(`Auth user ${email} already exists (${user.id})`);
+  console.log(
+    `Auth user ${email} already exists (${user.id}): created ${user.created_at}, last sign-in ${user.last_sign_in_at ?? "never"}.`,
+  );
+  if (process.argv.includes("--set-password")) {
+    if (!password) {
+      console.error("--set-password needs the new password as an argument.");
+      process.exit(2);
+    }
+    const { error } = await supabase.auth.admin.updateUserById(user.id, {
+      password,
+      email_confirm: true,
+    });
+    if (error) throw error;
+    console.log("Password replaced with the one given.");
+  } else {
+    console.log(
+      "Their existing password was kept. Pass --set-password to replace it.",
+    );
+  }
 }
 
 const { error: roleError } = await supabase
   .from("profiles")
-  .upsert({ id: user.id, email, role: "admin" });
+  .upsert({ id: user.id, email: email.toLowerCase(), role: "admin" });
 if (roleError) throw roleError;
 console.log(`Profile role set to admin for ${email}`);

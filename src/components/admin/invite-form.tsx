@@ -13,7 +13,7 @@ export function InviteForm() {
       <Field
         label="Invite an admin by email"
         htmlFor="invite-email"
-        hint="They receive a link to set a password; no public sign-up exists."
+        hint="They receive a link to choose a password; no public sign-up exists."
       >
         <div className="flex gap-2">
           <Input
@@ -30,6 +30,16 @@ export function InviteForm() {
       </Field>
       {state ? (
         <Notice tone={state.ok ? "success" : "error"}>{state.message}</Notice>
+      ) : null}
+      {state?.link ? (
+        <Field label="One-time link" htmlFor="invite-link">
+          <Input
+            id="invite-link"
+            readOnly
+            value={state.link}
+            onFocus={(event) => event.currentTarget.select()}
+          />
+        </Field>
       ) : null}
     </form>
   );

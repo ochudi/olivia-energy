@@ -44,7 +44,7 @@ export const PRIVACY = {
     {
       heading: "Cookies",
       paragraphs: [
-        "The public pages of this site set no cookies and run no analytics or tracking, so a Do Not Track signal from your browser changes nothing. An article may embed a video or audio player from YouTube, Vimeo, Spotify or Apple Podcasts; that player loads only when you open the article and follows its provider's own policy. The administration area, which only our staff can use, sets a sign-in cookie for the person signed in.",
+        "The public pages of this site set no cookies and run no analytics or tracking, so a Do Not Track signal from your browser changes nothing. An article may embed a video or audio player from YouTube, Vimeo, Spotify or Apple Podcasts; that player loads only when you open the article and follows its provider’s own policy. The administration area, which only our staff can use, sets a sign-in cookie for the person signed in.",
       ],
     },
     {

@@ -29,7 +29,7 @@ export const PUBLICATIONS = {
       hIndex: "h-index",
       i10Index: "i10-index",
     },
-    note: "Citation counts from OpenAlex, refreshed daily. Google Scholar's figures may differ slightly.",
+    note: "Citation counts from OpenAlex, refreshed daily. Google Scholar’s figures may differ slightly.",
   },
   /** Per-paper citation label. */
   cited: (count: number) =>
@@ -40,7 +40,7 @@ export const PUBLICATIONS = {
   undated: "Undated",
   empty: {
     title: "No papers are listed at present.",
-    body: "Insights carries the firm's shorter analysis of energy markets and policy.",
+    body: "Insights carries the firm’s shorter analysis of energy markets and policy.",
     link: { label: "Read Insights", href: "/insights" },
   },
 } as const;

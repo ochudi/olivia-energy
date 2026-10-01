@@ -3,6 +3,7 @@ import { getImageProps } from "next/image";
 import type { ReactNode } from "react";
 import { getMediaUrl } from "@/lib/supabase/queries";
 import embedHosts from "@/lib/insights/embed-hosts.json";
+import { typeset } from "@/lib/insights/text";
 
 /**
  * Renders a Tiptap JSON document as semantic HTML inside <Prose>.
@@ -27,12 +28,43 @@ export function TiptapContent({ doc }: { doc: JSONContent }) {
  */
 const EMBED_HOSTS: readonly string[] = embedHosts;
 
-function renderNodes(nodes: JSONContent[] | undefined): ReactNode[] {
-  return (nodes ?? []).map((node, index) => renderNode(node, index));
+/**
+ * `verbatim` is set inside a code block, where quotation marks stay as
+ * typed. Elsewhere text is typeset; `before` and `after` carry the
+ * neighbouring text nodes' nearest characters, so a quotation that closes
+ * after a bold or linked run, or opens just before one, is set correctly.
+ */
+function renderNodes(
+  nodes: JSONContent[] | undefined,
+  verbatim = false,
+): ReactNode[] {
+  const list = nodes ?? [];
+  const edge = (node: JSONContent | undefined, at: number) =>
+    node?.type === "text"
+      ? (node.text ?? "").slice(at, at + 1 || undefined)
+      : "";
+  return list.map((node, index) =>
+    renderNode(
+      node,
+      index,
+      verbatim,
+      edge(list[index - 1], -1),
+      edge(list[index + 1], 0),
+    ),
+  );
 }
 
-function renderNode(node: JSONContent, key: number): ReactNode {
-  const children = renderNodes(node.content);
+function renderNode(
+  node: JSONContent,
+  key: number,
+  verbatim: boolean,
+  before: string,
+  after: string,
+): ReactNode {
+  const children = renderNodes(
+    node.content,
+    verbatim || node.type === "codeBlock",
+  );
   const attrs = node.attrs ?? {};
   switch (node.type) {
     case "paragraph":
@@ -42,8 +74,15 @@ function renderNode(node: JSONContent, key: number): ReactNode {
       const Tag = `h${level}` as "h2" | "h3" | "h4";
       return <Tag key={key}>{children}</Tag>;
     }
-    case "text":
-      return applyMarks(node.text ?? "", node.marks, key);
+    case "text": {
+      const text = node.text ?? "";
+      const code = verbatim || node.marks?.some((m) => m.type === "code");
+      return applyMarks(
+        code ? text : typeset(text, before, after),
+        node.marks,
+        key,
+      );
+    }
     case "bulletList":
       return <ul key={key}>{children}</ul>;
     case "orderedList":

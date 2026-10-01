@@ -1,12 +1,12 @@
 -- =====================================================================
--- Seed — runs after migrations on `supabase db reset` (local only), before
--- supabase/seeds/*.sql (publications, starter articles).
---
--- Settings defaults. Shapes are validated by src/lib/supabase/types.ts
+-- Seed — settings defaults. Runs after the migration on `supabase db reset`,
+-- before supabase/seeds/*.sql (local admin, publications, starter
+-- articles), and is part of supabase/hosted-setup.sql for a hosted project.
+-- Shapes are validated by src/lib/supabase/types.ts
 -- (settingsSchema); every value is editable in Admin → Settings.
 -- =====================================================================
 
-insert into public.settings (key, value) values
+insert into olivia_energy.settings (key, value) values
   -- Footer line; mirrors SITE.tagline in src/content/site.ts
   ('tagline', '"Independent energy advisory, built on evidence."'::jsonb),
   -- Supplied by the client 2026-09-06
@@ -37,52 +37,6 @@ insert into public.settings (key, value) values
     { "key": "markets", "value": 2, "label": "Markets", "description": "United States and Nigeria" },
     { "key": "outlets", "value": 2, "label": "Retail outlets", "description": "Opened in Ogun State in 2020" },
     { "key": "articles", "value": 9, "label": "Journal articles", "description": "By the founder and co-authors, 2022 to 2025" },
-    { "key": "citations", "value": 130, "suffix": "+", "label": "Citations", "description": "Of the founder''s published papers" }
+    { "key": "citations", "value": 130, "suffix": "+", "label": "Citations", "description": "Of the founder’s published papers" }
   ]'::jsonb)
 on conflict (key) do update set value = excluded.value;
-
--- ---------------------------------------------------------------------
--- First admin (local only: seed.sql runs on `supabase db reset`). On a
--- hosted project run `node scripts/create-admin.mjs <email> <password>`
--- instead. Local login: admin@oliviaenergyandpower.com, password
--- olivia-admin-local — change it after signing in.
--- ---------------------------------------------------------------------
-insert into auth.users (
-  instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
-  last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at,
-  updated_at, confirmation_token, email_change, email_change_token_new,
-  recovery_token
-) values (
-  '00000000-0000-0000-0000-000000000000',
-  '00000000-0000-4000-8000-000000000001',
-  'authenticated',
-  'authenticated',
-  'admin@oliviaenergyandpower.com',
-  extensions.crypt('olivia-admin-local', extensions.gen_salt('bf')),
-  now(),
-  now(),
-  '{"provider":"email","providers":["email"]}'::jsonb,
-  '{}'::jsonb,
-  now(),
-  now(),
-  '', '', '', ''
-)
-on conflict (id) do nothing;
-
-insert into auth.identities (
-  id, user_id, identity_data, provider, provider_id, last_sign_in_at,
-  created_at, updated_at
-) values (
-  gen_random_uuid(),
-  '00000000-0000-4000-8000-000000000001',
-  '{"sub":"00000000-0000-4000-8000-000000000001","email":"admin@oliviaenergyandpower.com"}'::jsonb,
-  'email',
-  '00000000-0000-4000-8000-000000000001',
-  now(), now(), now()
-)
-on conflict do nothing;
-
--- The trigger created the profile with role editor; promote it.
-update public.profiles
-  set role = 'admin'
-  where id = '00000000-0000-4000-8000-000000000001';

@@ -21,7 +21,7 @@ export const SEO = {
   about: {
     title: `About ${SITE.name} | Energy Economics, US and Nigeria`,
     description:
-      "Energy advisory and research that began in fuel retail in Nigeria in 2020, registered in the United States and Nigeria and led by a Ph.D. economist.",
+      "Energy advisory and research that began in fuel retail in Nigeria in 2020, now working in the United States and Nigeria and led by a PhD energy economist.",
   },
   insights: {
     title: `Insights on Energy Markets & the Transition | ${SITE.name}`,
@@ -41,6 +41,10 @@ export const SEO = {
   suffix: ` | ${SITE.name}`,
   /** Search-facing line for the site as a whole (WebSite, social card). */
   tagline: "Energy advisory for the United States and Nigeria",
+  /** The firm's X account, credited on social cards. */
+  twitterSite: "@OliviaEnergy",
+  /** The Insights feed, advertised on every page for feed readers. */
+  feed: { path: "/insights/feed.xml", title: "Olivia Insights" },
   /** What the organisation is about, for structured data. */
   knowsAbout: [
     "Energy economics",

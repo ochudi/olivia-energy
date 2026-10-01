@@ -24,9 +24,19 @@ export const metadata: Metadata = {
   },
   description: SEO.home.description,
   applicationName: SITE.name,
-  openGraph: { type: "website", siteName: SITE.name, locale: "en_US" },
-  twitter: { card: "summary_large_image" },
-  robots: { index: true, follow: true },
+  openGraph: { type: "website", siteName: SITE.name, locale: "en_GB" },
+  twitter: { card: "summary_large_image", site: SEO.twitterSite },
+  // Lets search results and Discover show the full-size image and snippet.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 /**
@@ -44,7 +54,7 @@ export default function RootLayout({
 }: Readonly<{ children: ReactNode }>) {
   return (
     <html
-      lang="en"
+      lang="en-GB"
       data-scroll-behavior="smooth"
       className={`${displayFont.variable} ${displayItalicFont.variable} ${sansFont.variable} ${sansItalicFont.variable}`}
     >

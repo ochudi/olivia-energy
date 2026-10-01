@@ -73,7 +73,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
         <Field
           label="NIPEX wording"
           htmlFor="nipex"
-          hint="Shown in the footer legal line and on About. Leave empty to hide the line until the number is confirmed."
+          hint="Shown in the footer legal line. Leave empty to hide it until the number is confirmed."
         >
           <Input
             id="nipex"

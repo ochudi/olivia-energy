@@ -1,6 +1,7 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 import { getPublicSupabaseEnv } from "./env";
+import { DB_SCHEMA } from "./schema";
 
 let client: SupabaseClient<Database> | null = null;
 
@@ -13,6 +14,7 @@ export function getPublicSupabase(): SupabaseClient<Database> {
   if (client) return client;
   const { url, anonKey } = getPublicSupabaseEnv();
   client = createClient<Database>(url, anonKey, {
+    db: { schema: DB_SCHEMA },
     auth: {
       persistSession: false,
       autoRefreshToken: false,

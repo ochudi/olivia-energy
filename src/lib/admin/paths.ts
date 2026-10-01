@@ -5,6 +5,14 @@ export function safeNext(value: string | null | undefined): string {
   return value;
 }
 
+/** The one-time links the site emails: a new member's invite, a password reset. */
+export const ADMIN_LINK_TYPES = ["invite", "recovery"] as const;
+export type AdminLinkType = (typeof ADMIN_LINK_TYPES)[number];
+
+export function isAdminLinkType(value: unknown): value is AdminLinkType {
+  return ADMIN_LINK_TYPES.includes(value as AdminLinkType);
+}
+
 /** Routes under /admin that work without a session. */
 export const PUBLIC_ADMIN_PATHS = [
   "/admin/login",

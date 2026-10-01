@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
 import { SocialIcon } from "@/components/ui/social-icon";
+import { REGISTRATIONS } from "@/content/about";
 import { CONTACT, NAV, SERVICES, SITE, SOCIALS } from "@/content/site";
 import { getSettings } from "@/lib/supabase/queries";
 import { cn } from "@/lib/utils/cn";
@@ -117,8 +118,7 @@ export async function SiteFooter() {
 
         <div className="border-line text-ink-muted mt-14 flex flex-col gap-2 border-t pt-6 text-xs md:flex-row md:items-center md:justify-between">
           <p>
-            © {year} {SITE.name}. All rights reserved.{" "}
-            {CONTACT.offices.join(" · ")}
+            © {year} {REGISTRATIONS[0].label}. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             {settings.nipex_wording ? <p>{settings.nipex_wording}</p> : null}

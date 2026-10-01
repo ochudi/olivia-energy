@@ -1,7 +1,11 @@
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { INSIGHTS } from "@/content/insights";
-import type { PostCategory, PostSummary } from "@/lib/supabase/types";
+import { CATEGORY_TOPICS, INSIGHTS } from "@/content/insights";
+import {
+  postCategoryLabel,
+  type PostCategory,
+  type PostSummary,
+} from "@/lib/supabase/types";
 import { CategoryFilter } from "./category-filter";
 import { FeaturedPost } from "./featured-post";
 import { PostCard } from "./post-card";
@@ -15,19 +19,20 @@ export type InsightsArchiveProps = {
 
 /**
  * Body shared by the Insights index and its category archives: heading,
- * the latest post set large, then the category-filtered grid. The featured
- * post is always the newest post overall — on a category page it can also
- * reappear in the grid below when it belongs to that category, exactly as
- * the old `?category=` filter behaved.
+ * the latest post set large, then the rest in a grid. A category page is
+ * scoped throughout: it is headed by the category's name, features the
+ * newest post in that category and lists only the others in it.
  */
 export function InsightsArchive({ posts, active }: InsightsArchiveProps) {
-  const featured = posts[0] ?? null;
   const counts: Partial<Record<PostCategory, number>> = {};
   for (const post of posts)
     counts[post.category] = (counts[post.category] ?? 0) + 1;
-  const list: PostSummary[] = posts.filter((post) =>
-    active ? post.category === active : post.slug !== featured?.slug,
-  );
+  const scoped = active
+    ? posts.filter((post) => post.category === active)
+    : posts;
+  const featured = scoped[0] ?? null;
+  const list = scoped.slice(1);
+  const topics = active ? CATEGORY_TOPICS[active] : null;
 
   return (
     <>
@@ -37,8 +42,12 @@ export function InsightsArchive({ posts, active }: InsightsArchiveProps) {
             as="h1"
             size="lg"
             eyebrow={INSIGHTS.eyebrow}
-            title={INSIGHTS.title}
-            lede={INSIGHTS.lede}
+            title={active ? postCategoryLabel(active) : INSIGHTS.title}
+            lede={
+              topics
+                ? `${topics.charAt(0).toUpperCase()}${topics.slice(1)}.`
+                : INSIGHTS.lede
+            }
           />
         </Container>
       </section>
@@ -66,7 +75,7 @@ export function InsightsArchive({ posts, active }: InsightsArchiveProps) {
             <p className="text-ink-muted border-line mt-10 border-t pt-6 text-base">
               {!posts.length
                 ? "No articles have been published yet."
-                : active
+                : !scoped.length
                   ? INSIGHTS.empty
                   : INSIGHTS.onlyOne}
             </p>

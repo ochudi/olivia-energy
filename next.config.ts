@@ -87,13 +87,15 @@ const nextConfig: NextConfig = {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
   images: {
-    // Post covers and inline images come from this project's "media" bucket.
+    // Post covers and inline images come from the "olivia-energy-media"
+    // storage bucket, and only from it: the Supabase project may hold other
+    // applications' public buckets, which this site must not serve.
     // The local entries cover `supabase start` and other local stacks.
     remotePatterns: [
       {
         protocol: supabase?.protocol === "http:" ? "http" : "https",
         hostname: supabase?.hostname ?? "*.supabase.co",
-        pathname: "/storage/v1/object/public/**",
+        pathname: "/storage/v1/object/public/olivia-energy-media/**",
       },
       ...(production
         ? []
@@ -106,6 +108,10 @@ const nextConfig: NextConfig = {
     // local Supabase stack lives on 127.0.0.1, so allow it outside
     // production only; hosted projects serve covers from *.supabase.co.
     dangerouslyAllowLocalIP: !production,
+    // Uploads get a unique file name and the bundled photographs change
+    // name when replaced, so an optimised copy can be kept for a month
+    // rather than the four-hour default.
+    minimumCacheTTL: 2678400,
     // Photographs are served at 60 (see CoverImage and PhotoFigure); 75 stays
     // for anything that does not pass a quality.
     qualities: [60, 75],

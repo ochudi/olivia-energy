@@ -66,15 +66,19 @@ redirects any request without a session to the login page (all methods, with
 a `next` parameter that only ever points back inside `/admin`); every page
 and layout calls `requireAdmin()`, which also checks `profiles.role`; and every
 server action calls `assertAdmin()`. Writes go through the cookie-bound server
-client, so RLS applies to admins as well. The service-role key is used in
-four places only: inviting a team member, changing a role, removing a member,
-and writing a contact-form message after Turnstile has verified it (the
-public API key cannot insert into `contact_messages`).
+client, so RLS applies to admins as well. The service-role key is used only
+for team management (invite, role change, removal), for minting invitation and
+password-reset links, and for writing a contact-form message after Turnstile
+has verified it (the public API key cannot insert into `contact_messages`).
+Access is a row in `profiles`, never the mere existence of an Auth user, so
+the Supabase project can be shared with other applications: their users can
+sign in and still reach nothing. Removing a member deletes the row and leaves
+the Auth account alone for the same reason.
 
 **Editor.** Articles are stored as Tiptap JSON in `posts.body` and rendered on
 the server by `src/components/insights/tiptap-content.tsx`, which allow-lists
 node types and embeds. Images are resized in the browser to at most 1920px on
-the long side before upload to the `media` bucket. A database trigger
+the long side before upload to the `olivia-energy-media` bucket. A database trigger
 maintains `word_count` and stamps `published_at` on first publish.
 
 **Settings.** One table of `key → jsonb`. `settingsSchema` in
@@ -84,10 +88,11 @@ admin form and one line in the seed. Rows are cached; validation runs on every
 read, so a new key gets its default even while the cache still holds old rows.
 
 **Contact.** Server action in `src/lib/contact/actions.ts`: honeypot, zod,
-Turnstile verified against Cloudflare with the secret key, insert as the
-anonymous role, then Resend with Reply-To set to the sender. A `BEFORE INSERT`
+Turnstile verified against Cloudflare with the secret key, insert with the
+service role, then Resend with Reply-To set to the sender. A `BEFORE INSERT`
 trigger refuses a fourth message from one address within an hour (SQLSTATE
-`PT429`, HTTP 429), so the limit also covers direct API calls.
+`PT429`, HTTP 429). If the database cannot be reached the message still goes
+out by email; the visitor sees an error only when it reached neither.
 
 **Design system.** `src/styles/tokens.css` is the only source of colour, type,
 spacing, radius and motion values; `/styleguide` renders them and every
@@ -98,7 +103,8 @@ No animation library ships with the public site.
 **SEO.** `pageMetadata()` gives each page a title under 60 characters, a
 description, canonical URL and social cards; `src/lib/seo/json-ld.ts` builds
 the Organization, WebSite and founder Person graph from settings; articles and
-publications add their own nodes. `sitemap.ts` includes every published post.
+publications add their own nodes. `sitemap.ts` includes every published post,
+and `/llms.txt` gives language models the same facts as plain Markdown.
 
 ## 4. Environment variables
 
@@ -111,8 +117,8 @@ publications add their own nodes. `sitemap.ts` includes every published post.
 | `RESEND_FROM_EMAIL`             | A sender on a domain verified in Resend, e.g. `Olivia Energy <no-reply@oliviaenergyandpower.com>` | Never              |
 | `TURNSTILE_SITE_KEY`            | Cloudflare → Turnstile → widget → Site key (the page passes it to the widget)                     | Indirectly         |
 | `TURNSTILE_SECRET_KEY`          | Cloudflare → Turnstile → widget → Secret key                                                      | Never              |
-| `REVALIDATE_SECRET`             | Any long random string (`openssl rand -hex 32`); shared with the Supabase webhook                 | Never              |
-| `NEXT_PUBLIC_SITE_URL`          | The public origin, no trailing slash; canonical URLs, sitemap, social cards, invite links         | Yes                |
+| `REVALIDATE_SECRET`             | Any long random string (`openssl rand -hex 32`); the bearer token for `POST /api/revalidate`      | Never              |
+| `NEXT_PUBLIC_SITE_URL`          | The public origin, no trailing slash. Optional on Vercel, which supplies its production domain    | Yes                |
 
 `.env.example` documents each one and lists Cloudflare's Turnstile test keys.
 Locally, `.env.local` points at the local Supabase stack and uses the
@@ -126,23 +132,26 @@ older), the Supabase CLI, Docker Desktop for the local Supabase stack.
 ```
 npm install
 npm run db:start          # local Supabase; prints the URL and keys for .env.local
-npm run db:reset          # migrations + seed.sql + seeds/*.sql (settings, first admin, starter drafts)
+npm run db:reset          # migration + seed.sql + seeds/*.sql (settings, local admin, publications, articles)
 npm run dev               # http://localhost:3000, admin at /admin
 ```
 
 The local first admin is `admin@oliviaenergyandpower.com` / `olivia-admin-local`
-(created by `supabase/seed.sql`; change it after signing in). Other commands:
+(created by `supabase/seeds/local-admin.sql`, which never runs on a hosted
+project). Other commands:
 
-| Command                                            | What it does                                                                          |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `npm run test`                                     | Vitest: contact action, admin route guard, revalidation helpers and route             |
-| `npm run db:test`                                  | RLS proof against the local stack with the anon key, including the rate-limit trigger |
-| `npm run db:types`                                 | Regenerate `src/lib/supabase/database.types.ts` after a migration                     |
-| `npm run typecheck`, `lint`, `format:check`        | The usual; all three are clean at handover                                            |
-| `npm run build && npm run start`                   | Production build; required before `lighthouse`                                        |
-| `npm run lighthouse`                               | Lighthouse mobile on Home and What We Do (reports in `.screenshots/`)                 |
-| `npm run shots -- /route`                          | Screenshots at 390/768/1440 with overflow and console checks                          |
-| `node scripts/create-admin.mjs <email> <password>` | Create or promote an admin on any project                                             |
+| Command                                                | What it does                                                                            |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `npm run test`                                         | Vitest: contact and admin actions, route guard, schema guard, SEO helpers, revalidation |
+| `npm run db:test`                                      | RLS proof against the local stack with the anon key, including the rate-limit trigger   |
+| `npm run db:types`                                     | Regenerate `src/lib/supabase/database.types.ts` after a migration                       |
+| `npm run typecheck`, `lint`, `format:check`            | The usual; all three are clean at handover                                              |
+| `npm run build && npm run start`                       | Production build; required before `lighthouse`                                          |
+| `npm run lighthouse`                                   | Lighthouse mobile on Home and What We Do (reports in `.screenshots/`)                   |
+| `npm run shots -- /route`                              | Screenshots at 390/768/1440 with overflow and console checks                            |
+| `node scripts/create-admin.mjs <email> <password>`     | Create or promote an admin on any project (`--set-password` replaces a password)        |
+| `npm run db:hosted-sql`                                | Regenerate `supabase/hosted-setup.sql` from the migration and seeds                     |
+| `node --env-file=.env.hosted scripts/check-hosted.mjs` | Read-only check of a hosted project after setup                                         |
 
 Notes: everything runs on Node 22 (the Supabase client needs its native
 WebSocket). `next dev` writes to `.next/dev`, so a dev run never clobbers a
@@ -157,124 +166,130 @@ purges it.
 
 ## 6. Database
 
-Three migrations in `supabase/migrations/`:
+Everything lives in one Postgres schema, `olivia_energy`, created by the
+single migration in `supabase/migrations/`, so the site can share a Supabase
+project with other applications. Nothing is created in `public`, there is no
+trigger on `auth.users`, and the only objects outside the schema are the
+`olivia-energy-media` storage bucket and its four policies. The two names are
+constants in `src/lib/supabase/schema.ts`; every Supabase client passes the
+schema (a test fails if one does not), and the Data API must list it under
+Exposed schemas.
 
-1. `initial_schema` — `profiles` (one per Auth user, `role` admin or editor,
-   created by a trigger on `auth.users`), `posts`, `publications`, `settings`,
-   `contact_messages`, the `media` bucket, RLS policies, narrowed grants, the
-   `is_admin()` function and the word-count trigger.
-2. `public_authors` — a view exposing only the names of profiles with a
-   published post, for bylines.
-3. `contact_rate_limit` — the 3-per-hour trigger.
+- `profiles`: who may use the admin (`role` admin or editor). Rows are written
+  explicitly by the Team page and `scripts/create-admin.mjs`. An Auth user
+  without one, such as a user of another application in the same project, has
+  no access.
+- `posts`, `publications`, `settings`, `contact_messages`, and the `authors`
+  view (names of profiles with a published post, for bylines).
+- `is_admin()`, the word-count trigger on posts and the 3-per-hour trigger on
+  contact messages.
 
-`supabase/seed.sql` holds settings defaults, one draft and the local admin;
-`supabase/seeds/starter-articles.sql` holds the four starter drafts. Both load
-on `db reset`; on an existing database run the file with `psql`.
+Seeds: `supabase/seed.sql` (settings), then `supabase/seeds/local-admin.sql`
+(local stack only), `publications.sql` and `starter-articles.sql`. All load on
+`db reset`. For a hosted project, `supabase/hosted-setup.sql` is the migration
+plus the content seeds in one transaction; it is generated, so after changing
+a migration or seed run `npm run db:hosted-sql` (`-- --check` fails if the
+file is stale).
 
-RLS in one line: anon reads published posts, publications and settings and may
-insert contact messages (never pre-marked read); admins do everything; editors
-see only their own profile. `scripts/rls-test.mjs` proves each rule.
+RLS in one line: anon reads published posts, publications, settings and
+bylines; admins do everything; anyone else who is signed in gets what anon
+gets and nothing more. Contact messages are written only by the server action
+with the service role. `scripts/rls-test.mjs` proves each rule on the local
+stack, including a signed-in user with no profile.
 
 ## 7. Deploying
 
-**Supabase (hosted).**
+The step-by-step is `docs/LAUNCH_CHECKLIST.md`; this section gives the
+reasoning.
 
-1. Create a project; note the URL and keys.
-2. `supabase link --project-ref <ref>` then `supabase db push` to apply the
-   migrations. Do not push `seed.sql` to production; create the first admin
-   with `node scripts/create-admin.mjs <email> '<password>'` using the
-   production env, then invite others from Team.
-3. Authentication → URL Configuration: set Site URL to the public origin and
-   add `https://oliviaenergyandpower.com/admin/auth/callback` to Redirect
-   URLs (invite and reset links land there). Disable public sign-ups (the
-   local config already does).
-4. Authentication → Email Templates. Supabase's default invite and recovery
-   templates put the token in the URL fragment, which a server route cannot
-   read, so replace the link in both with a `token_hash` link to the callback
-   (the route accepts both types and shows "That sign-in link is invalid or
-   has expired" for a bad one). Invite user:
+**Supabase (hosted).** The site is built to live in a project that may be
+shared with other applications, so the rule is: change nothing project-wide
+except the one setting in step 2.
 
-   ```html
-   <h2>You have been invited</h2>
-   <p>
-     You have been invited to administer Olivia Energy. Follow this link to
-     accept the invitation and set your password:
-   </p>
-   <p>
-     <a
-       href="{{ .SiteURL }}/admin/auth/callback?token_hash={{ .TokenHash }}&type=invite&next=/admin/set-password"
-       >Accept the invitation</a
-     >
-   </p>
-   ```
-
-   Reset password:
-
-   ```html
-   <h2>Reset your password</h2>
-   <p>
-     Follow this link to set a new password for your Olivia Energy admin
-     account:
-   </p>
-   <p>
-     <a
-       href="{{ .SiteURL }}/admin/auth/callback?token_hash={{ .TokenHash }}&type=recovery&next=/admin/set-password"
-       >Reset password</a
-     >
-   </p>
-   <p>If you did not request this, ignore this email.</p>
-   ```
-
-   Leave the other templates as shipped; the admin area never sends them.
-
-5. Authentication → Attack Protection: enable CAPTCHA protection with
-   provider Turnstile and the same secret as `TURNSTILE_SECRET_KEY` (the
-   sign-in and reset forms already send the token and verify it themselves
-   first, so they work before and after this is switched on); set the
-   minimum password length to 10; enable leaked-password protection.
-6. Authentication → SMTP: configure a sender (Resend works) or invite and
-   reset emails will not go out.
-7. Storage: the migration creates the `media` bucket (public read of
-   objects, admin write, images and PDFs up to 10 MB; listing is not public).
-8. Database → Webhooks: on insert, update and delete of `posts`,
-   `publications` and `settings`, `POST https://<domain>/api/revalidate` with
-   header `Authorization: Bearer <REVALIDATE_SECRET>`.
-9. Plan: Pro. Free projects pause after a week without traffic and keep no
-   backups; Pro takes daily backups (seven days) and point-in-time recovery
-   is an add-on. Backups do not include Storage objects: export the `media`
-   bucket periodically alongside `supabase db dump`.
+1. SQL Editor: paste `supabase/hosted-setup.sql` and run it. It creates the
+   `olivia_energy` schema, the bucket and the seed content in one transaction
+   and refuses to run twice. Never run `supabase link`, `supabase db push` or
+   `supabase config push` against a shared project: migration history is kept
+   per project, not per application, and `config push` would apply this
+   repository's local Auth settings (sign-ups off, a localhost Site URL) to
+   every application in it.
+2. Project Settings → Data API → Exposed schemas: add `olivia_energy` at the
+   end of the list, leaving `public` first (the first entry is the default
+   for every other application).
+3. Create the first admin with
+   `node --env-file=.env.hosted scripts/create-admin.mjs <email> '<password>'`,
+   then run `node --env-file=.env.hosted scripts/check-hosted.mjs`, which
+   reads only, to confirm the public key, the service role, the bucket and
+   the admin. `.env.hosted` is a git-ignored file holding the production
+   values. If creating the user fails with "Database error saving new user",
+   another application's trigger on `auth.users` is rejecting it.
+4. Authentication: leave every setting as it is. Invitations and password
+   resets do not use Supabase's emails. The site mints a one-time link with
+   the service role and mails it through Resend (`src/lib/admin/links.ts`),
+   so nothing depends on the project's Site URL, redirect allow-list, email
+   templates or SMTP. The link opens `/admin/auth/confirm` and is verified
+   only when its button is pressed, so a mail scanner or a link preview that
+   fetches the URL cannot spend it. Do not enable CAPTCHA protection: the sign-in form
+   verifies Turnstile itself, and a project-wide CAPTCHA would break sign-in
+   here and in every other application in the project.
+5. Until Resend is configured no email goes out. An invitation then shows its
+   link for the admin to pass on, and a forgotten password is replaced with
+   `scripts/create-admin.mjs <email> '<new password>' --set-password`.
+6. Keys: a publishable key and a secret key. On a shared project the secret
+   key can read and write every application's data, so it belongs in Vercel's
+   environment variables and nowhere else. Prefer a secret key created for
+   this site alone (Project Settings → API Keys), which can be revoked
+   without touching the others.
+7. Database webhooks are not needed: the admin purges the cache on every
+   save. `POST /api/revalidate` exists for edits made outside the admin and
+   refuses payloads from any schema but `olivia_energy`.
+8. Plan: a free project pauses after a week without requests and keeps no
+   backups. While it is paused the public pages keep serving their last
+   built copy, the contact form falls back to email, and admin sign-in
+   fails. Pro removes pausing and adds daily backups (Storage objects are
+   not included; copy the bucket separately).
 
 **Vercel.**
 
-1. Import the repository (see §8 for creating it). Framework preset Next.js;
-   defaults for build and output; Node.js 22 (pinned by `engines`). Plan:
-   Pro, since the Hobby plan is for non-commercial use.
-2. Add every variable from §4 for Production (and Preview if wanted).
-   `NEXT_PUBLIC_SITE_URL` must be the public origin; a production build
-   without it fails on purpose.
+1. Import the GitHub repository. Framework preset Next.js; defaults for build
+   and output; Node.js 22 (pinned by `engines`).
+2. Add the variables from §4 for Production. Leave `NEXT_PUBLIC_SITE_URL`
+   unset: the site then uses Vercel's production domain
+   (`VERCEL_PROJECT_PRODUCTION_URL`), which becomes the custom domain once
+   one is attached, so canonical URLs, the sitemap and the contact form's
+   Turnstile hostname check follow the domain. Set the variable only to force
+   a particular origin.
 3. Add the custom domain and point DNS at Vercel (the domain is registered at
    Hostinger; change its A and CNAME records there and add `www` as a redirect
-   to the apex), then redeploy.
+   to the apex), then redeploy so the static pages pick up the new origin.
 4. Images and the CSP are confined to the project in
-   `NEXT_PUBLIC_SUPABASE_URL`; nothing to add unless a custom storage domain
-   is used, in which case edit `next.config.ts`.
+   `NEXT_PUBLIC_SUPABASE_URL`, and images to the `olivia-energy-media` bucket
+   within it; nothing to add unless a custom storage domain is used, in which
+   case edit `next.config.ts`.
 5. Set the function region to match the Supabase region.
+6. Plan: Hobby costs nothing, but its terms restrict it to non-commercial
+   use and a Hobby project cannot be transferred to a team. Pro removes both
+   limits.
 
 **Resend.** Verify the sending domain (SPF and DKIM records), create an API
 key restricted to sending, set `RESEND_FROM_EMAIL` to an address on that
 domain. Contact-form mail goes to the address in Settings → Contact email with
-Reply-To set to the sender.
+Reply-To set to the sender; invitations and password resets use the same
+sender. Verification needs the domain's DNS, so it comes after the domain is
+connected.
 
-**Cloudflare Turnstile.** Create a widget for the production hostname (and
-`localhost` for previews if desired), managed mode, and copy the site and
-secret keys.
+**Cloudflare Turnstile.** Create a widget in managed mode and add every
+hostname the site is served from: the `vercel.app` production hostname and
+the custom domain (apex and `www`). Sign-in and the contact form both require
+it, and the contact form also checks that the token was solved on the site's
+own hostname.
 
-**After the first deploy.** Sign in at `/admin`, change the password, set
-Settings (addresses, phones, socials, Scholar profile), submit the contact
-form once and confirm the message reaches both the inbox and the mailbox,
-publish a test article and confirm it appears without a redeploy, submit the
-sitemap in Google Search Console, and run the Rich Results Test on the live
-URL (its code-paste mode requires a Google login; the URL mode does not).
+**After the first deploy.** Sign in at `/admin`, set Settings (addresses,
+phones, socials, Scholar profile), submit the contact form once and confirm
+the message reaches the inbox (and the mailbox once Resend is set up), publish
+a test article and confirm it appears without a redeploy, submit the sitemap
+in Google Search Console, and run the Rich Results Test on the live URL (its
+code-paste mode requires a Google login; the URL mode does not).
 
 ## 8. Transferring ownership
 
@@ -285,18 +300,28 @@ old URL), then connect it to Vercel if Git-based deploys are wanted.
 `.gitignore` already excludes `node_modules`, `.next`, every `.env*` file
 except `.env.example`, `.screenshots` and the local harness state.
 
-**Vercel project.** From the project: Settings → General → Transfer Project,
-choose the client's team (they need a Vercel team; Hobby accounts cannot own
-team projects). Environment variables, domains and deployments move with it.
-Confirm the DNS records still point at Vercel afterwards.
+**Supabase.** At launch the data lives in a Supabase project the developer
+shares with other applications. That project cannot be transferred, and its
+secret key reaches every application in it, so neither the key nor a Vercel
+project that holds it may be handed over. To give the client the data, create
+a project of their own and move into it:
 
-**Supabase project.** From the project: Settings → General → Transfer Project
-to another organisation. The client must first create an organisation and
-accept the transfer; the project keeps its URL and keys, so nothing in Vercel
-changes. Move billing to the client's organisation at the same time. After
-the transfer, rotate the service-role key and `REVALIDATE_SECRET`, update
-them in Vercel and in the webhook, and remove the handover engineer's Auth
-user from Team.
+1. Run `supabase/hosted-setup.sql` there and expose the schema (§7).
+2. Copy the content:
+   `pg_dump --data-only -n olivia_energy --exclude-table-data=olivia_energy.profiles`
+   from the shared project, restored after emptying the seeded tables and
+   with `posts.author_id` set to null, plus the objects in the
+   `olivia-energy-media` bucket. Profiles are left out because they point at
+   Auth users, which do not move between projects.
+3. Recreate the admins with `scripts/create-admin.mjs`.
+4. Replace the three Supabase variables in Vercel, redeploy, then drop the
+   schema, the bucket and the four storage policies from the shared project.
+
+**Vercel project.** Only after the Supabase move above. From the project:
+Settings → General → Transfer Project, choose the client's team (they need a
+Vercel team; a Hobby project cannot be transferred). Environment variables,
+domains and deployments move with it. Rotate `REVALIDATE_SECRET` and confirm
+the DNS records still point at Vercel afterwards.
 
 **Resend and Cloudflare.** These are account-bound rather than transferable.
 Create them under the client's accounts, re-verify the sending domain, create
@@ -329,12 +354,14 @@ Every factual line on the site traces to one of these sources (checked
 - **Supplied by the client.** The email address, the three social profile
   URLs, the logo and the portrait.
 
-Kept as the client's brief states them, because nothing online confirms
-them: "registered in the United States and Nigeria" and "a NIPEX registered
-partner". They appear in the positioning statement and the third
-differentiator on What We Do, and in the About page's search description.
-The hero's credentials line carries only sourced facts (incorporation in
-2020, the founder's name and field, the two cities).
+Removed until the client confirms them, because nothing online does:
+"registered in the United States and Nigeria" and "a NIPEX-registered
+partner", both from the client's brief. If confirmed, restore them in the
+What We Do positioning and third differentiator
+(`src/content/what-we-do.ts`) and the About description
+(`src/content/seo.ts`); the NIPEX line also has a field in Admin → Settings.
+The site otherwise carries only sourced facts (incorporation in 2020, the
+founder's name and field, the two cities).
 
 **The client should confirm or supply:**
 
@@ -359,8 +386,9 @@ The hero's credentials line carries only sourced facts (incorporation in
 - The brand mark is the client's legacy mark redrawn as vector geometry
   (`src/lib/brand/mark.ts`, rendered by `<Logo>`; files and rules in
   `public/brand/README.md`).
-- Invite emails have not been exercised against a real Supabase Auth SMTP
-  configuration; the code follows the documented flow.
+- Invitation and reset emails go through Resend (`src/lib/admin/links.ts`)
+  and have been exercised in unit tests only; send one real invitation once
+  the Resend domain is verified.
 - Turnstile runs on Cloudflare's always-pass test keys in `.env.local`; the
   hosted site needs the real site and secret keys (the widget shows "For
   testing only" until then).

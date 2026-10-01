@@ -1,4 +1,5 @@
 import { createBrowserSupabase } from "@/lib/supabase/client";
+import { MEDIA_BUCKET } from "@/lib/supabase/schema";
 import { extensionFor, prepareImage } from "./images";
 import { slugify } from "./slug";
 
@@ -29,7 +30,7 @@ export async function uploadImage(
   const path = `${folder}/${Date.now()}-${base}.${extensionFor(prepared.type)}`;
   const supabase = createBrowserSupabase();
   const { error } = await supabase.storage
-    .from("media")
+    .from(MEDIA_BUCKET)
     .upload(path, await prepared.blob.arrayBuffer(), {
       contentType: prepared.type,
       cacheControl: "31536000",
@@ -47,6 +48,6 @@ export async function uploadImage(
 /** Public URL for a media path (or an absolute / site-relative URL as is). */
 export function mediaUrl(path: string): string {
   if (/^https?:\/\//.test(path) || path.startsWith("/")) return path;
-  return createBrowserSupabase().storage.from("media").getPublicUrl(path).data
-    .publicUrl;
+  return createBrowserSupabase().storage.from(MEDIA_BUCKET).getPublicUrl(path)
+    .data.publicUrl;
 }

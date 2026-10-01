@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "./database.types";
 import { getPublicSupabaseEnv } from "./env";
+import { DB_SCHEMA } from "./schema";
 
 /**
  * Server client bound to the request's auth cookies. Use in Server
@@ -17,6 +18,7 @@ export async function createServerSupabase() {
   const cookieStore = await cookies();
   const { url, anonKey } = getPublicSupabaseEnv();
   return createServerClient<Database>(url, anonKey, {
+    db: { schema: DB_SCHEMA },
     cookieOptions: {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

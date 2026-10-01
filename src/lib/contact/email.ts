@@ -1,7 +1,7 @@
 import "server-only";
 
-import { Resend } from "resend";
 import { SITE } from "@/content/site";
+import { escapeHtml, sendEmail, type SendResult } from "@/lib/email/send";
 import { absoluteUrl } from "@/lib/seo/urls";
 
 export type ContactEmail = {
@@ -15,29 +15,12 @@ export type ContactEmail = {
   receivedAt: Date;
 };
 
-export type SendResult =
-  | { ok: true; id: string | null }
-  | { ok: false; reason: "unconfigured" | "failed"; detail?: string };
-
-const DEFAULT_FROM = `${SITE.name} <no-reply@oliviaenergyandpower.com>`;
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
 /**
  * Delivers a contact message to the site mailbox through Resend, with
  * Reply-To set to the sender so a reply from any mail client goes straight
  * back to them. RESEND_FROM_EMAIL must be on a domain verified in Resend.
  */
 export async function sendContactEmail(m: ContactEmail): Promise<SendResult> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return { ok: false, reason: "unconfigured" };
-  const from = process.env.RESEND_FROM_EMAIL || DEFAULT_FROM;
   const clean = (value: string) => value.replace(/\p{Cc}+/gu, " ").trim();
   const subject = `Website enquiry from ${clean(m.name)}${m.organization ? ` (${clean(m.organization)})` : ""}`;
   const when = m.receivedAt.toISOString();
@@ -75,24 +58,12 @@ export async function sendContactEmail(m: ContactEmail): Promise<SendResult> {
 <p style="margin:24px 0 0;font-size:13px;color:#6b6f6a">Reply to this email to answer ${escapeHtml(m.name)}. Also in the <a href="${escapeHtml(inbox)}" style="color:#0f6a3e">admin inbox</a>.</p>
 </div></body></html>`;
 
-  try {
-    const resend = new Resend(apiKey);
-    const { data, error } = await resend.emails.send({
-      from,
-      to: [m.to],
-      replyTo: m.email,
-      subject,
-      text,
-      html,
-      headers: { "X-Entity-Ref-ID": m.id },
-    });
-    if (error) return { ok: false, reason: "failed", detail: error.message };
-    return { ok: true, id: data?.id ?? null };
-  } catch (error) {
-    return {
-      ok: false,
-      reason: "failed",
-      detail: error instanceof Error ? error.message : String(error),
-    };
-  }
+  return sendEmail({
+    to: m.to,
+    replyTo: m.email,
+    subject,
+    text,
+    html,
+    headers: { "X-Entity-Ref-ID": m.id },
+  });
 }

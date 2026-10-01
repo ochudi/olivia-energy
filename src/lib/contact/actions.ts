@@ -8,6 +8,7 @@ import { sendContactEmail } from "./email";
 import { contactSchema, fieldErrors, type ContactErrors } from "./schema";
 import { siteUrl } from "@/lib/seo/urls";
 import { getServiceSupabase } from "@/lib/supabase/service";
+import { parseSettings } from "@/lib/supabase/types";
 import { turnstileConfigured, verifyTurnstile } from "./turnstile";
 
 export type ContactFailure =
@@ -28,10 +29,11 @@ const text = (value: FormDataEntryValue | null): string =>
 
 /**
  * Contact-form submission. In order: honeypot, zod, Turnstile (verified
- * with Cloudflare), insert into contact_messages with the anonymous client
- * (RLS allows exactly that; the database trigger enforces the 3-per-hour
- * limit and answers PT429), then email through Resend. A mail failure is
- * logged, not shown: the message is already in the admin inbox.
+ * with Cloudflare), insert into contact_messages with the service role
+ * (the database trigger enforces the 3-per-hour limit and answers PT429),
+ * then email through Resend. The message has to reach at least one of the
+ * two: a mail failure is only logged when the row is in the admin inbox,
+ * and a database failure is only logged when the email went out.
  */
 export async function submitContact(
   _prev: ContactState,
@@ -87,7 +89,7 @@ export async function submitContact(
   }
 
   // The service role writes the row: anon has no insert privilege on
-  // contact_messages (see the launch-hardening migration), so the only way
+  // contact_messages (see the grants in the migration), so the only way
   // into the inbox is through this action, after Turnstile has passed.
   const { error } = await getServiceSupabase().from("contact_messages").insert({
     id,
@@ -97,15 +99,16 @@ export async function submitContact(
     message: values.message,
     turnstile_score: 1,
   });
+  if (error?.code === "PT429") {
+    return { status: "error", reason: "rate_limited", at };
+  }
   if (error) {
-    if (error.code === "PT429") {
-      return { status: "error", reason: "rate_limited", at };
-    }
     console.error("[contact] insert failed:", error.code, error.message);
-    return { status: "error", reason: "server", at };
   }
 
-  const settings = await getSettings();
+  // With the database unreachable the cached settings may be too; the
+  // defaults carry the same mailbox.
+  const settings = await getSettings().catch(() => parseSettings([]));
   const sent = await sendContactEmail({
     to: settings.contact_email,
     id,
@@ -117,8 +120,9 @@ export async function submitContact(
   });
   if (!sent.ok) {
     console.warn(
-      `[contact] stored ${id} but email not sent (${sent.reason})${sent.detail ? `: ${sent.detail}` : ""}`,
+      `[contact] ${error ? "not stored" : `stored ${id}`} and email not sent (${sent.reason})${sent.detail ? `: ${sent.detail}` : ""}`,
     );
+    if (error) return { status: "error", reason: "server", at };
   }
   return { status: "success", name: values.name, email: values.email, at };
 }

@@ -3,25 +3,60 @@ import { absoluteUrl } from "@/lib/seo/urls";
 import { getPublishedPosts } from "@/lib/supabase/queries";
 import { POST_CATEGORIES, type PostCategory } from "@/lib/supabase/types";
 
+/**
+ * `updated` is the day the page's copy last changed. Keep it honest: a
+ * search engine that sees every page "modified" on every deploy stops
+ * trusting the dates. Change it when you change the page.
+ */
 const STATIC_ROUTES: {
   path: string;
+  updated: string;
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
   priority: number;
 }[] = [
-  { path: "/", changeFrequency: "monthly", priority: 1 },
-  { path: "/what-we-do", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/about", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/insights", changeFrequency: "weekly", priority: 0.8 },
-  { path: "/publications", changeFrequency: "monthly", priority: 0.7 },
-  { path: "/contact", changeFrequency: "yearly", priority: 0.5 },
-  { path: "/privacy", changeFrequency: "yearly", priority: 0.2 },
+  { path: "/", updated: "2026-10-01", changeFrequency: "monthly", priority: 1 },
+  {
+    path: "/what-we-do",
+    updated: "2026-10-01",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/about",
+    updated: "2026-10-01",
+    changeFrequency: "monthly",
+    priority: 0.7,
+  },
+  {
+    path: "/insights",
+    updated: "2026-10-01",
+    changeFrequency: "weekly",
+    priority: 0.8,
+  },
+  {
+    path: "/publications",
+    updated: "2026-09-29",
+    changeFrequency: "monthly",
+    priority: 0.7,
+  },
+  {
+    path: "/contact",
+    updated: "2026-09-29",
+    changeFrequency: "yearly",
+    priority: 0.5,
+  },
+  {
+    path: "/privacy",
+    updated: "2026-09-29",
+    changeFrequency: "yearly",
+    priority: 0.2,
+  },
 ];
 
 /** Static pages plus every published article; refreshed with the posts tag. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getPublishedPosts();
   const newest = posts[0]?.updated_at;
-  const built = new Date();
 
   const latestByCategory = new Map<PostCategory, string>();
   for (const post of posts) {
@@ -33,20 +68,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...STATIC_ROUTES.map((route) => ({
       url: absoluteUrl(route.path),
-      lastModified:
-        route.path === "/insights" && newest ? new Date(newest) : built,
+      lastModified: new Date(
+        route.path === "/insights" && newest ? newest : route.updated,
+      ),
       changeFrequency: route.changeFrequency,
       priority: route.priority,
     })),
-    ...POST_CATEGORIES.map((category) => {
-      const latest = latestByCategory.get(category);
-      return {
+    // Only categories with something in them; an empty one is noindex.
+    ...POST_CATEGORIES.filter((category) => latestByCategory.has(category)).map(
+      (category) => ({
         url: absoluteUrl(`/insights/category/${category}`),
-        lastModified: latest ? new Date(latest) : built,
+        lastModified: new Date(latestByCategory.get(category)!),
         changeFrequency: "weekly" as const,
         priority: 0.4,
-      };
-    }),
+      }),
+    ),
     ...posts.map((post) => ({
       url: absoluteUrl(`/insights/${post.slug}`),
       lastModified: new Date(post.updated_at),

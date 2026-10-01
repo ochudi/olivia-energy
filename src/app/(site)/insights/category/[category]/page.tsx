@@ -1,7 +1,10 @@
 import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import { InsightsArchive } from "@/components/insights";
+import { JsonLd } from "@/components/seo/json-ld";
+import { CATEGORY_TOPICS, INSIGHTS } from "@/content/insights";
 import { SITE } from "@/content/site";
+import { breadcrumbList } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getPublishedPosts } from "@/lib/supabase/queries";
 import {
@@ -16,7 +19,9 @@ type Params = Promise<{ category: string }>;
 export async function generateStaticParams() {
   return POST_CATEGORIES.map((category) => ({ category }));
 }
-export const dynamicParams = true;
+// The categories are a fixed list, so anything else is the site's ordinary
+// 404 page rather than a render on demand.
+export const dynamicParams = false;
 
 export async function generateMetadata(
   { params }: { params: Params },
@@ -25,24 +30,42 @@ export async function generateMetadata(
   const { category } = await params;
   if (!isPostCategory(category)) return {};
   const label = postCategoryLabel(category);
-  return pageMetadata({
+  const topics = CATEGORY_TOPICS[category];
+  const metadata = await pageMetadata({
     title: `${label} | Insights | ${SITE.name}`,
-    description: `${label} articles from Olivia Insights: analysis and briefings on energy markets in the United States and Nigeria.`,
+    description: `${topics.charAt(0).toUpperCase()}${topics.slice(1)}. Analysis from Olivia Insights.`,
     path: `/insights/category/${category}`,
   })(undefined, parent);
+  // A category with nothing in it yet stays out of search results.
+  const posts = await getPublishedPosts();
+  return posts.some((post) => post.category === category)
+    ? metadata
+    : { ...metadata, robots: { index: false, follow: true } };
 }
 
 /**
  * One Insights category: the same cached, tagged post list /insights reads,
- * filtered to this category. Layout and the featured-post treatment are
- * identical to the index — only the active chip and the grid below it
- * change. The category is a fixed enum, so a segment outside it 404s
- * rather than rendering an empty page.
+ * scoped to this category (heading, featured post and grid). The category
+ * is a fixed enum, so a segment outside it 404s rather than rendering an
+ * empty page.
  */
 export default async function Page({ params }: { params: Params }) {
   const { category } = await params;
   if (!isPostCategory(category)) notFound();
 
   const posts = await getPublishedPosts();
-  return <InsightsArchive posts={posts} active={category} />;
+  return (
+    <>
+      <InsightsArchive posts={posts} active={category} />
+      <JsonLd
+        data={breadcrumbList([
+          { name: INSIGHTS.eyebrow, path: "/insights" },
+          {
+            name: postCategoryLabel(category),
+            path: `/insights/category/${category}`,
+          },
+        ])}
+      />
+    </>
+  );
 }

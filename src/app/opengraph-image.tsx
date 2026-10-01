@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { ImageResponse } from "next/og";
+import { FOUNDER } from "@/content/about";
 import { SEO } from "@/content/seo";
 import { SITE } from "@/content/site";
 import {
@@ -17,7 +18,6 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 const GREEN_950 = "#002210";
-const GREEN_300 = "#79d88d";
 const NEUTRAL_50 = "#faf7f3";
 const NEUTRAL_300 = "#cecac3";
 
@@ -38,7 +38,9 @@ const DESCENT = 0.265;
 
 /**
  * Default social card: the lockup (one-colour mark, as on every dark ground)
- * and the search tagline on the inverse green.
+ * and the search tagline on the inverse green, with who leads the practice
+ * and the address along the foot. Nothing else: the card is read at
+ * thumbnail size in a chat or a feed, so the tagline is set large.
  */
 export default async function Image() {
   const [serif, sans] = await Promise.all([
@@ -53,7 +55,6 @@ export default async function Image() {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
         padding: "64px 72px",
         backgroundColor: GREEN_950,
         color: NEUTRAL_50,
@@ -63,25 +64,11 @@ export default async function Image() {
       <div
         style={{
           display: "flex",
-          alignItems: "center",
-          gap: 14,
-          color: GREEN_300,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          fontSize: 18,
+          flexDirection: "column",
+          flexGrow: 1,
+          justifyContent: "center",
         }}
       >
-        <span
-          style={{
-            display: "flex",
-            width: 24,
-            height: 1,
-            backgroundColor: GREEN_300,
-          }}
-        />
-        Energy advisory · Research · Energy transition
-      </div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
         <div
           style={{
             display: "flex",
@@ -114,11 +101,11 @@ export default async function Image() {
         <div
           style={{
             display: "flex",
-            marginTop: 28,
-            fontSize: 34,
-            lineHeight: 1.3,
+            marginTop: 30,
+            fontSize: 40,
+            lineHeight: 1.25,
             color: NEUTRAL_300,
-            maxWidth: 900,
+            maxWidth: 1056,
           }}
         >
           {SEO.tagline}
@@ -134,7 +121,7 @@ export default async function Image() {
           color: NEUTRAL_300,
         }}
       >
-        <span>United States · Nigeria</span>
+        <span>Led by {FOUNDER.name}, energy economist</span>
         <span>{host}</span>
       </div>
     </div>,

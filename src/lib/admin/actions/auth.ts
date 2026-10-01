@@ -4,9 +4,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { turnstileConfigured, verifyTurnstile } from "@/lib/contact/turnstile";
-import { safeNext } from "@/lib/admin/paths";
-import { siteUrl } from "@/lib/seo/urls";
+import { adminLinkUrl, sendAdminLink } from "@/lib/admin/links";
+import { isAdminLinkType, safeNext } from "@/lib/admin/paths";
 import { createServerSupabase } from "@/lib/supabase/server";
+import { getServiceSupabase } from "@/lib/supabase/service";
 import type { ActionState } from "./types";
 
 const credentials = z.object({
@@ -47,25 +48,23 @@ export async function signIn(
     };
   }
 
-  // Signed-in requests run on the server, so Supabase's own per-IP limit
+  // Sign-in requests run on the server, so Supabase's own per-IP limit
   // only ever sees the host's IP. Turnstile puts the check back on the
-  // visitor; verified here (defence in depth) and also handed to Supabase
-  // via `captchaToken` so its own Attack Protection setting can use it too.
-  const token = String(formData.get("cf-turnstile-response") ?? "");
-  let captchaToken: string | undefined;
+  // visitor. It is verified here and nowhere else: a token verifies once,
+  // so it cannot also be handed to Supabase's CAPTCHA setting, which must
+  // stay off for this project (see docs/DEVELOPER_HANDOVER.md §7).
   if (turnstileConfigured()) {
+    const token = String(formData.get("cf-turnstile-response") ?? "");
     const verified = await verifyTurnstile(token, await clientIp());
     if (!verified.ok) {
       return { ok: false, message: TURNSTILE_ERROR, values };
     }
-    captchaToken = token;
   }
 
   const supabase = await createServerSupabase();
   const { error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
-    options: captchaToken ? { captchaToken } : undefined,
   });
   if (error) {
     if (error.status === 429) {
@@ -87,11 +86,51 @@ export async function signOut(): Promise<void> {
 
 const resetEmail = z.object({ email: z.email() });
 
+/** A member may be sent one recovery link per minute. */
+const RESET_INTERVAL_MS = 60_000;
+
+/**
+ * Mails a one-time recovery link, but only to an address that is a member
+ * of this site's admin: the Auth project may hold other applications'
+ * users, and they have no business receiving this site's email. The link
+ * is minted with the service role and sent through Resend (see links.ts).
+ */
+async function sendRecoveryLink(email: string): Promise<void> {
+  const service = getServiceSupabase();
+  const { data: member } = await service
+    .from("profiles")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+  if (!member) return;
+  const { data: account } = await service.auth.admin.getUserById(member.id);
+  const lastSent = account.user?.recovery_sent_at;
+  if (lastSent && Date.now() - Date.parse(lastSent) < RESET_INTERVAL_MS) return;
+  const { data, error } = await service.auth.admin.generateLink({
+    type: "recovery",
+    email,
+  });
+  if (error) {
+    console.warn("[auth] recovery link not created:", error.message);
+    return;
+  }
+  const sent = await sendAdminLink(
+    "recovery",
+    email,
+    adminLinkUrl(data.properties),
+  );
+  if (!sent.ok) {
+    console.warn(
+      `[auth] recovery email not sent (${sent.reason})${sent.detail ? `: ${sent.detail}` : ""}`,
+    );
+  }
+}
+
 /**
  * Requests a recovery email. Always answers with the same neutral message,
- * whether or not the address has an account and whether or not Turnstile or
- * Supabase accepted the request — nothing here should let a caller tell
- * those cases apart.
+ * whether or not the address is a member and whether or not Turnstile
+ * accepted the request or the email went out — nothing here should let a
+ * caller tell those cases apart.
  */
 export async function requestPasswordReset(
   _prev: ActionState,
@@ -103,23 +142,34 @@ export async function requestPasswordReset(
     return { ok: false, message: "Enter a valid email address.", values };
   }
 
-  const token = String(formData.get("cf-turnstile-response") ?? "");
-  let captchaToken: string | undefined;
-  let blockedByTurnstile = false;
   if (turnstileConfigured()) {
+    const token = String(formData.get("cf-turnstile-response") ?? "");
     const verified = await verifyTurnstile(token, await clientIp());
-    if (verified.ok) captchaToken = token;
-    else blockedByTurnstile = true;
+    if (!verified.ok) return { ok: true, message: RESET_NOTICE };
   }
-
-  if (!blockedByTurnstile) {
-    const supabase = await createServerSupabase();
-    await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-      redirectTo: `${siteUrl()}/admin/auth/callback?next=/admin/set-password`,
-      ...(captchaToken ? { captchaToken } : {}),
-    });
+  try {
+    await sendRecoveryLink(parsed.data.email.toLowerCase());
+  } catch (error) {
+    console.error("[auth] recovery request failed:", error);
   }
   return { ok: true, message: RESET_NOTICE };
+}
+
+/**
+ * Spends a one-time invite or reset link and signs the person in. This is
+ * the confirm page's button, so the token is verified on a POST the person
+ * made, never on the GET that merely opened the link.
+ */
+export async function confirmLink(formData: FormData): Promise<void> {
+  const tokenHash = String(formData.get("token_hash") ?? "");
+  const type = formData.get("type");
+  if (!tokenHash || !isAdminLinkType(type)) redirect("/admin/login?error=link");
+  const supabase = await createServerSupabase();
+  const { error } = await supabase.auth.verifyOtp({
+    token_hash: tokenHash,
+    type,
+  });
+  redirect(error ? "/admin/login?error=link" : "/admin/set-password");
 }
 
 const passwords = z

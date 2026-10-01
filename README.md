@@ -1,6 +1,6 @@
 # Olivia Energy
 
-Marketing site and admin for Olivia Energy, built on Next.js 15 (App Router),
+Marketing site and admin for Olivia Energy, built on Next.js 16 (App Router),
 React 19, TypeScript (strict) and Tailwind CSS v4.
 
 ## Stack
@@ -25,7 +25,7 @@ src/
   app/
     (site)/         Public pages: shell layout, page template, routes
     (guide)/        /styleguide, rendered without the site chrome
-    admin/          Back office: (auth) sign-in screens, (app) sidebar screens, auth/callback
+    admin/          Back office: (auth) sign-in and link screens, (app) sidebar screens
   components/
     ui/             Reusable primitives (buttons, cards, social icons, skip link, ...)
     sections/       Page-level sections and chrome (site-header, site-footer, ...)
@@ -40,7 +40,7 @@ src/
 
 ## Prerequisites
 
-- Node.js 22 or newer (`.nvmrc` pins 22; run `nvm use`). `npm run dev` and
+- Node.js 22 (`.nvmrc` and `engines` pin 22.x; run `nvm use`). `npm run dev` and
   `npm run build` refuse older versions (`scripts/check-node.mjs`): the
   `@supabase/supabase-js` client warns on 20 and its scripts need the native
   WebSocket that arrived in 22.
@@ -75,17 +75,17 @@ src/
 
 All variables are listed in `.env.example`. Never commit real values.
 
-| Variable                        | Where to find it                                             | Exposed to browser |
-| ------------------------------- | ------------------------------------------------------------ | ------------------ |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase → Project Settings → API → Project URL              | Yes                |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API → anon public key          | Yes (RLS applies)  |
-| `SUPABASE_SERVICE_ROLE_KEY`     | Supabase → Project Settings → API → service_role key         | No (server only)   |
-| `RESEND_API_KEY`                | Resend → API Keys                                            | No                 |
-| `RESEND_FROM_EMAIL`             | Sender for contact-form mail, on a domain verified in Resend | No                 |
-| `TURNSTILE_SITE_KEY`            | Cloudflare → Turnstile → widget → Site key                   | No                 |
-| `TURNSTILE_SECRET_KEY`          | Cloudflare → Turnstile → widget → Secret key                 | No                 |
-| `REVALIDATE_SECRET`             | Any long random string; shared with the Supabase webhook     | No (server only)   |
-| `NEXT_PUBLIC_SITE_URL`          | Canonical public origin, no trailing slash                   | Yes                |
+| Variable                        | Where to find it                                               | Exposed to browser |
+| ------------------------------- | -------------------------------------------------------------- | ------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase → Project Settings → API → Project URL                | Yes                |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API → anon public key            | Yes (RLS applies)  |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Supabase → Project Settings → API → service_role key           | No (server only)   |
+| `RESEND_API_KEY`                | Resend → API Keys                                              | No                 |
+| `RESEND_FROM_EMAIL`             | Sender for contact-form mail, on a domain verified in Resend   | No                 |
+| `TURNSTILE_SITE_KEY`            | Cloudflare → Turnstile → widget → Site key                     | No                 |
+| `TURNSTILE_SECRET_KEY`          | Cloudflare → Turnstile → widget → Secret key                   | No                 |
+| `REVALIDATE_SECRET`             | Any long random string; bearer for `POST /api/revalidate`      | No (server only)   |
+| `NEXT_PUBLIC_SITE_URL`          | Canonical public origin, no trailing slash; optional on Vercel | Yes                |
 
 `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security. Only use it in
 server-side code (route handlers, server actions) and never ship it to the
@@ -93,26 +93,27 @@ client.
 
 ## Scripts
 
-| Command                | What it does                                                                          |
-| ---------------------- | ------------------------------------------------------------------------------------- |
-| `npm run dev`          | Start the dev server (Turbopack; writes to `.next/dev`, so it never clobbers a build) |
-| `npm run build`        | Production build                                                                      |
-| `npm run start`        | Serve the production build                                                            |
-| `npm run lint`         | Run ESLint                                                                            |
-| `npm run lint:fix`     | Run ESLint and auto-fix                                                               |
-| `npm run format`       | Format the codebase with Prettier                                                     |
-| `npm run format:check` | Verify formatting without writing                                                     |
-| `npm run typecheck`    | Type-check with `tsc --noEmit`                                                        |
-| `npm run shots`        | Screenshot a route at 390/768/1440 (see Visual QA)                                    |
-| `npm run a11y`         | Lighthouse accessibility audit, mobile and desktop                                    |
-| `npm run lighthouse`   | Lighthouse mobile, all four categories, on Home and What We Do                        |
-| `npm run db:start`     | Start the local Supabase stack (Docker) and apply migrations                          |
-| `npm run db:reset`     | Recreate the local database: migrations, then `supabase/seed.sql`                     |
-| `npm run test`         | Vitest: contact action, admin route guard, revalidation helpers and route             |
-| `npm run db:types`     | Regenerate `src/lib/supabase/database.types.ts` from the local stack                  |
-| `npm run db:test`      | RLS proof against the local stack (`scripts/rls-test.mjs`)                            |
-| `npm run db:stop`      | Stop the local stack                                                                  |
-| `npm run admin:create` | Create or promote an admin user on the local stack                                    |
+| Command                 | What it does                                                                            |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| `npm run dev`           | Start the dev server (Turbopack; writes to `.next/dev`, so it never clobbers a build)   |
+| `npm run build`         | Production build                                                                        |
+| `npm run start`         | Serve the production build                                                              |
+| `npm run lint`          | Run ESLint                                                                              |
+| `npm run lint:fix`      | Run ESLint and auto-fix                                                                 |
+| `npm run format`        | Format the codebase with Prettier                                                       |
+| `npm run format:check`  | Verify formatting without writing                                                       |
+| `npm run typecheck`     | Type-check with `tsc --noEmit`                                                          |
+| `npm run shots`         | Screenshot a route at 390/768/1440 (see Visual QA)                                      |
+| `npm run a11y`          | Lighthouse accessibility audit, mobile and desktop                                      |
+| `npm run lighthouse`    | Lighthouse mobile, all four categories, on Home and What We Do                          |
+| `npm run db:start`      | Start the local Supabase stack (Docker) and apply migrations                            |
+| `npm run db:reset`      | Recreate the local database: the migration, then `seed.sql` and `seeds/*.sql`           |
+| `npm run test`          | Vitest: contact and admin actions, route guard, schema guard, SEO helpers, revalidation |
+| `npm run db:types`      | Regenerate `src/lib/supabase/database.types.ts` from the local stack                    |
+| `npm run db:test`       | RLS proof against the local stack (`scripts/rls-test.mjs`)                              |
+| `npm run db:hosted-sql` | Regenerate `supabase/hosted-setup.sql`, the one file a hosted project is set up from    |
+| `npm run db:stop`       | Stop the local stack                                                                    |
+| `npm run admin:create`  | Create or promote an admin user on the local stack                                      |
 
 Before opening a PR or deploying, run:
 
@@ -281,9 +282,10 @@ are served from the Data Cache and refreshed by tag.
 - **Home** "Latest insights" reads the three newest posts through the same
   layer and hides itself while there are none.
 
-Inline images and covers come from the `media` bucket; `next.config.ts`
-allows `*.supabase.co` and localhost as image hosts. Add your own domain
-there if the bucket sits behind a custom hostname.
+Inline images and covers come from the `olivia-energy-media` bucket;
+`next.config.ts` allows that bucket on the configured Supabase host (and
+localhost outside production) as an image source. Add your own domain there
+if the bucket sits behind a custom hostname.
 
 ### Fonts and performance
 
@@ -370,6 +372,17 @@ every published article (refreshed with the `posts` tag);
 `src/app/robots.ts` allows everything except `/admin`, `/api/` and
 `/styleguide` and points at the sitemap.
 
+**Answer engines.** `/llms.txt` (`src/app/llms.txt/route.ts`, built by
+`src/lib/seo/llms.ts`) is a plain Markdown summary for language models and
+the search products built on them: who the firm is, its services, and a link
+to every page, article and paper. It is generated from the content files and
+the database and refreshes with the same cache tags as the pages. `robots.txt`
+allows every crawler, AI crawlers included, since being quoted is the point.
+
+**Typography in content.** Editors type straight quotation marks; the read
+layer and the article renderer set them as typographic ones (`typeset()` in
+`src/lib/insights/text.ts`), leaving code untouched.
+
 **Performance budget.** Lighthouse mobile targets are 95+ performance and
 100 for accessibility, best practices and SEO on Home, What We Do and an
 article. `npm run build && npm run start`, then `npm run lighthouse`
@@ -406,13 +419,14 @@ Action (`src/lib/contact/actions.ts`) in this order:
    the secret key. The widget is rendered explicitly and reset after every
    rejection, because a token verifies once. If the widget cannot load (a
    content blocker), the form says so and offers the email address.
-4. **Insert into `contact_messages`** with the anonymous client (that is all
-   RLS allows it). A `BEFORE INSERT` trigger rejects a fourth message from
-   the same address within an hour with SQLSTATE `PT429`, which PostgREST
-   turns into HTTP 429; the form shows a rate-limit state.
+4. **Insert into `contact_messages`** with the service role (the public key
+   has no privilege on the table). A `BEFORE INSERT` trigger rejects a fourth
+   message from the same address within an hour with SQLSTATE `PT429`, which
+   PostgREST turns into HTTP 429; the form shows a rate-limit state.
 5. **Email through Resend** to `settings.contact_email` with `Reply-To` set
-   to the sender, so replying from any mail client answers them. A send
-   failure is logged, not shown: the message is already in the admin inbox.
+   to the sender, so replying from any mail client answers them. The message
+   has to reach the inbox or the mailbox: a failure of one is logged, a
+   failure of both is shown.
 
 **Env.** `TURNSTILE_SITE_KEY` (handed to the widget by the page, no
 `NEXT_PUBLIC_` prefix needed), `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY` and
@@ -453,9 +467,10 @@ A small, dense back office on the same tokens as the site: sidebar
 navigation, tables, and one editor. Every route under `/admin` is guarded
 by `src/proxy.ts`: no session redirects to `/admin/login?next=…`, and
 the `(app)` layout plus every server action then require
-`profiles.role = 'admin'` (`src/lib/admin/auth.ts`). There is no public
-sign-up; `supabase/config.toml` disables it locally and the hosted project
-should match.
+`profiles.role = 'admin'` (`src/lib/admin/auth.ts`). The site has no sign-up
+of its own, and it does not rely on sign-up being closed in Supabase: access
+is a `profiles` row, so an Auth user without one (including a user of another
+application sharing the project) signs in to a "no access" page.
 
 | Screen       | What it does                                                                                                                                                                              |
 | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -473,52 +488,68 @@ home page update within a second; no redeploy. Unpublishing removes the
 page (404) the same way.
 
 **Images** are resized in the browser to at most 1920px on the long side
-(WebP, or PNG when the source is PNG) before upload to the `media` bucket;
+(WebP, or PNG when the source is PNG) before upload to the
+`olivia-energy-media` bucket;
 inline images keep their measured width and height so the site can reserve
 space. Covers are stored as bucket paths.
 
-**First admin.** `supabase/seed.sql` creates `admin@oliviaenergyandpower.com` with
-password `olivia-admin-local` on the local stack (change it after signing
-in). On the hosted project run
-`node scripts/create-admin.mjs <email> <password>` once, then invite others
-from Team. Invited users land on `/admin/auth/callback` and set a password.
+**First admin.** `supabase/seeds/local-admin.sql` creates
+`admin@oliviaenergyandpower.com` with password `olivia-admin-local` on the
+local stack only. On the hosted project run
+`node --env-file=.env.hosted scripts/create-admin.mjs <email> <password>`
+once, then invite others from Team.
+
+**Invitations and password resets** are the site's own: it mints a one-time
+link with the service role and mails it through Resend
+(`src/lib/admin/links.ts`), and the link opens `/admin/auth/confirm`, whose
+button verifies it and continues to the set-password screen (a page load
+alone spends nothing, so a mail scanner or a link preview cannot use it up). Supabase's built-in emails, templates, Site URL
+and redirect list are not involved. Without Resend configured, an invitation
+shows its link for the admin to pass on, and a forgotten password is replaced
+with `scripts/create-admin.mjs <email> <password> --set-password`. Inviting an
+address that already has an account grants it access and leaves its password
+alone; removing a member revokes access and leaves the account in place.
 
 **Env.** The admin needs the same Supabase variables as the site plus
-`SUPABASE_SERVICE_ROLE_KEY` (invites and role changes only) and
-`NEXT_PUBLIC_SITE_URL` (invite redirect target).
+`SUPABASE_SERVICE_ROLE_KEY` (team management, the links above and the contact
+form) and the Resend pair.
 
 ## Database (Supabase)
 
-The schema lives in `supabase/migrations/` and applies to a fresh project in
-one step; `supabase/seed.sql` adds settings defaults and one draft post for
-local development only.
+Everything lives in its own Postgres schema, `olivia_energy`, created by the
+one migration in `supabase/migrations/`, so the site can share a Supabase
+project with other applications: nothing is created in `public` and nothing
+hangs off `auth.users`. The schema must be listed under the project's exposed
+schemas (locally `supabase/config.toml` does it). `supabase/seed.sql` adds the
+settings defaults and `supabase/seeds/` the local admin, the publications and
+the four starter articles.
 
 | Table              | Purpose                                                                                                |
 | ------------------ | ------------------------------------------------------------------------------------------------------ |
-| `profiles`         | One row per Auth user; `role` is `admin` or `editor` (checked)                                         |
+| `profiles`         | Who may use the admin; `role` is `admin` or `editor` (checked)                                         |
 | `posts`            | Insights articles: Tiptap JSON `body`, `category` enum, `tags`, status                                 |
 | `publications`     | Title, authors, venue, year, URL (Scholar or DOI), summary, featured, sort                             |
 | `settings`         | `key` → `jsonb`: tagline, contact_email, socials, addresses, phones, nipex_wording, stats, scholar_url |
 | `contact_messages` | Contact-form submissions with `read` flag and optional bot score                                       |
-| storage `media`    | Public-read bucket for covers and documents; admins write                                              |
+| storage bucket     | `olivia-energy-media`: public read by URL for covers and documents; admins write                       |
 
 **Access.** RLS is on for every table. `anon` can select published posts
-(`status = published` and `published_at <= now()`), publications and
-settings, and insert `contact_messages` (never pre-marked as read). Signed-in
-users with `profiles.role = 'admin'` can do everything; the `is_admin()`
-function backs those policies. Table privileges are also narrowed, so a
+(`status = published` and `published_at <= now()`), publications, settings
+and bylines. Signed-in users with `profiles.role = 'admin'` can do everything;
+the `is_admin()` function backs those policies. Any other signed-in user gets
+what `anon` gets. `contact_messages` is written only by the contact form's
+server action, with the service role. Table privileges are also narrowed, so a
 forbidden operation as `anon` (for example reading `contact_messages`) fails
 with `42501` rather than returning an empty set. The service-role key bypasses
 RLS and is used only server-side (`src/lib/supabase/service.ts`, which is
 `server-only`).
 
-**Admin users** are Supabase Auth users. Public sign-up is disabled in
-`supabase/config.toml` (mirror that in the hosted dashboard). New Auth users
-get a profile with role `editor`, which grants nothing; promote with:
+**Admin users** are Supabase Auth users with a `profiles` row. Nothing
+creates that row automatically; the Team page's invite writes it, and so does:
 
 ```bash
 npm run admin:create -- admin@example.com 'a strong password'   # local
-node scripts/create-admin.mjs admin@example.com 'a strong password'  # env-configured project
+node --env-file=.env.hosted scripts/create-admin.mjs admin@example.com 'a strong password'  # hosted
 ```
 
 **Local stack.** Requires Docker and the Supabase CLI.
@@ -533,16 +564,25 @@ npm run db:stop
 
 Put the printed `API URL` and keys into `.env.local` as
 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and
-`SUPABASE_SERVICE_ROLE_KEY`. Against a hosted project, link it and run
-`supabase db push`.
+`SUPABASE_SERVICE_ROLE_KEY`.
+
+**Hosted project.** Paste `supabase/hosted-setup.sql` into the Supabase SQL
+Editor and run it, then add `olivia_energy` to Project Settings → Data API →
+Exposed schemas. The file is the migration plus the content seeds in one
+transaction; it touches nothing outside the schema and the site's own bucket,
+and refuses to run twice. It is generated: after changing a migration or seed,
+run `npm run db:hosted-sql`. `supabase db push` is not used, because the
+project may be shared and migration history is per project. Check the result
+with `node --env-file=.env.hosted scripts/check-hosted.mjs` (read-only).
 
 **RLS proof.** `scripts/rls-test.mjs` creates fixtures with the service-role
-key (a published, a draft and a future-dated post, a contact message, an
-admin and an editor user), then checks with the anon key that only the
-published post is visible, that reading `contact_messages` fails, that
-inserting one succeeds, and that every write is refused; then repeats the
-checks as the editor (no rights) and the admin (full rights, including a
-storage upload that is publicly readable). It cleans up after itself and
+key (a published, a draft and a future-dated post, a contact message, and
+three users: an admin, an editor and one with no profile at all), then checks
+with the anon key that only the published post is visible, that reading and
+writing `contact_messages` both fail, and that every write is refused; then
+repeats the checks as the user with no profile (what another application's
+user looks like), the editor (no rights) and the admin (full rights, including
+a storage upload that is publicly readable). It cleans up after itself and
 exits non-zero on any failure.
 
 **Data layer** (`src/lib/supabase/`):
@@ -568,7 +608,7 @@ exits non-zero on any failure.
 
 The seven `post_category` values were chosen for the brief. Rename one in a
 new migration with
-`alter type public.post_category rename value 'old' to 'new'` and update
+`alter type olivia_energy.post_category rename value 'old' to 'new'` and update
 `POST_CATEGORY_LABELS`.
 
 ## Deploying
@@ -596,12 +636,13 @@ required.
    dashboard (Project → Settings → Environment Variables) or the CLI:
 
    ```bash
-   vercel env add SUPABASE_URL production
-   # repeat for each variable, and for the `preview` environment if used
+   vercel env add NEXT_PUBLIC_SUPABASE_URL production
+   # repeat for each variable
    ```
 
-   Set `NEXT_PUBLIC_SITE_URL` to the final public origin
-   (for example `https://oliviaenergyandpower.com`).
+   Leave `NEXT_PUBLIC_SITE_URL` unset: on Vercel the site follows the
+   project's production domain. Keep `SUPABASE_SERVICE_ROLE_KEY` to the
+   Production environment.
 
 4. Deploy:
 
@@ -646,15 +687,16 @@ For container deploys, set `output: "standalone"` in `next.config.ts` and copy
 ### Launch checklist
 
 `docs/LAUNCH_CHECKLIST.md` records what was verified in the final build and
-the steps only the account owners can take: the Supabase project and its
-Auth settings, Turnstile and Resend keys, the Vercel project and its
-variables, DNS at the registrar, and the first checks on the live URL. The
+the steps only the account owners can take: the database setup in Supabase,
+Turnstile and Resend keys, the Vercel project and its variables, DNS at the
+registrar, and the first checks on the live URL. The
 essentials, if you read nothing else:
 
-- Add the production domain to Supabase → Authentication → URL Configuration
-  (Site URL and Redirect URLs), and paste the invite and recovery email
-  templates from `docs/DEVELOPER_HANDOVER.md` §7.
-- Add the production hostname to the Turnstile widget's allowed domains.
+- Run `supabase/hosted-setup.sql` in the Supabase SQL Editor and expose the
+  `olivia_energy` schema. Change nothing under Authentication.
+- Add every hostname the site is served from to the Turnstile widget.
 - Verify the Resend sending domain and that `RESEND_API_KEY` belongs to it.
-- Set `NEXT_PUBLIC_SITE_URL` to the served origin; a production build without
-  it fails on purpose rather than baking localhost into canonical URLs.
+- On Vercel leave `NEXT_PUBLIC_SITE_URL` unset and the site follows the
+  project's production domain; elsewhere set it to the served origin, since a
+  production build without either fails on purpose rather than baking
+  localhost into canonical URLs.

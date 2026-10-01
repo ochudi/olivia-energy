@@ -15,7 +15,7 @@ export function ArticleFooter({ post, url }: { post: Article; url: string }) {
             <ul aria-label="Tags" className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
                 <li key={tag}>
-                  <Tag variant="outline">{tag}</Tag>
+                  <Tag variant="outline">{tag.replace(/-/g, " ")}</Tag>
                 </li>
               ))}
             </ul>

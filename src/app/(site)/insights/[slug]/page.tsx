@@ -10,7 +10,9 @@ import {
 } from "@/components/insights";
 import { Container } from "@/components/ui/container";
 import { Prose } from "@/components/ui/prose";
-import { articleTitle } from "@/lib/seo/metadata";
+import { SEO } from "@/content/seo";
+import { SITE } from "@/content/site";
+import { articleTitle, feedAlternate } from "@/lib/seo/metadata";
 import { absoluteUrl } from "@/lib/seo/urls";
 import {
   getPostBySlug,
@@ -45,9 +47,11 @@ export async function generateMetadata({
   return {
     title: articleTitle(title),
     description,
-    alternates: { canonical: `/insights/${slug}` },
+    alternates: { canonical: `/insights/${slug}`, types: feedAlternate },
     openGraph: {
       type: "article",
+      siteName: SITE.name,
+      locale: "en_GB",
       title,
       description,
       url: `/insights/${slug}`,
@@ -57,7 +61,12 @@ export async function generateMetadata({
       section: postCategoryLabel(post.category),
       tags: post.tags,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: "summary_large_image",
+      site: SEO.twitterSite,
+      title,
+      description,
+    },
   };
 }
 

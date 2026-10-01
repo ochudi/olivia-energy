@@ -3,13 +3,14 @@ import { z } from "zod";
 import { STATS } from "@/content/home";
 import { CONTACT, SITE, SOCIALS } from "@/content/site";
 import type { Database } from "./database.types";
+import type { DB_SCHEMA } from "./schema";
 
 /**
  * Typed aliases over the generated Database type, plus the runtime
  * companions the UI needs (category labels, the settings schema).
  */
 
-type PublicSchema = Database["public"];
+type PublicSchema = Database[typeof DB_SCHEMA];
 
 export type Tables<T extends keyof PublicSchema["Tables"]> =
   PublicSchema["Tables"][T]["Row"];

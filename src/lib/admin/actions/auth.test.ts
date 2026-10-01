@@ -4,7 +4,11 @@ const mocks = vi.hoisted(() => ({
   turnstileConfigured: vi.fn(),
   verifyTurnstile: vi.fn(),
   signInWithPassword: vi.fn(),
-  resetPasswordForEmail: vi.fn(),
+  verifyOtp: vi.fn(),
+  memberLookup: vi.fn(),
+  getUserById: vi.fn(),
+  generateLink: vi.fn(),
+  sendAdminLink: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
@@ -19,19 +23,38 @@ vi.mock("@/lib/contact/turnstile", () => ({
   turnstileConfigured: mocks.turnstileConfigured,
   verifyTurnstile: mocks.verifyTurnstile,
 }));
-vi.mock("@/lib/seo/urls", () => ({
-  siteUrl: () => "https://admin.example.com",
+vi.mock("@/lib/admin/links", () => ({
+  adminLinkUrl: (properties: { hashed_token: string }) =>
+    `https://admin.example.com/admin/auth/confirm?token_hash=${properties.hashed_token}`,
+  sendAdminLink: mocks.sendAdminLink,
 }));
 vi.mock("@/lib/supabase/server", () => ({
   createServerSupabase: async () => ({
     auth: {
       signInWithPassword: mocks.signInWithPassword,
-      resetPasswordForEmail: mocks.resetPasswordForEmail,
+      verifyOtp: mocks.verifyOtp,
+    },
+  }),
+}));
+vi.mock("@/lib/supabase/service", () => ({
+  getServiceSupabase: () => ({
+    from: () => ({
+      select: () => ({
+        eq: (_column: string, email: string) => ({
+          maybeSingle: () => mocks.memberLookup(email),
+        }),
+      }),
+    }),
+    auth: {
+      admin: {
+        getUserById: mocks.getUserById,
+        generateLink: mocks.generateLink,
+      },
     },
   }),
 }));
 
-import { requestPasswordReset, signIn } from "./auth";
+import { confirmLink, requestPasswordReset, signIn } from "./auth";
 
 function form(fields: Record<string, string>): FormData {
   const data = new FormData();
@@ -43,7 +66,18 @@ beforeEach(() => {
   mocks.turnstileConfigured.mockReturnValue(false);
   mocks.verifyTurnstile.mockResolvedValue({ ok: true });
   mocks.signInWithPassword.mockResolvedValue({ error: null });
-  mocks.resetPasswordForEmail.mockResolvedValue({ error: null });
+  mocks.verifyOtp.mockResolvedValue({ error: null });
+  mocks.memberLookup.mockResolvedValue({ data: { id: "user-1" } });
+  mocks.getUserById.mockResolvedValue({
+    data: { user: { id: "user-1", recovery_sent_at: null } },
+  });
+  mocks.generateLink.mockResolvedValue({
+    data: {
+      properties: { hashed_token: "hash-1", verification_type: "recovery" },
+    },
+    error: null,
+  });
+  mocks.sendAdminLink.mockResolvedValue({ ok: true, id: "email-1" });
 });
 
 describe("signIn", () => {
@@ -68,7 +102,6 @@ describe("signIn", () => {
     expect(mocks.signInWithPassword).toHaveBeenCalledWith({
       email: "a@example.com",
       password: "secret1",
-      options: undefined,
     });
   });
 
@@ -90,7 +123,7 @@ describe("signIn", () => {
     expect(mocks.signInWithPassword).not.toHaveBeenCalled();
   });
 
-  it("passes a verified Turnstile token through as captchaToken", async () => {
+  it("signs in once Turnstile verifies, without forwarding the spent token", async () => {
     mocks.turnstileConfigured.mockReturnValue(true);
     mocks.verifyTurnstile.mockResolvedValue({ ok: true });
     await expect(
@@ -107,7 +140,6 @@ describe("signIn", () => {
     expect(mocks.signInWithPassword).toHaveBeenCalledWith({
       email: "a@example.com",
       password: "secret1",
-      options: { captchaToken: "tok-1" },
     });
   });
 
@@ -168,46 +200,104 @@ describe("signIn", () => {
   });
 });
 
+describe("confirmLink", () => {
+  it("verifies the token and continues to the set-password screen", async () => {
+    await expect(
+      confirmLink(form({ token_hash: "hash-1", type: "invite" })),
+    ).rejects.toThrow("REDIRECT:/admin/set-password");
+    expect(mocks.verifyOtp).toHaveBeenCalledWith({
+      token_hash: "hash-1",
+      type: "invite",
+    });
+  });
+
+  it("sends a spent or expired link back to sign-in", async () => {
+    mocks.verifyOtp.mockResolvedValue({ error: { message: "expired" } });
+    await expect(
+      confirmLink(form({ token_hash: "hash-1", type: "recovery" })),
+    ).rejects.toThrow("REDIRECT:/admin/login?error=link");
+  });
+
+  it("refuses a missing token or an unexpected type without calling Supabase", async () => {
+    await expect(confirmLink(form({ type: "invite" }))).rejects.toThrow(
+      "REDIRECT:/admin/login?error=link",
+    );
+    await expect(
+      confirmLink(form({ token_hash: "hash-1", type: "magiclink" })),
+    ).rejects.toThrow("REDIRECT:/admin/login?error=link");
+    expect(mocks.verifyOtp).not.toHaveBeenCalled();
+  });
+});
+
 describe("requestPasswordReset", () => {
-  it("answers with the same neutral message for any address", async () => {
+  const neutral = {
+    ok: true,
+    message: expect.stringContaining("If that address"),
+  };
+
+  it("mails a member a one-time link to this site's own confirm page", async () => {
+    const state = await requestPasswordReset(
+      null,
+      form({ email: "Person@Example.com" }),
+    );
+    expect(state).toMatchObject(neutral);
+    expect(mocks.memberLookup).toHaveBeenCalledWith("person@example.com");
+    expect(mocks.generateLink).toHaveBeenCalledWith({
+      type: "recovery",
+      email: "person@example.com",
+    });
+    expect(mocks.sendAdminLink).toHaveBeenCalledWith(
+      "recovery",
+      "person@example.com",
+      expect.stringContaining("/admin/auth/confirm?token_hash=hash-1"),
+    );
+  });
+
+  it("answers the same way, and sends nothing, for an address that is not a member", async () => {
+    mocks.memberLookup.mockResolvedValue({ data: null });
+    const state = await requestPasswordReset(
+      null,
+      form({ email: "other-app-user@example.com" }),
+    );
+    expect(state).toMatchObject(neutral);
+    expect(mocks.generateLink).not.toHaveBeenCalled();
+    expect(mocks.sendAdminLink).not.toHaveBeenCalled();
+  });
+
+  it("sends at most one link a minute to the same member", async () => {
+    mocks.getUserById.mockResolvedValue({
+      data: {
+        user: { id: "user-1", recovery_sent_at: new Date().toISOString() },
+      },
+    });
     const state = await requestPasswordReset(
       null,
       form({ email: "person@example.com" }),
     );
-    expect(state).toMatchObject({
-      ok: true,
-      message: expect.stringContaining("If that address"),
-    });
-    expect(mocks.resetPasswordForEmail).toHaveBeenCalledWith(
-      "person@example.com",
-      expect.objectContaining({
-        redirectTo: expect.stringContaining("/admin/auth/callback"),
-      }),
-    );
+    expect(state).toMatchObject(neutral);
+    expect(mocks.generateLink).not.toHaveBeenCalled();
   });
 
-  it("still answers neutrally, without calling Supabase, when Turnstile rejects the token", async () => {
+  it("still answers neutrally, without touching Supabase, when Turnstile rejects the token", async () => {
     mocks.turnstileConfigured.mockReturnValue(true);
     mocks.verifyTurnstile.mockResolvedValue({ ok: false, codes: ["invalid"] });
     const state = await requestPasswordReset(
       null,
       form({ email: "person@example.com", "cf-turnstile-response": "bad" }),
     );
-    expect(state).toMatchObject({ ok: true });
-    expect(mocks.resetPasswordForEmail).not.toHaveBeenCalled();
+    expect(state).toMatchObject(neutral);
+    expect(mocks.memberLookup).not.toHaveBeenCalled();
+    expect(mocks.generateLink).not.toHaveBeenCalled();
   });
 
-  it("passes a verified token through as captchaToken", async () => {
-    mocks.turnstileConfigured.mockReturnValue(true);
-    mocks.verifyTurnstile.mockResolvedValue({ ok: true });
-    await requestPasswordReset(
+  it("answers neutrally when the lookup or the mail fails", async () => {
+    mocks.generateLink.mockRejectedValue(new Error("network"));
+    const state = await requestPasswordReset(
       null,
-      form({ email: "person@example.com", "cf-turnstile-response": "tok-2" }),
+      form({ email: "person@example.com" }),
     );
-    expect(mocks.resetPasswordForEmail).toHaveBeenCalledWith(
-      "person@example.com",
-      expect.objectContaining({ captchaToken: "tok-2" }),
-    );
+    expect(state).toMatchObject(neutral);
+    expect(mocks.sendAdminLink).not.toHaveBeenCalled();
   });
 
   it("rejects a malformed address before ever reaching Supabase", async () => {
@@ -216,6 +306,6 @@ describe("requestPasswordReset", () => {
       form({ email: "not-an-email" }),
     );
     expect(state).toMatchObject({ ok: false });
-    expect(mocks.resetPasswordForEmail).not.toHaveBeenCalled();
+    expect(mocks.memberLookup).not.toHaveBeenCalled();
   });
 });

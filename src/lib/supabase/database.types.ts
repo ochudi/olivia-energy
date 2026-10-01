@@ -12,7 +12,7 @@ export type Json =
   | Json[];
 
 export type Database = {
-  public: {
+  olivia_energy: {
     Tables: {
       contact_messages: {
         Row: {
@@ -51,7 +51,7 @@ export type Database = {
         Row: {
           author_id: string | null;
           body: Json;
-          category: Database["public"]["Enums"]["post_category"];
+          category: Database["olivia_energy"]["Enums"]["post_category"];
           cover_path: string | null;
           created_at: string;
           excerpt: string | null;
@@ -60,7 +60,7 @@ export type Database = {
           seo_description: string | null;
           seo_title: string | null;
           slug: string;
-          status: Database["public"]["Enums"]["post_status"];
+          status: Database["olivia_energy"]["Enums"]["post_status"];
           tags: string[];
           title: string;
           updated_at: string;
@@ -69,7 +69,7 @@ export type Database = {
         Insert: {
           author_id?: string | null;
           body?: Json;
-          category: Database["public"]["Enums"]["post_category"];
+          category: Database["olivia_energy"]["Enums"]["post_category"];
           cover_path?: string | null;
           created_at?: string;
           excerpt?: string | null;
@@ -78,7 +78,7 @@ export type Database = {
           seo_description?: string | null;
           seo_title?: string | null;
           slug: string;
-          status?: Database["public"]["Enums"]["post_status"];
+          status?: Database["olivia_energy"]["Enums"]["post_status"];
           tags?: string[];
           title: string;
           updated_at?: string;
@@ -87,7 +87,7 @@ export type Database = {
         Update: {
           author_id?: string | null;
           body?: Json;
-          category?: Database["public"]["Enums"]["post_category"];
+          category?: Database["olivia_energy"]["Enums"]["post_category"];
           cover_path?: string | null;
           created_at?: string;
           excerpt?: string | null;
@@ -96,7 +96,7 @@ export type Database = {
           seo_description?: string | null;
           seo_title?: string | null;
           slug?: string;
-          status?: Database["public"]["Enums"]["post_status"];
+          status?: Database["olivia_energy"]["Enums"]["post_status"];
           tags?: string[];
           title?: string;
           updated_at?: string;
@@ -250,7 +250,7 @@ type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
 type DefaultSchema = DatabaseWithoutInternals[Extract<
   keyof Database,
-  "public"
+  "olivia_energy"
 >];
 
 export type Tables<
@@ -364,7 +364,7 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
-  public: {
+  olivia_energy: {
     Enums: {
       post_category: [
         "market-analysis",

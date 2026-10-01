@@ -30,7 +30,9 @@ export function AboutStory() {
         <Container>
           <div className="grid gap-y-10 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:gap-x-8 lg:gap-y-8">
             <Reveal className="lg:col-span-4 lg:row-start-1">
-              <Eyebrow number="01">{STORY.sectionEyebrow}</Eyebrow>
+              <Eyebrow as="h2" number="01">
+                {STORY.sectionEyebrow}
+              </Eyebrow>
             </Reveal>
             <div className="lg:col-span-7 lg:col-start-6 lg:row-span-2 lg:row-start-1">
               {STORY.paragraphs.map((paragraph, index) => (

@@ -35,10 +35,10 @@ export const SERVICES_INDEX = {
 
 export const HERITAGE = {
   eyebrow: "Heritage",
-  title: "From Nigeria's downstream to the energy transition.",
+  title: "From Nigeria’s downstream to the energy transition.",
   paragraphs: [
-    "Olivia Energy was incorporated in Nigeria in February 2020 as a technology-driven fuel retailer. Its first service station opened at Sango Ota, Ogun State, that June, and a second outlet followed at Oju Ore, Otta, in November.",
-    "The advisory and research practice grew from that operating base and from its founder's own record: downstream experience across continents, and research in energy and environmental economics published since 2022.",
+    "Olivia Energy began in fuel retail. It was incorporated in Nigeria in February 2020, opened its first service station at Sango Ota, Ogun State, that June, and a second outlet at Oju Ore, Otta, in November.",
+    "Today Olivia Energy is an independent energy consultancy. Its advisory and research practice grew from that operating base and from its founder’s research in energy and environmental economics, published since 2022.",
   ],
   timeline: [
     {
@@ -96,7 +96,7 @@ export const STATS: readonly {
     value: 130,
     suffix: "+",
     label: "Citations",
-    description: "Of the founder's published papers",
+    description: "Of the founder’s published papers",
   },
 ];
 

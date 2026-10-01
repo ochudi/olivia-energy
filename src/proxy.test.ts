@@ -48,11 +48,11 @@ describe("admin route guard", () => {
     }
   });
 
-  it("lets a signed-out visitor reach the login page, the reset-password page, and the auth callback", async () => {
+  it("lets a signed-out visitor reach the login page, the reset-password page, and the link confirm page", async () => {
     for (const path of [
       "/admin/login",
       "/admin/reset",
-      "/admin/auth/callback?code=abc",
+      "/admin/auth/confirm?token_hash=abc&type=invite",
     ]) {
       const response = await proxy(request(path));
       expect(response.status).toBe(200);
@@ -107,7 +107,7 @@ describe("post-login redirect target", () => {
   it("knows which admin paths are public", () => {
     expect(isPublicAdminPath("/admin/login")).toBe(true);
     expect(isPublicAdminPath("/admin/reset")).toBe(true);
-    expect(isPublicAdminPath("/admin/auth/callback")).toBe(true);
+    expect(isPublicAdminPath("/admin/auth/confirm")).toBe(true);
     expect(isPublicAdminPath("/admin/loginx")).toBe(false);
     expect(isPublicAdminPath("/admin/resetx")).toBe(false);
     expect(isPublicAdminPath("/admin")).toBe(false);

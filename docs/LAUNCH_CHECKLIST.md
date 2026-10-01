@@ -60,11 +60,15 @@ a single h1 and console errors, then read by eye.
 
 **SEO and sharing.** Every public page has a unique title under 60
 characters, a description, a canonical URL, Open Graph and Twitter cards
-(rendered images at 1200×630), `lang="en"`, one h1 and no skipped heading
-levels. `robots.txt` excludes `/admin`, `/api/` and `/styleguide`; the
-sitemap lists every public route including each Insights category and
-article. Structured data (Organization, WebSite, Person, Article,
-ScholarlyArticle) parses on every page.
+(rendered images at 1200×630), `lang="en-GB"`, one h1 and no skipped heading
+levels. `robots.txt` excludes `/admin`, `/api/` and `/styleguide` and admits
+every crawler, AI crawlers included; the sitemap lists every public route,
+each article and each Insights category that has an article (an empty
+category is `noindex`). Structured data (Organization with its legal name
+and registration, WebSite, the founder as a Person with his scholarly
+profiles, Article, ScholarlyArticle with DOIs, BreadcrumbList) parses on
+every page. `/llms.txt` summarises the firm, its pages, articles and papers
+for answer engines, and `/insights/feed.xml` is an RSS feed of the articles.
 
 **Accessibility.** Lighthouse accessibility 100 on every route; visible
 focus on every control; skip link; labelled form fields with errors
@@ -82,36 +86,92 @@ linked from the footer and the form.
 claim traces to a source listed in `DEVELOPER_HANDOVER.md`, section 9, which
 also lists what the client should confirm.
 
-## Before go-live (account owners)
+## Going live
 
-1. **Supabase project.** Create it (Pro plan: daily backups, no pausing).
-   Run the migrations and the seeds (`supabase db push`, then
-   `supabase/seed.sql` and `supabase/seeds/*.sql` with `psql`), create the
-   first admin with `node scripts/create-admin.mjs`, and complete the Auth
-   settings in `DEVELOPER_HANDOVER.md` §7 (email templates for invite and
-   recovery, the redirect-URL allow-list, Turnstile CAPTCHA, minimum password
-   length 10, leaked-password protection). Add the Database Webhook for
-   `posts`, `publications` and `settings` pointing at `/api/revalidate`.
-2. **Cloudflare Turnstile.** Create a widget for `oliviaenergyandpower.com`
-   and take its site key and secret. The test keys in `.env.local` show
-   "For testing only" and must not reach production.
-3. **Resend.** Verify the sending domain (SPF, DKIM and a DMARC record at the
-   registrar) and create an API key. The sender is
-   `no-reply@oliviaenergyandpower.com`; replies go to the person who wrote.
-4. **Vercel project.** Pro plan (the site is commercial). Import the code,
-   framework preset Next.js, Node 22. Set every variable in `.env.example`
-   for Production, with `NEXT_PUBLIC_SITE_URL=https://oliviaenergyandpower.com`
-   and `REVALIDATE_SECRET` from `openssl rand -hex 32`. Choose a function
-   region near the Supabase region.
-5. **Domain.** At Hostinger, point `oliviaenergyandpower.com` at Vercel (the
-   A and CNAME records Vercel shows) and add `www` as a redirect to the apex.
-   Keep the registrar account in the client's name.
-6. **First checks on the live URL.** Sign in at `/admin`, change the admin
-   password, save Settings once, send one contact message and confirm it
-   reaches the inbox and the email, run `npm run lighthouse` against the
-   live URL, and submit the sitemap in Google Search Console.
-7. **Change the seeded password.** If the seed was used, the local admin
-   password `olivia-admin-local` is public knowledge; set a new one.
+Vercel first, on its own `vercel.app` address; the domain and email follow.
+The Supabase project may be one shared with other applications: every step
+below leaves them untouched. `.env.hosted` is a git-ignored file in the
+project folder holding the production values.
+
+### 1. Database (Supabase dashboard, about five minutes)
+
+1. **SQL Editor → New query.** Paste the whole of `supabase/hosted-setup.sql`
+   and run it. The editor may ask you to confirm because the script contains
+   `revoke` statements; they apply to the new schema only. The result is one
+   row: 9 settings, 9 publications, 4 articles, 1 media bucket. Running it a
+   second time changes nothing and says so. If a run stops with an error, run
+   `rollback;` on its own before trying again.
+2. **Project Settings → Data API → Exposed schemas.** Add `olivia_energy` at
+   the end of the list, leave `public` first, save. Change nothing else, and
+   nothing under Authentication.
+3. **First admin and a check**, in a terminal in the project folder:
+
+   ```bash
+   node --env-file=.env.hosted scripts/create-admin.mjs you@example.com 'a strong password'
+   node --env-file=.env.hosted scripts/check-hosted.mjs
+   ```
+
+   The second command reads only and should end with "All checks passed".
+
+### 2. Bot protection (Cloudflare, free)
+
+4. **Turnstile → Add widget.** Managed mode, hostname
+   `oliviaenergyandpower.com`. Put the site key and the secret key into
+   `.env.hosted`. The contact form and admin sign-in both need them; the test
+   keys used locally do not work on the live site.
+
+### 3. Vercel
+
+5. **Add New → Project → import the GitHub repository.** Leave the detected
+   Next.js settings. Copy the variables to the clipboard with
+   `grep -v '^#' .env.hosted | grep . | pbcopy`, click into the first Key box
+   under Environment Variables and paste (Vercel splits the lines into six
+   variables), then Deploy. Do not set `NEXT_PUBLIC_SITE_URL`: the site follows the project's
+   production domain by itself. Afterwards, under Settings → Environment
+   Variables, edit `SUPABASE_SERVICE_ROLE_KEY` and untick Preview and
+   Development so only production builds carry it; and under Settings →
+   Functions choose the region nearest the Supabase project's.
+6. **Add the Vercel hostname to Turnstile.** Copy the production domain
+   Vercel assigned (for example `olivia-energy.vercel.app`) into the widget's
+   hostnames. No redeploy is needed. Use that address, not the longer
+   per-deployment ones, which Turnstile and the contact form reject.
+7. **Check the live address.** Open each page, send one contact message,
+   sign in at `/admin` and find the message in Inbox, save Settings once,
+   publish a test article and confirm it appears without a redeploy.
+
+### 4. Domain and email (when ready)
+
+8. **Vercel → Settings → Domains.** Add `oliviaenergyandpower.com` and `www`
+   (redirecting to the apex). At Hostinger set the A and CNAME records Vercel
+   shows. As soon as Vercel marks the domain valid, redeploy: until then the
+   contact form on the new domain is rejected, because each deployment knows
+   only the address it was built for. Then set the `vercel.app` domain to
+   redirect to the apex. Check that the mailbox in Settings → Contact email
+   (`info@oliviaenergyandpower.com`) exists.
+9. **Resend.** Add the domain, create the SPF, DKIM and DMARC records it
+   lists at Hostinger, create an API key, add `RESEND_API_KEY` in Vercel and
+   redeploy. From then on contact messages are also emailed, and invitations
+   and password resets go out by email. Until then messages wait in the
+   Inbox, an invitation shows its link for you to pass on, and a forgotten
+   password is replaced with
+   `node --env-file=.env.hosted scripts/create-admin.mjs <email> '<new password>' --set-password`.
+10. **Search.** Submit the sitemap in Google Search Console and run
+    `npm run lighthouse` against the live URL.
+
+### What costs nothing, and the catch in each
+
+- **Vercel Hobby** is free, but its terms limit it to non-commercial use and
+  a Hobby project cannot be transferred to a client's team. Pro removes both.
+- **Supabase free** pauses a project after a week without requests and keeps
+  no backups. A shared project that other applications keep busy will not
+  pause; a paused one leaves the public pages up from their last build and
+  takes sign-in down.
+- **Turnstile** is free. **Resend** is free for one domain and 3,000 emails
+  a month.
+- **The secret key** of a shared Supabase project reaches every application
+  in it. It lives in Vercel's environment variables and `.env.hosted` only,
+  and the Vercel project must not be handed to the client while the project
+  is shared (`DEVELOPER_HANDOVER.md` §8).
 
 ## Recommended after launch
 
