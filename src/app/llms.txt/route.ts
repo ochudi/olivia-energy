@@ -1,5 +1,6 @@
 import { llmsText } from "@/lib/seo/llms";
 import {
+  getOpEds,
   getPublications,
   getPublishedPosts,
   getSettings,
@@ -13,12 +14,13 @@ import {
 export const dynamic = "force-static";
 
 export async function GET() {
-  const [settings, posts, publications] = await Promise.all([
+  const [settings, posts, publications, opEds] = await Promise.all([
     getSettings(),
     getPublishedPosts(),
     getPublications(),
+    getOpEds(),
   ]);
-  return new Response(llmsText({ settings, posts, publications }), {
+  return new Response(llmsText({ settings, posts, publications, opEds }), {
     headers: { "content-type": "text/plain; charset=utf-8" },
   });
 }

@@ -1,8 +1,9 @@
-import { FOUNDER, REGISTRATIONS } from "@/content/about";
+import { FOUNDER, FOUNDER_PAGE, ORIGIN, REGISTRATIONS } from "@/content/about";
 import { SEO } from "@/content/seo";
 import { SERVICES, SITE } from "@/content/site";
 import { INTRO } from "@/content/what-we-do";
 import { formatDate } from "@/lib/insights/text";
+import type { OpEd } from "@/types/contracts";
 import {
   postCategoryLabel,
   type PostSummary,
@@ -22,33 +23,45 @@ import { absoluteUrl } from "./urls";
 export function llmsText(input: {
   settings: SiteSettings;
   posts: readonly PostSummary[];
+  /** Journal articles (`getPublications()`). */
   publications: readonly Publication[];
+  /** The founder's op-eds, newest first (`getOpEds()`). */
+  opEds?: readonly OpEd[];
 }): string {
-  const { settings, posts, publications } = input;
+  const { settings, posts, publications, opEds = [] } = input;
   const one = (text: string | null | undefined) =>
     (text ?? "").replace(/\s+/g, " ").trim();
   const places = settings.addresses
     .map((a) => [...a.lines, a.country].map(one).filter(Boolean).join(", "))
     .join("; ");
-  const registration = REGISTRATIONS[0];
+  const [registration, ...otherRegistrations] = REGISTRATIONS;
+  // The founder's place, read from the role line on About
+  // ("Founder/CEO, Olivia Energy · Energy economist · Fort Worth, Texas").
+  const founderPlace = FOUNDER_PAGE.role.split("·").at(-1)?.trim();
+  const nipex = one(settings.nipex_wording);
 
   const lines: string[] = [
     `# ${SITE.name}`,
     "",
     `> ${INTRO.positioning}`,
     "",
-    `- Legal name: ${registration.label}, RC ${registration.number}, incorporated in ${registration.region} in ${registration.founded.slice(0, 4)}.`,
-    `- Led by ${FOUNDER.name}, its founder and chief executive, an energy economist based in Fort Worth, Texas.`,
+    `- Legal name: ${registration.label}, ${registration.registry} ${registration.number}, registered in ${registration.region}.`,
+    ...otherRegistrations.map(
+      (r) =>
+        `- ${r.region} entity: ${r.label}, ${r.registry} ${r.number}, formed ${formatDate(r.founded)}.`,
+    ),
+    ...(nipex ? [`- ${nipex}`] : []),
+    `- Founded by ${FOUNDER.name}, its ${FOUNDER.role}, an energy economist${founderPlace ? ` based in ${founderPlace}` : ""}.`,
     ...(places ? [`- Locations: ${places}.`] : []),
     `- Enquiries: ${settings.contact_email} or ${absoluteUrl("/contact")}.`,
-    "- It began in 2020 as a fuel retailer, with service stations at Sango Ota and Oju Ore, Otta, in Ogun State.",
+    `- ${one(ORIGIN.paragraph)}`,
     "",
     "## Pages",
     "",
     `- [What we do](${absoluteUrl("/what-we-do")}): ${SEO.whatWeDo.description}`,
     `- [About](${absoluteUrl("/about")}): ${SEO.about.description}`,
     `- [Insights](${absoluteUrl("/insights")}): ${SEO.insights.description}`,
-    `- [Publications](${absoluteUrl("/publications")}): ${SEO.publications.description}`,
+    `- [Research](${absoluteUrl("/research")}): ${SEO.research.description}`,
     `- [Contact](${absoluteUrl("/contact")}): ${SEO.contact.description}`,
     "",
     "## Services",
@@ -71,6 +84,19 @@ export function llmsText(input: {
       const excerpt = one(post.excerpt);
       lines.push(
         `- [${one(post.title)}](${absoluteUrl(`/insights/${post.slug}`)}): ${excerpt ? `${excerpt} ` : ""}(${meta})`,
+      );
+    }
+  }
+
+  if (opEds.length) {
+    lines.push("", `## Op-eds by ${FOUNDER.name}`, "");
+    for (const oped of opEds) {
+      const meta = [oped.outlet, formatDate(oped.publishedOn)]
+        .filter(Boolean)
+        .join(", ");
+      const summary = one(oped.summary);
+      lines.push(
+        `- [${one(oped.title)}](${oped.url}): ${summary ? `${summary} ` : ""}(${meta})`,
       );
     }
   }

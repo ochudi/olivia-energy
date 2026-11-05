@@ -137,7 +137,7 @@ Everything on this screen is shown somewhere on the public site:
 - **Tagline**: the line under the wordmark in the footer.
 - **Contact email**: shown on the Contact page and in the footer. Messages
   from the contact form are sent to this address.
-- **NIPEX wording**: the registration line in the footer.
+- **NIPEX wording**: the registration line in the footer (the vendor ID and categories). Clear it to hide the line.
 - **Social profiles**: LinkedIn, Instagram and X links, and the founder's
   Google Scholar profile (linked from Publications; leave it empty to hide
   the link).
@@ -149,7 +149,7 @@ The figures band only shows on the site once **Show the figures on the
 homepage** is checked. Leave it off while any number is still provisional —
 flipping it on is the last step, once every figure is confirmed.
 
-The NIPEX line only appears once you type something into **NIPEX wording**.
+The NIPEX line disappears from the footer if you clear **NIPEX wording**.
 Leave it empty and the footer leaves the line out until the registration
 number is ready.
 

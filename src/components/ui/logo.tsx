@@ -18,9 +18,10 @@ export type LogoProps = {
   /** lockup: mark beside the wordmark. stacked: mark above it. mark: the mark alone. */
   variant?: LogoVariant;
   /**
-   * color: the full-colour mark, which turns one-colour by itself inside any
-   * inverse surface (data-tone="inverse", the header over a dark hero or with
-   * the menu open). mono: one colour everywhere, taken from currentColor.
+   * color: the full-colour mark, which turns one-colour by itself on any
+   * surface whose --brand-mark-* variables are currentColor (the floods,
+   * the photo surface, data-tone="inverse", the header over one of them or
+   * with the menu open). mono: one colour everywhere, from currentColor.
    */
   tone?: LogoTone;
   /**

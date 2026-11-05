@@ -3,10 +3,11 @@ import { cn } from "@/lib/utils/cn";
 
 /**
  * Public-site form controls. Hairline border in line-strong, 48px inputs,
- * the focus ring from the tokens, and the accent reserved for invalid state.
+ * the focus ring from the tokens, and the surface's error colour (red ink on
+ * paper, never the flood red) for the invalid state and the error line.
  */
 const inputClass =
-  "border-line-strong bg-surface text-ink placeholder:text-ink-subtle w-full rounded-xs border px-4 font-sans text-base transition-[border-color,box-shadow] duration-fast ease-standard hover:border-ink/50 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-focus/25 focus-visible:ring-offset-0 focus-visible:outline-none aria-invalid:border-accent disabled:opacity-50";
+  "border-line-strong bg-surface text-ink placeholder:text-ink-subtle w-full rounded-xs border px-4 font-sans text-base transition-[border-color,box-shadow] duration-fast ease-standard hover:border-ink/50 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-focus/25 focus-visible:ring-offset-0 focus-visible:outline-none aria-invalid:border-error disabled:opacity-50";
 
 export type FormFieldProps = {
   label: ReactNode;
@@ -38,7 +39,7 @@ export function FormField({
           {label}
         </label>
         {optional ? (
-          <span className="text-ink-muted text-xs">{optionalLabel}</span>
+          <span className="text-ink-muted text-sm">{optionalLabel}</span>
         ) : null}
       </div>
       {children}
@@ -46,12 +47,12 @@ export function FormField({
         <p
           id={`${htmlFor}-error`}
           role="alert"
-          className="text-accent animate-field-error text-sm"
+          className="text-error animate-field-error text-sm"
         >
           {error}
         </p>
       ) : hint ? (
-        <p id={`${htmlFor}-hint`} className="text-ink-muted text-xs">
+        <p id={`${htmlFor}-hint`} className="text-ink-muted text-sm">
           {hint}
         </p>
       ) : null}

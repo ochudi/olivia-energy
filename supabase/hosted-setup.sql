@@ -515,6 +515,105 @@ create policy "olivia_energy media: admin delete"
   to authenticated
   using (bucket_id = 'olivia-energy-media' and olivia_energy.is_admin());
 
+-- >>>>> supabase/migrations/20261003120000_commentary_and_formats.sql
+
+-- =====================================================================
+-- OLIVIA ENERGY — commentary and formats (3 October 2026)
+--
+-- Additive and idempotent: every statement is `if not exists` or guarded,
+-- so it is safe to run twice and on a database that already has it. It
+-- creates, alters or drops nothing outside the olivia_energy schema, and
+-- it never drops, renames or relaxes anything that exists.
+--
+-- publications gains what the Research and Insights pages need to list the
+-- founder's BusinessDay commentary beside his journal articles:
+--   kind          'journal' (every existing row), 'op-ed', 'mention',
+--                 'report' or 'talk'
+--   published_on  full publication date; year stays as it is
+--   topics        chips for an op-ed (see OpEdTopic in src/types/contracts.ts)
+--   pull_quote    one sentence from the piece
+--   syndication   true for a copy of a report on another site; listed, not counted
+-- posts gains
+--   format        one of the eight Insights formats, or null
+--
+-- RLS and grants are untouched: the existing policies and table grants are
+-- per table, not per column, so the new columns inherit them (public read;
+-- admin write).
+-- =====================================================================
+
+alter table olivia_energy.publications
+  add column if not exists kind text not null default 'journal';
+alter table olivia_energy.publications
+  add column if not exists published_on date;
+alter table olivia_energy.publications
+  add column if not exists topics text[] not null default '{}';
+alter table olivia_energy.publications
+  add column if not exists pull_quote text;
+alter table olivia_energy.publications
+  add column if not exists syndication boolean not null default false;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'publications_kind_check'
+      and conrelid = 'olivia_energy.publications'::regclass
+  ) then
+    alter table olivia_energy.publications
+      add constraint publications_kind_check
+      check (kind in ('journal', 'op-ed', 'mention', 'report', 'talk'));
+  end if;
+end
+$$;
+
+comment on column olivia_energy.publications.kind is
+  'journal (default), op-ed, mention, report or talk. Journals list on Research; op-eds and mentions are the founder''s commentary.';
+comment on column olivia_energy.publications.published_on is
+  'Full publication date; used to order commentary newest first.';
+comment on column olivia_energy.publications.topics is
+  'Topic chips for an op-ed: Dangote Refinery, Energy security, Energy transition, Downstream, Oil and gas, Power, Climate and ESG, Policy, Economy.';
+comment on column olivia_energy.publications.pull_quote is
+  'One sentence from the piece, shown on the commentary cards.';
+comment on column olivia_energy.publications.syndication is
+  'True for a copy of a BusinessDay report on another site. Listed, not counted.';
+
+create index if not exists publications_kind_published_on_idx
+  on olivia_energy.publications (kind, published_on desc);
+
+alter table olivia_energy.posts
+  add column if not exists format text;
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint
+    where conname = 'posts_format_check'
+      and conrelid = 'olivia_energy.posts'::regclass
+  ) then
+    alter table olivia_energy.posts
+      add constraint posts_format_check
+      check (
+        format is null or format in (
+          'energy-transition-briefing',
+          'downstream-market-outlook',
+          'african-energy-outlook',
+          'esg-insight',
+          'policy-brief',
+          'executive-commentary',
+          'research-paper',
+          'webinar-podcast'
+        )
+      );
+  end if;
+end
+$$;
+
+comment on column olivia_energy.posts.format is
+  'Insights format, or null. Mirrors POST_FORMAT_LABELS in src/lib/supabase/types.ts.';
+
+-- Tell PostgREST about the new columns (a no-op where nothing listens).
+notify pgrst, 'reload schema';
+
 -- >>>>> supabase/seed.sql
 
 -- =====================================================================
@@ -527,7 +626,7 @@ create policy "olivia_energy media: admin delete"
 
 insert into olivia_energy.settings (key, value) values
   -- Footer line; mirrors SITE.tagline in src/content/site.ts
-  ('tagline', '"Independent energy advisory, built on evidence."'::jsonb),
+  ('tagline', '"Powering the transition. Inspiring sustainable futures."'::jsonb),
   -- Supplied by the client 2026-09-06
   ('contact_email', '"info@oliviaenergyandpower.com"'::jsonb),
   -- Supplied by the client 2026-09-29
@@ -536,16 +635,19 @@ insert into olivia_energy.settings (key, value) values
     "instagram": "https://www.instagram.com/olivia.energy/",
     "x": "https://x.com/OliviaEnergy"
   }'::jsonb),
-  -- City level only. Fort Worth: the founder's BusinessDay byline (January
-  -- 2026). Otta: the company's LinkedIn headquarters.
+  -- Fort Worth, city level: the founder's BusinessDay byline (January 2026).
+  -- Nigeria, region level only: the client's instruction (3 October 2026)
+  -- is that no town or state is named.
   ('addresses', '[
     { "country": "United States", "lines": ["Fort Worth, Texas"] },
-    { "country": "Nigeria", "lines": ["Otta, Ogun State"] }
+    { "country": "Nigeria", "lines": ["Southwest Nigeria"] }
   ]'::jsonb),
   -- No public numbers; the contact page lists none while this is empty
   ('phones', '[]'::jsonb),
-  -- Footer NIPEX line; the footer hides it while empty
-  ('nipex_wording', '""'::jsonb),
+  -- Footer NIPEX line; mirrors NIPEX_WORDING in src/content/site.ts (vendor
+  -- ID and categories supplied by the client 2026-10-03). The footer hides
+  -- it when an admin clears it.
+  ('nipex_wording', '"NIPEX Vendor ID S77939994. Categories: Consultancy QA/QC, Petroleum Products Haulage/Logistics, Goods/Materials Haulage."'::jsonb),
   -- The client decides whether to show the stats band
   ('stats_visible', 'false'::jsonb),
   -- Founder's Google Scholar profile, linked from Publications
@@ -554,7 +656,7 @@ insert into olivia_energy.settings (key, value) values
   -- source for each (Brand Spur 2020; OpenAlex, ORCID, Google Scholar 2026)
   ('stats', '[
     { "key": "markets", "value": 2, "label": "Markets", "description": "United States and Nigeria" },
-    { "key": "outlets", "value": 2, "label": "Retail outlets", "description": "Opened in Ogun State in 2020" },
+    { "key": "outlets", "value": 2, "label": "Retail outlets", "description": "Opened in Southwest Nigeria in 2020" },
     { "key": "articles", "value": 9, "label": "Journal articles", "description": "By the founder and co-authors, 2022 to 2025" },
     { "key": "citations", "value": 130, "suffix": "+", "label": "Citations", "description": "Of the founder’s published papers" }
   ]'::jsonb)
@@ -687,6 +789,355 @@ where not exists (
   select 1 from olivia_energy.publications p where p.url = v.url
 );
 
+-- >>>>> supabase/seeds/commentary.sql
+
+-- =====================================================================
+-- Commentary — Dr Olugbenga Olaoye's BusinessDay op-eds (kind 'op-ed',
+-- 11 rows) and the BusinessDay reports that quote him (kind 'mention',
+-- 13 rows, one of them a syndicated copy). GENERATED by
+-- scripts/build-commentary.mjs from supabase/seeds/source/commentary.json;
+-- edit that file and re-run the script, not this one.
+--
+-- Runs on `supabase db reset` (via config.toml sql_paths, after the
+-- migration that adds the columns used here) and can be run by hand:
+--   psql "$DATABASE_URL" -f supabase/seeds/commentary.sql
+-- Idempotent: a row is inserted only if no publication already has its URL,
+-- so re-running it never duplicates a row or overwrites an admin's edits.
+--
+-- Titles, summaries and pull quotes are copied verbatim from the published
+-- pages (checked 2 October 2026). For an op-ed, authors holds the author
+-- named in the closing note of the piece (the page byline is the BusinessDay
+-- house account); for a mention it holds the reporter's byline. Mentions
+-- carry the topics and summary of the report and, in pull_quote, the passage
+-- that names him.
+--
+-- Not included: two Clinton School of Public Service pages (a student
+-- placement list, not commentary) and a Conquest Magazine report of a
+-- webinar (not energy commentary; not written by him).
+-- =====================================================================
+
+insert into olivia_energy.publications
+  (kind, title, authors, venue, year, published_on, url, topics, summary, pull_quote, syndication)
+select v.kind, v.title, v.authors, v.venue, v.year, v.published_on, v.url, v.topics, v.summary, v.pull_quote, v.syndication
+from (
+  values
+    (
+      'op-ed'::text,
+      'Turning Nigerians from consumers into owners'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-09-10',
+      'https://businessday.ng/opinion/article/turning-nigerians-from-consumers-into-owners/'::text,
+      array['Dangote Refinery', 'Energy security', 'Economy']::text[],
+      'Argues the Dangote Refinery IPO could turn Nigerians from fuel consumers into owners, deepen the capital market, and test whether African savings can finance African industrialisation and energy security.'::text,
+      'It asks whether the next chapter of Africa''s development can be defined by what Africans build, what Africans finance and what Africans own.'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'Divided by barrels, united by football'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-06-08',
+      'https://businessday.ng/pro/article/divided-by-barrels-united-by-football/'::text,
+      array['Policy', 'Economy']::text[],
+      'Uses the 2026 FIFA World Cup to argue that sport remains a valuable if symbolic channel of diplomacy and economic signalling in a world fragmented by geopolitical and energy rivalries.'::text,
+      'The world may remain divided by barrels, but it is still occasionally united by football.'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'Nigeria’s unexpected shield in a time of global energy turbulence'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-03-24',
+      'https://businessday.ng/pro/article/nigerias-unexpected-shield-in-a-time-of-global-energy-turbulence/'::text,
+      array['Dangote Refinery', 'Energy security', 'Downstream']::text[],
+      'Argues that the Dangote Refinery spared Nigeria a fuel crisis during the Middle East conflict, but warns against relying on one private asset and urges refinery sales, modular refineries and strategic reserves.'::text,
+      'Nations that fail to refine what they produce will always import the consequences of global instability.'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'What the U.S.–Israel–Iran war means for Nigeria’s wallet'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-03-01',
+      'https://businessday.ng/opinion/article/what-the-u-s-israel-iran-war-means-for-nigerias-wallet/'::text,
+      array['Energy security', 'Oil and gas', 'Economy']::text[],
+      'Traces how the conflict between the US, Israel and Iran reaches Nigeria through oil prices, Hormuz shipping risk, aviation disruption and investor flight, arguing higher crude helps only if output holds, while consumers still face costlier fuel and inflation.'::text,
+      'So the benefit may accrue “upstream” while the pain shows up “downstream” as higher transport costs, higher food prices, and higher inflation.'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'US intervention in Venezuela: A bold move for energy security and global energy dynamics? Lessons for Africa'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-01-06',
+      'https://businessday.ng/opinion/article/us-intervention-in-venezuela-a-bold-move-for-energy-security-and-global-energy-dynamics-lessons-for-africa/'::text,
+      array['Energy security', 'Oil and gas', 'Policy']::text[],
+      'Weighs the US operation in Venezuela as an energy-security move and draws lessons for African producers: balance resource nationalism with investor confidence, maintain infrastructure, diversify energy, and choose partnerships that serve national goals.'::text,
+      'Ultimately, the Venezuelan episode illustrates that energy security is not merely a function of resource endowments but of governance, investment, infrastructure, and geopolitical calculus.'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'From station to destination: Is Nigeria’s fuel retail sector ready for the next level?'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2025::integer,
+      date '2025-07-28',
+      'https://businessday.ng/opinion/article/from-station-to-destination-is-nigerias-fuel-retail-sector-ready-for-the-next-level/'::text,
+      array['Downstream', 'Dangote Refinery']::text[],
+      'Argues that after subsidy removal, and with the Dangote Refinery reshaping supply, Nigerian fuel retailers must move beyond selling volume. They should compete on non-fuel retail, convenience, digital payments and loyalty, with regulators supporting the change.'::text,
+      'The pump is no longer enough. The question is simple: are we ready to go from station to destination?'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'Filling up in a net-zero world: The fossil fuel paradox that won’t go away'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2025::integer,
+      date '2025-07-23',
+      'https://businessday.ng/opinion/article/filling-up-in-a-net-zero-world-the-fossil-fuel-paradox-that-wont-go-away/'::text,
+      array['Energy transition', 'Downstream', 'Oil and gas']::text[],
+      'Argues that continued investment in fuel stations reflects a non-linear energy transition. It calls for a pragmatic hybrid path: dual-use fuel and EV infrastructure, converting fleets first, and support for emerging markets.'::text,
+      'What we need is not ideological purity but pragmatic evolution.'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'Sanitation without accountability: Why Nigeria’s open defecation crisis persists (Part 2)'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2025::integer,
+      date '2025-07-14',
+      'https://businessday.ng/opinion/article/sanitation-without-accountability-why-nigerias-open-defecation-crisis-persists-part-2/'::text,
+      array['Policy']::text[],
+      'Argues that Nigeria''s open defecation persists because of weak accountability. It calls for empowered community committees, culturally aware messaging, integrated health and sanitation data, and state partnerships with proven local sanitation champions.'::text,
+      'Toilets are not just about waste; they are about dignity, equality, and state legitimacy.'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'Taming the menace of open defecation in Nigeria'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2025::integer,
+      date '2025-07-07',
+      'https://businessday.ng/opinion/article/taming-the-menace-of-open-defecation-in-nigeria/'::text,
+      array['Policy', 'Economy']::text[],
+      'Argues that open defecation is a public health and economic drag on Nigeria, rooted in housing, culture and weak institutions, and calls for community-led sanitation, behavioural change and durable financing.'::text,
+      'Every naira spent on sanitation returns multiple times in saved healthcare costs, increased school attendance, and boosted productivity.'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'Power to prosper: How energy transition can reduce poverty in Nigeria'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2025::integer,
+      date '2025-06-27',
+      'https://businessday.ng/opinion/article/power-to-prosper-how-energy-transition-can-reduce-poverty-in-nigeria/'::text,
+      array['Energy transition', 'Power', 'Economy']::text[],
+      'Argues that renewables, especially off-grid solar, can cut energy poverty in Nigeria by widening access, creating jobs and lowering household costs, provided policy, cheap finance and community ownership support them.'::text,
+      'Energy transition is not just about saving the planet; for Nigeria, it’s about saving people from poverty.'::text,
+      false::boolean
+    ),
+    (
+      'op-ed'::text,
+      'Africa’s energy future must be built on reality, not rhetoric'::text,
+      array['Olugbenga Olaoye']::text[],
+      'BusinessDay'::text,
+      2025::integer,
+      date '2025-06-23',
+      'https://businessday.ng/opinion/article/africas-energy-future-must-be-built-on-reality-not-rhetoric/'::text,
+      array['Energy transition', 'Climate and ESG', 'Policy']::text[],
+      'Contends Africa needs a pragmatic, home-defined transition: renewables alongside transitional gas, stronger grids and affordability, with fairer climate finance from rich nations rather than one-size-fits-all prescriptions.'::text,
+      'Pragmatism, not idealism, should guide Africa’s energy strategy.'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'How Nigeria''s debt bill is squeezing the budget'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-06-08',
+      'https://businessday.ng/business-economy/article/how-nigerias-debt-bill-is-squeezing-the-budget/'::text,
+      array['Economy', 'Policy']::text[],
+      'BusinessDay Pro analysis showing debt service consumed about 67 per cent of federal revenue in early-to-late 2025, arguing a shallow revenue base, not the debt stock alone, is squeezing Nigeria''s budget.'::text,
+      '“Nigeria is not being squeezed only by how much it owes. It is being squeezed by the cost of servicing what it owes against a revenue base that remains dangerously shallow,” said Olugbenga Olaoye, a member of the United States Association for Energy Economics (USAEE).'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'Nigeria''s economy seen growing at fastest rate in 5 years'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-05-13',
+      'https://businessday.ng/pro/article/nigerias-economy-seen-growing-4-as-reform-shock-begins-to-fade/'::text,
+      array['Economy', 'Policy']::text[],
+      'Projects roughly 4 per cent first-quarter 2026 GDP growth as reform shocks fade, while noting growth remains too slow to cut poverty and energy-linked inflation makes recovery uneven.'::text,
+      '“What we now have is a more uneven recovery where services and consumption continue to support activity, but energy-linked inflation pressures are slowing the transmission mechanism,” he said.'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'UAE exit deepens OPEC’s fading pricing influence'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-05-08',
+      'https://businessday.ng/pro/article/uae-exit-deepens-opecs-fading-pricing-influence/'::text,
+      array['Oil and gas', 'Policy', 'Economy']::text[],
+      'Analyses how the UAE''s departure from OPEC weakens the cartel''s supply discipline and argues that Nigeria, hampered by volatile output, remains a price-dependent producer with little volume flexibility.'::text,
+      'According to Olugbenga Olaoye, Nigeria’s gains reflect short-term efficiency improvements rather than a durable expansion in capacity.'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'UAE exit from OPEC exposes Nigeria’s structural output limits'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-05-05',
+      'https://businessday.ng/pro/article/uae-exit-from-opec-exposes-nigerias-structural-output-limits/'::text,
+      array['Oil and gas', 'Economy', 'Policy']::text[],
+      'Argues that the UAE leaving OPEC weakens the cartel''s pricing power and exposes Nigeria as a price-dependent producer unable to raise output, straining revenue projections and budgets.'::text,
+      'According to Olugbenga Olaoye, Nigeria’s gains reflect short-term efficiency improvements rather than a durable expansion in capacity.'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'How 132 ships became none in Hormuz'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-04-22',
+      'https://businessday.ng/business-economy/article/how-132-ships-became-none-in-hormuz/'::text,
+      array['Energy security', 'Oil and gas']::text[],
+      'Analyses the collapse in Strait of Hormuz vessel crossings in early 2026, arguing that lost commercial confidence rather than formal closure drives freight, oil prices and imported inflation.'::text,
+      'In his view, once confidence weakens, prices, freight decisions and hedging behaviour begin to adjust long before any formal shortage is visible.'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'Rising oil prices tighten CBN’s options, deepen growth–inflation trade-off'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-04-01',
+      'https://businessday.ng/pro/article/rising-oil-prices-tighten-cbns-options-deepen-growth-inflation-trade-off/'::text,
+      array['Economy', 'Oil and gas', 'Policy']::text[],
+      'Argues that rising oil prices leave Nigeria''s central bank facing a costly trade-off between containing inflation and supporting growth, with holding, tightening and easing each carrying risks.'::text,
+      'Olugbenga Olaoye, energy economist, observes that delayed responses to global shocks allow cost pressures to cascade across sectors.'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'Oil at $100 again, but Nigeria is poorer for it this time'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-03-30',
+      'https://businessday.ng/pro/article/oil-at-100-again-but-nigeria-is-poorer-for-it-this-time/'::text,
+      array['Oil and gas', 'Energy security', 'Dangote Refinery']::text[],
+      'Compares today''s $100 oil with the 1970s shocks, arguing Nigeria now absorbs price volatility faster through inflation and fuel costs, and recommending local refining, reliable power and renewables as buffers.'::text,
+      'As Olugbenga Olaoye, energy economist and member of the United States Association for Energy Economics (USAEE), notes, “Nigeria’s inflation response to external oil shocks is no longer gradual.'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'Oil price surge tests Nigeria’s post-subsidy model'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-03-27',
+      'https://businessday.ng/business-economy/article/oil-price-surge-tests-nigerias-post-subsidy-model/'::text,
+      array['Downstream', 'Oil and gas', 'Economy']::text[],
+      'Reports that, without fuel subsidies, rising crude prices pass straight into Nigerian fuel, transport and food costs, while limited refining means the country gains little from higher oil prices.'::text,
+      '“The country exports crude but still imports fuel, so rising prices increase both revenues and costs at the same time.”'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'Oil price surge tests Nigeria’s post-subsidy model'::text,
+      array['Chinedu Okafor']::text[],
+      'Parrot Nigeria'::text,
+      2026::integer,
+      date '2026-03-27',
+      'https://parrotnigeria.com/2026/03/27/oil-price-surge-tests-nigerias-post-subsidy-model/'::text,
+      array['Downstream', 'Oil and gas', 'Economy']::text[],
+      'News analysis on how rising crude prices, with no subsidy left, now pass straight into Nigerian fuel, transport and food costs, while limited refining keeps the country dependent on fuel imports.'::text,
+      '“This is why Nigeria is not fully benefiting from higher oil prices,” said Olugbenga Olaoye, an energy economist and member of USAEE.'::text,
+      true::boolean
+    ),
+    (
+      'mention'::text,
+      'Africa exports raw wealth, imports global shocks'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-03-24',
+      'https://businessday.ng/pro/article/africa-exports-raw-wealth-imports-global-shocks/'::text,
+      array['Downstream', 'Dangote Refinery', 'Economy']::text[],
+      'Reports that Sub-Saharan Africa''s reliance on unprocessed commodity exports leaves it exposed to global shocks, citing Nigeria''s Dangote Refinery as evidence that local value addition cushions economies.'::text,
+      'Olugbenga Olaoye, energy economist and member of the USAEE, says, “For decades, Nigeria operated a structurally flawed downstream model: exporting crude oil while importing refined products.'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'Nigeria’s oil windfall comes at a cost of living crisis for households'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-03-18',
+      'https://businessday.ng/pro/article/nigerias-oil-windfall-comes-at-a-cost-of-living-crisis-for-households/'::text,
+      array['Oil and gas', 'Economy', 'Energy security']::text[],
+      'Argues that Brent above $100 amid Middle East tensions boosts Nigeria''s oil revenues while raising fuel, transport and living costs for households and businesses.'::text,
+      '“Higher oil prices improve government earnings, but they also increase costs across the economy.'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'What the MPC’s rate cut really signals'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2026::integer,
+      date '2026-02-25',
+      'https://businessday.ng/business-economy/article/what-the-mpcs-rate-cut-really-signals/'::text,
+      array['Economy', 'Policy']::text[],
+      'Explains the Central Bank of Nigeria''s 50-basis-point cut to 26.5 per cent alongside an unchanged 45 per cent cash reserve ratio, reading it as cautious easing without releasing liquidity.'::text,
+      'Olugbenga Olaoye, an energy economist, says, “This rate cut is not dramatic. It is small and cautious.”'::text,
+      false::boolean
+    ),
+    (
+      'mention'::text,
+      'Dangote–PENGASSAN tensions may spark new economic threat'::text,
+      array['Oluwatobi Ojabello']::text[],
+      'BusinessDay'::text,
+      2025::integer,
+      date '2025-09-29',
+      'https://businessday.ng/pro/article/dangote-pengassan-tensions-may-spark-new-economic-threat/'::text,
+      array['Dangote Refinery', 'Downstream', 'Economy']::text[],
+      'Argues that the standoff between the Dangote refinery and the PENGASSAN oil union could disrupt fuel supply, push up prices and inflation, and jeopardise gains from Nigeria''s recent reforms.'::text,
+      'Over the years, unions such as PENGASSAN have appeared inevitable and untouchable, but at this level, unionism undermines national stability.'::text,
+      false::boolean
+    )
+) as v(kind, title, authors, venue, year, published_on, url, topics, summary, pull_quote, syndication)
+where not exists (
+  select 1 from olivia_energy.publications p where p.url = v.url
+);
+
 -- >>>>> supabase/seeds/starter-articles.sql
 
 -- =====================================================================
@@ -777,6 +1228,8 @@ commit;
 
 select
   (select count(*) from olivia_energy.settings) as settings,
-  (select count(*) from olivia_energy.publications) as publications,
+  (select count(*) from olivia_energy.publications where kind = 'journal') as journal_articles,
+  (select count(*) from olivia_energy.publications where kind = 'op-ed') as op_eds,
+  (select count(*) from olivia_energy.publications where kind = 'mention') as mentions,
   (select count(*) from olivia_energy.posts) as articles,
   (select count(*) from storage.buckets where id = 'olivia-energy-media') as media_bucket;

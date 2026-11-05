@@ -3,6 +3,7 @@ import { NotFoundSection } from "@/components/sections/not-found-section";
 import { SiteFooter } from "@/components/sections/site-footer";
 import { SiteHeader } from "@/components/sections/site-header";
 import { SkipLink } from "@/components/ui/skip-link";
+import { getSettings } from "@/lib/supabase/queries";
 
 export const metadata: Metadata = {
   title: "Page not found",
@@ -16,15 +17,16 @@ export const metadata: Metadata = {
  * of its own. It therefore renders the full public shell itself, exactly as
  * src/app/(site)/layout.tsx does, so the page looks identical either way.
  */
-export default function NotFound() {
+export default async function NotFound() {
+  const settings = await getSettings();
   return (
     <>
       <SkipLink />
-      <SiteHeader />
+      <SiteHeader email={settings.contact_email} />
       <main
         id="content"
         tabIndex={-1}
-        className="pt-header scroll-mt-header flex-1 outline-none"
+        className="pt-header scroll-mt-header flex-1 overflow-x-clip outline-none"
       >
         <NotFoundSection />
       </main>

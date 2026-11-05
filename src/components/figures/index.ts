@@ -1,0 +1,36 @@
+export { AfricaMap, type AfricaMapProps } from "./africa-map";
+export { ChartReadout, type ChartReadoutProps } from "./chart-readout";
+export {
+  FigurePlate,
+  type FigurePlateProps,
+  type FigureTable,
+} from "./figure-plate";
+export {
+  CompareBars,
+  DotRow,
+  GlyphFor,
+  ShareBar,
+  type CompareBarsProps,
+  type DotRowProps,
+  type GlyphForProps,
+  type ShareBarProps,
+} from "./glyphs";
+export {
+  HATCH_BACKGROUND,
+  HatchPattern,
+  hatchPitch,
+  type HatchPatternProps,
+} from "./hatch";
+export { LineChart, type ChartColor, type LineChartProps } from "./line-chart";
+export { NumeralFigure, type NumeralFigureProps } from "./numeral-figure";
+export {
+  PrintTimeline,
+  type PrintTimelineProps,
+  type TimelineItem,
+} from "./timeline";
+export {
+  Waffle,
+  WaffleKey,
+  type WaffleKeyProps,
+  type WaffleProps,
+} from "./waffle";

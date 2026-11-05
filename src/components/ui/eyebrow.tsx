@@ -1,28 +1,28 @@
 import type { ElementType, ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
+import { FlameBullet } from "./flame-bullet";
 
 export type EyebrowProps = {
   children: ReactNode;
-  /** Section numeral, e.g. "01". Replaces the rule mark. */
+  /** Section numeral, e.g. "01". Replaces the mark. */
   number?: string;
-  /** Uses the accent (legacy red) for the mark. Budget: once per page. */
-  accent?: boolean;
-  /** Suppresses the mark entirely. */
-  plain?: boolean;
-  as?: ElementType;
+  /** The mark's flame before the label instead of the rule. */
+  flame?: boolean;
+  as?: "p" | "span" | "h2" | "h3" | ElementType;
   id?: string;
   className?: string;
 };
 
 /**
- * Eyebrow — small-caps label that sits above a heading. A short hairline in
- * primary green anchors it to the grid; pass `number` for numbered sections.
+ * Eyebrow — the 12px label above a heading (uppercase, 600, tracked), in
+ * the surface's muted ink. A 16px rule in the primary colour anchors it to
+ * the grid; `flame` swaps the rule for the mark's flame; `number` for a
+ * numeral.
  */
 export function Eyebrow({
   children,
   number,
-  accent = false,
-  plain = false,
+  flame = false,
   as,
   id,
   className,
@@ -31,20 +31,16 @@ export function Eyebrow({
   return (
     <Tag
       id={id}
-      className={cn(
-        "tracking-caps text-ink-muted flex items-start gap-3 font-sans text-xs font-medium uppercase",
-        className,
-      )}
+      className={cn("label text-ink-muted flex items-start gap-3", className)}
     >
       {number ? (
-        <span className="text-ink-muted tabular-nums">{number}</span>
-      ) : plain ? null : (
+        <span className="numerals">{number}</span>
+      ) : flame ? (
+        <FlameBullet className="text-primary mt-[0.05em] h-[1.1em]" />
+      ) : (
         <span
           aria-hidden
-          className={cn(
-            "mt-[calc(0.75em-0.5px)] h-px w-4 shrink-0",
-            accent ? "bg-accent" : "bg-primary",
-          )}
+          className="bg-primary mt-[calc(0.7em-0.5px)] h-px w-4 shrink-0"
         />
       )}
       <span>{children}</span>

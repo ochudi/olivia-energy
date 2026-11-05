@@ -46,7 +46,7 @@ export const metadata: Metadata = {
  */
 export const viewport: Viewport = {
   colorScheme: "light",
-  themeColor: "#faf7f3",
+  themeColor: "#f5f0e4",
 };
 
 export default function RootLayout({
@@ -58,7 +58,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${displayFont.variable} ${displayItalicFont.variable} ${sansFont.variable} ${sansItalicFont.variable}`}
     >
-      <body className="bg-canvas text-ink flex min-h-dvh flex-col font-sans antialiased">
+      <body className="bg-canvas text-ink flex min-h-dvh flex-col font-sans text-base antialiased">
         {children}
       </body>
     </html>

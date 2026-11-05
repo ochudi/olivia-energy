@@ -83,11 +83,21 @@ export function TurnstileWidget({
     if (scriptReady || window.turnstile) render();
   }, [scriptReady, render]);
 
+  // The script loads after the page's load event (lazyOnload), so the
+  // ten-second allowance starts there, not at mount.
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      if (!window.turnstile) setStatus("unavailable");
-    }, 10000);
-    return () => window.clearTimeout(timer);
+    let timer: number | undefined;
+    const start = () => {
+      timer = window.setTimeout(() => {
+        if (!window.turnstile) setStatus("unavailable");
+      }, 10000);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => {
+      window.removeEventListener("load", start);
+      window.clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -119,7 +129,10 @@ export function TurnstileWidget({
     <>
       <Script
         src={SCRIPT_SRC}
-        strategy="afterInteractive"
+        // After the load event: a third-party origin requested before
+        // first paint cost /contact about 0.5 s of simulated LCP on mobile
+        // (Q1 Lighthouse, 3 October 2026). The form is below the hero.
+        strategy="lazyOnload"
         onLoad={() => setScriptReady(true)}
         onError={() => setStatus("unavailable")}
       />

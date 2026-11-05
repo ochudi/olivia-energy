@@ -1,46 +1,103 @@
-import { FOUNDER } from "./about";
+import type { Counts, Cta, SourceRef } from "@/types/contracts";
+import { capitalise, countWords, monthYear } from "@/lib/content/format";
+import { RETRIEVED } from "./home";
 
 /**
- * Publications page copy. The papers themselves come from the database
- * (getPublications in src/lib/supabase/queries.ts; seeded from
- * supabase/seeds/publications.sql) and the founder's Google Scholar
- * profile from settings (scholar_url); this file holds only the page
- * furniture.
+ * Research page copy (/research, creative brief 4.6). Journal articles come
+ * from the database (getJournalArticles), op-eds from getOpEds, counts from
+ * getCommentaryCounts.
  */
-export const PUBLICATIONS = {
-  eyebrow: "Publications",
-  title: "Papers and published research.",
-  /** One sentence on the founder's research, matching the seeded list. */
-  intro: `Journal articles by ${FOUNDER.name} and his co-authors, chiefly in energy and environmental economics with a focus on Africa, each linked to its published version.`,
-  /** Metadata description. */
-  description: `Journal articles by ${FOUNDER.name}, founder of Olivia Energy, chiefly in energy and environmental economics, each linked to its published version.`,
-  scholarLabel: "Google Scholar profile",
-  /**
-   * Research profile panel. Metrics come from OpenAlex (src/lib/research/
-   * openalex.ts) for the author id below; Google Scholar has no API, so the
-   * profile link points there and the numbers come from OpenAlex.
-   */
-  profile: {
-    heading: "Research profile",
-    openalexAuthorId: "A5091615039",
-    metrics: {
-      articles: "Journal articles",
-      citations: "Citations",
-      hIndex: "h-index",
-      i10Index: "i10-index",
+export const RESEARCH_PAGE: {
+  hero: {
+    eyebrow: string;
+    title: string;
+    lede: string;
+    counters: readonly {
+      key: "articles" | "citations";
+      value: string;
+      label: string;
+    }[];
+    figure: {
+      n: number;
+      title: string;
+      legend: { article: string; oped: string };
+      interpretation: (c: Counts) => string;
+      sources: SourceRef[];
+      retrieved: string;
+    };
+  };
+  articles: {
+    eyebrow: string;
+    title: string;
+    linkLabel: string;
+    /** Accessible name of the DOI link. */
+    linkAriaLabel: (title: string) => string;
+  };
+  commentary: {
+    eyebrow: string;
+    title: string;
+    lede: (c: Counts) => string;
+    link: Cta;
+  };
+  profiles: {
+    title: string;
+    sentence: string;
+    /** Pill labels; URLs from FOUNDER.links and settings (scholar_url). */
+    pills: readonly ["ORCID", "Google Scholar"];
+    membership: string;
+  };
+} = {
+  hero: {
+    eyebrow: "Research",
+    title: "Independent research that informs decisions.",
+    lede: "Peer-reviewed research and published commentary by our founder, Dr Olugbenga Olaoye, on energy economics, environmental quality and policy.",
+    counters: [
+      { key: "articles", value: "9", label: "journal articles since 2022" },
+      {
+        key: "citations",
+        value: "200+",
+        label: "citations, Google Scholar, 2 October 2026",
+      },
+    ],
+    figure: {
+      n: 1,
+      title: "In print, 2022 to 2026",
+      legend: { article: "Journal article", oped: "BusinessDay op-ed" },
+      interpretation: (c) =>
+        `${capitalise(countWords(c.articles))} journal articles since 2022 and ${countWords(c.opeds)} op-eds in BusinessDay since ${monthYear(c.firstOpEd)}.`,
+      sources: [
+        {
+          org: "ORCID record 0000-0003-2658-916X",
+          url: "https://orcid.org/0000-0003-2658-916X",
+        },
+        {
+          org: "BusinessDay",
+          url: "https://businessday.ng/author/olugbenga-olaoye/",
+        },
+      ],
+      retrieved: RETRIEVED,
     },
-    note: "Citation counts from OpenAlex, refreshed daily. Google Scholar’s figures may differ slightly.",
   },
-  /** Per-paper citation label. */
-  cited: (count: number) =>
-    count === 1 ? "Cited once" : `Cited ${count.toLocaleString("en")} times`,
-  featured: { heading: "Selected papers" },
-  all: { heading: "All publications" },
-  read: { scholar: "Read on Google Scholar", other: "Read the paper" },
-  undated: "Undated",
-  empty: {
-    title: "No papers are listed at present.",
-    body: "Insights carries the firm’s shorter analysis of energy markets and policy.",
-    link: { label: "Read Insights", href: "/insights" },
+  articles: {
+    eyebrow: "Peer-reviewed",
+    title: "Journal articles",
+    linkLabel: "Read the article",
+    linkAriaLabel: (title) => `Read “${title}”, opens in a new tab`,
   },
-} as const;
+  commentary: {
+    eyebrow: "Commentary",
+    title: "In BusinessDay",
+    lede: (c) =>
+      `${capitalise(countWords(c.opeds))} op-eds by Dr Olaoye, newest first.`,
+    link: {
+      label: "See the covers on Insights",
+      href: "/insights#businessday",
+    },
+  },
+  profiles: {
+    title: "Find the record",
+    sentence: "His publications are listed on ORCID and Google Scholar.",
+    pills: ["ORCID", "Google Scholar"],
+    membership: "Member, United States Association for Energy Economics",
+  },
+};

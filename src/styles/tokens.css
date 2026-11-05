@@ -1,16 +1,24 @@
 /* =====================================================================
    OLIVIA ENERGY — DESIGN TOKENS (single source of truth)
 
+   "Bridging Light" system (October 2026 rebuild, creative brief 2.1–2.8).
+
    Consumed two ways:
    1. Tailwind v4 reads this @theme block and generates utilities
-      (bg-primary, text-display-lg, py-section, rounded-xs, ease-out …).
-   2. Every token is also emitted as a CSS custom property on :root, so
-      plain CSS (prose.css) and JavaScript (AnimatedNumber) read the same
-      values. Nothing is duplicated anywhere else.
+     (bg-canvas, text-display-lg, py-section, shoulder, ease-out …).
+   2. Every token is also a CSS custom property on :root, so plain CSS
+     (globals.css, prose.css) and JavaScript (AnimatedNumber) read the
+     same values. Nothing is duplicated anywhere else.
+
+   Surfaces: every section declares data-surface="paper|paper-deep|night|
+   green|lime|red|photo". The surface rules in globals.css remap the
+   semantic tokens (canvas, ink, primary, line …), the chart variables,
+   the hatch, the turn colour and the logo variables, so components keep
+   using bg-canvas, text-ink, border-line and need no per-surface variants.
 
    A trailing comment on a token line is its usage note. /styleguide
    parses this file and renders it, so the page can never drift from
-   what ships.
+   what ships. One token per line.
    ===================================================================== */
 @theme {
   /* Remove Tailwind's stock palette, fonts, sizes, radii, shadows and
@@ -23,161 +31,224 @@
   --ease-*: initial;
 
   /* ---------------------------------------------------------------- */
-  /* Colour · brand green. Sampled from the mark (src/lib/brand/mark.ts). */
-  /* Step 500 is the mark itself (#04923F). Steps are even OKLCH        */
-  /* lightness; hue drifts ~8° cooler toward the dark end so the deep   */
-  /* greens read as forest rather than olive.                           */
+  /* Colour · brand and surface (creative brief 2.1). The mark's three  */
+  /* colours are exact (src/lib/brand/mark.ts); the rest are the floods */
+  /* and grounds every section is built from. Green is the stage, lime  */
+  /* is the evidence, red is the gap, paper is for reading, night is    */
+  /* used one slab at a time.                                           */
   /* ---------------------------------------------------------------- */
-  --color-green-50: #ebfded; /* Tinted backgrounds behind green text */
-  --color-green-100: #d4f9d8; /* Selection, soft highlights */
-  --color-green-200: #acedb6; /* Chart tints, decorative rules on inverse */
-  --color-green-300: #79d88d; /* Chart series, icons on inverse */
-  --color-green-400: #42b861; /* Chart series only */
-  --color-green-500: #04923f; /* The mark. Illustration and iconography, never text on light */
-  --color-green-600: #007839; /* Focus ring, large text on light (AA) */
-  --color-green-700: #006032; /* PRIMARY. Buttons, links, marks (AAA on canvas) */
-  --color-green-800: #004a27; /* Primary hover, text on green-50 */
-  --color-green-900: #00371d; /* Deep fills, text on green-100 */
-  --color-green-950: #002210; /* Inverse surfaces: footer, dark sections */
+  --color-brand-green: #04923f; /* The mark; chart series on paper; display type 24px+ on paper. Never behind white body text, never a flood */
+  --color-brand-lime: #88c029; /* Lime flood; lead data colour on night; the turn on night; underlines and rules. Never text on paper, green or red */
+  --color-brand-red: #d5281b; /* Red flood; the gap hatch; gap pills; the big quotation flame. Never small text on paper (use red-ink) */
+  --color-flood-green: #047a36; /* Green flood surface; green text on paper (4.8:1); the turn on paper. Never the mark */
+  --color-red-ink: #b8231a; /* Red text under 24px on paper; form errors. Never a flood */
+  --color-night: #06170e; /* Night slab: figure plates, founder band, About hero, footer. Never two dark screens in a row */
+  --color-night-raised: #0e2418; /* Panels and grid lines on night. Never text */
+  --color-paper: #f5f0e4; /* Default page surface */
+  --color-paper-deep: #eae2ce; /* Alternate band; cover-wall ground */
+  --color-card: #fbf8f0; /* Cards on paper */
+  --color-chart-tint: #3fcb79; /* Third chart series, night only. Never on paper */
+  --color-lime-pale: #d3eda6; /* The italic turn on photographs only. Nowhere else */
+  --color-white: #ffffff; /* Text on night, green, red and photo */
 
   /* ---------------------------------------------------------------- */
-  /* Colour · warm neutrals (OKLCH hue 80). Off-whites through ink.     */
+  /* Colour · ink ramp for paper. Ink and its two quieter steps; the    */
+  /* per-surface values live in globals.css.                            */
   /* ---------------------------------------------------------------- */
-  --color-neutral-0: #fffdfa; /* Surface: cards, panels, inputs */
-  --color-neutral-50: #faf7f3; /* Canvas: page background */
-  --color-neutral-100: #f2efe9; /* Muted surface: tags, code, table stripes */
-  --color-neutral-200: #e3dfd8; /* Hairlines and card borders */
-  --color-neutral-300: #cecac3; /* Strong hairlines, table heads, outline cards */
-  --color-neutral-400: #8b8882; /* Disabled text, placeholder icons, input borders (3:1 on surface) */
-  --color-neutral-500: #6f6c66; /* Subtle text: meta, labels, captions (AA at 12px on every surface) */
-  --color-neutral-600: #67635c; /* Muted text: ledes, captions (AA) */
-  --color-neutral-700: #504c46; /* Secondary text where more weight is needed */
-  --color-neutral-800: #3b3732; /* Rare: dark UI chrome */
-  --color-neutral-900: #292622; /* Rare: near-ink fills */
-  --color-neutral-950: #161310; /* Ink: primary text */
+  --color-ink-paper: #0b1f14; /* Ink on paper and lime (15:1 on paper) */
+  --color-ink-paper-muted: #4a5a50; /* Muted text on paper (6.4:1) and paper-deep (5.7:1); chart axis on paper */
+  --color-ink-paper-subtle: #5e6d63; /* Subtle text on paper only (4.8:1; 4.2:1 on paper-deep, so paper-deep uses muted) */
+  --color-ink-night-muted: #b9c7be; /* Muted text and chart axis on night (10.5:1) */
+  --color-ink-green-muted: #e1f0e6; /* Muted text on the green flood (4.6:1) */
+  --color-ink-lime-muted: #23401c; /* Muted text, second chart series and axis on lime (5.3:1) */
+  --color-ink-photo-muted: #e6ece8; /* Muted text over a photograph on at least 70% scrim */
+  --color-light-unlit: #a9cdb5; /* A Why Olivia line before it lights (the `light` motion starts here) */
 
   /* ---------------------------------------------------------------- */
-  /* Colour · accent. The legacy red, sampled from the logo. ONE token. */
-  /* Budget: at most one use per page — a small mark or an active       */
-  /* state. Never a fill larger than 24px, never a paragraph, never a   */
-  /* button. If a page needs two reds, the page is wrong.               */
+  /* Colour · legacy ramps. Kept so nothing built on them breaks; new   */
+  /* work uses the brand, surface and semantic tokens above and below.  */
   /* ---------------------------------------------------------------- */
-  --color-accent: #c5372b; /* Small marks and active states only. Once per page */
+  --color-green-50: #ebfded; /* Legacy ramp */
+  --color-green-100: #d4f9d8; /* Legacy ramp */
+  --color-green-200: #acedb6; /* Legacy ramp */
+  --color-green-300: #79d88d; /* Legacy ramp */
+  --color-green-400: #42b861; /* Legacy ramp */
+  --color-green-500: #04923f; /* Legacy ramp (equals brand-green) */
+  --color-green-600: #007839; /* Legacy ramp */
+  --color-green-700: #006032; /* Legacy ramp */
+  --color-green-800: #004a27; /* Legacy ramp */
+  --color-green-900: #00371d; /* Legacy ramp */
+  --color-green-950: #002210; /* Legacy ramp */
+  --color-neutral-0: #fffdfa; /* Legacy ramp */
+  --color-neutral-50: #faf7f3; /* Legacy ramp */
+  --color-neutral-100: #f2efe9; /* Legacy ramp */
+  --color-neutral-200: #e3dfd8; /* Legacy ramp */
+  --color-neutral-300: #cecac3; /* Legacy ramp */
+  --color-neutral-400: #8b8882; /* Legacy ramp */
+  --color-neutral-500: #6f6c66; /* Legacy ramp */
+  --color-neutral-600: #67635c; /* Legacy ramp */
+  --color-neutral-700: #504c46; /* Legacy ramp */
+  --color-neutral-800: #3b3732; /* Legacy ramp */
+  --color-neutral-900: #292622; /* Legacy ramp */
+  --color-neutral-950: #161310; /* Legacy ramp */
 
   /* ---------------------------------------------------------------- */
-  /* Colour · semantic. Components use these, never raw steps.          */
+  /* Colour · accent. The brand red as an accent: the gap hatch, the    */
+  /* gap pill, the quotation flame. Red means "the gap" and nothing     */
+  /* else; small red text on paper uses red-ink. On green and red       */
+  /* surfaces the accent becomes white.                                 */
   /* ---------------------------------------------------------------- */
-  --color-canvas: var(--color-neutral-50); /* Page background */
-  --color-surface: var(--color-neutral-0); /* Cards, panels, inputs */
-  --color-surface-muted: var(--color-neutral-100); /* Quiet fills: tags, code, table stripes */
-  --color-ink: var(--color-neutral-950); /* Primary text */
-  --color-ink-muted: var(--color-neutral-600); /* Secondary text: ledes, captions, notes */
-  --color-ink-subtle: var(--color-neutral-500); /* Tertiary: meta, token labels; non-essential text only */
-  --color-line: var(--color-neutral-200); /* Hairlines, dividers, card borders */
-  --color-line-strong: var(--color-neutral-400); /* Section rules, table heads, outline cards, input borders */
-  --color-primary: var(--color-green-700); /* Buttons, links, eyebrow marks */
-  --color-primary-hover: var(--color-green-800); /* Hover and pressed state of primary */
-  --color-primary-fg: var(--color-neutral-0); /* Text on primary */
-  --color-primary-soft: var(--color-green-50); /* Tinted fill behind primary text (tags, callouts) */
-  --color-primary-soft-fg: var(--color-green-800); /* Text on primary-soft */
-  --color-inverse: var(--color-green-950); /* Dark sections, footer */
-  --color-inverse-fg: var(--color-neutral-50); /* Text on inverse */
-  --color-inverse-muted: var(--color-neutral-300); /* Secondary text on inverse */
-  --color-focus: var(--color-green-600); /* Focus rings */
-  --color-selection: var(--color-green-100); /* ::selection background */
+  --color-accent: var(--color-brand-red); /* The gap: hatch, gap pill, quotation flame. White on green and red surfaces */
+  --color-accent-fg: var(--color-white); /* Text on accent (the gap pill); the flood colour itself where accent is white */
+  --color-error: var(--color-red-ink); /* Form errors and invalid borders: red ink on paper, white on green and red, light red on night, ink on lime */
+  --color-glyph: var(--color-flood-green); /* The line glyphs: flood green on paper, white on green, night and red, ink on lime */
+
+  /* ---------------------------------------------------------------- */
+  /* Colour · semantic. Components use these, never raw values. The     */
+  /* values here are the paper surface; every other surface remaps     */
+  /* them under [data-surface] in globals.css.                          */
+  /* ---------------------------------------------------------------- */
+  --color-canvas: var(--color-paper); /* Section background (the surface) */
+  --color-surface: var(--color-card); /* Cards, panels, inputs on the surface */
+  --color-surface-muted: var(--color-paper-deep); /* Quiet fills: tags, code, table stripes */
+  --color-ink: var(--color-ink-paper); /* Primary text */
+  --color-ink-muted: var(--color-ink-paper-muted); /* Secondary text: ledes, captions, notes */
+  --color-ink-subtle: var(--color-ink-paper-subtle); /* Tertiary: meta, source lines; non-essential text only */
+  --color-line: rgba(11, 31, 20, 0.14); /* Hairlines, dividers, card borders */
+  --color-line-strong: rgba(11, 31, 20, 0.32); /* Outline chips and buttons, table heads, input borders */
+  --color-primary: var(--color-flood-green); /* Primary button fill, links, marks */
+  --color-primary-hover: #03632c; /* Hover and pressed state of primary */
+  --color-primary-fg: var(--color-white); /* Text on primary */
+  --color-primary-soft: rgba(4, 122, 54, 0.1); /* Tinted fill behind primary text (opening chips, callouts) */
+  --color-primary-soft-fg: var(--color-flood-green); /* Text on primary-soft */
+  --color-inverse: var(--color-night); /* The opposite slab: night on light surfaces, paper on dark ones */
+  --color-inverse-fg: var(--color-white); /* Text on inverse */
+  --color-inverse-muted: var(--color-ink-night-muted); /* Secondary text on inverse */
+  --color-focus: var(--color-flood-green); /* Focus rings */
+  --color-selection: rgba(136, 192, 41, 0.4); /* ::selection background */
 
   /* ---------------------------------------------------------------- */
   /* Typography · families. Variables set by next/font in app/fonts.ts */
+  /* Newsreader weight 400 only; italic only for the turn.              */
   /* ---------------------------------------------------------------- */
-  --font-display: var(--font-newsreader), "Iowan Old Style", Georgia, serif; /* Headlines, pull quotes, stat numerals. Weights 400–500 only */
-  --font-display-italic: var(--font-newsreader-italic), "Iowan Old Style", Georgia, serif; /* True serif italic for pull quotes and citations. Pair with `italic`; loads only where used */
-  --font-sans: var(--font-instrument-sans), system-ui, "Helvetica Neue", Arial, sans-serif; /* UI, body, labels. Weights 400–600 */
-  --font-sans-italic: var(--font-instrument-sans-italic), system-ui, "Helvetica Neue", Arial, sans-serif; /* Sans italic for emphasis inside prose. Pair with `italic`; loads only where used */
+  --font-display: var(--font-newsreader), "Iowan Old Style", Georgia, serif; /* Every headline, the Why Olivia lines, numerals, quotations, cover titles. Weight 400 */
+  --font-display-italic: var(--font-newsreader-italic), "Iowan Old Style", Georgia, serif; /* The turn only (class `turn`). Static instance, weight 400, preloaded */
+  --font-sans: var(--font-instrument-sans), system-ui, "Helvetica Neue", Arial, sans-serif; /* Body, ledes, labels, buttons, chips, sources, navigation. Weights 400–600 */
+  --font-sans-italic: var(--font-instrument-sans-italic), system-ui, "Helvetica Neue", Arial, sans-serif; /* Sans italic for emphasis inside prose. Loads only where used */
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace; /* Code, token names, data keys */
 
-  --tracking-tight: -0.015em; /* Display headings */
-  --tracking-caps: 0.14em; /* Uppercase labels: eyebrows, tags, table heads */
+  --tracking-display-tight: -0.04em; /* Home H1 (display-2xl) */
+  --tracking-display: -0.02em; /* Display headings md and up (each size also carries its own letter-spacing) */
+  --tracking-label: 0.14em; /* Labels: 12px uppercase 600 */
+  --tracking-tight: -0.015em; /* Legacy: small display headings */
+  --tracking-caps: 0.14em; /* Legacy alias of tracking-label */
 
-  /* Typography · text scale (fixed sizes for UI and body) */
-  --text-xs: 0.75rem; /* Eyebrows, tags, meta */
-  --text-xs--line-height: 1.5;
-  --text-sm: 0.875rem; /* UI controls, captions, table cells */
+  /* Typography · text scale (fixed sizes for UI and body; brief 2.2) */
+  --text-xs: 0.75rem; /* Labels (uppercase, 600, tracking-label) and source lines (regular, sentence case) */
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.9375rem; /* Secondary text, card summaries, captions (15px) */
   --text-sm--line-height: 1.5;
-  --text-base: 1.0625rem; /* Body copy (17px) */
-  --text-base--line-height: 1.65;
-  --text-lg: 1.1875rem; /* Ledes and intro paragraphs */
-  --text-lg--line-height: 1.6;
-  --text-xl: 1.375rem; /* Large body, sans card titles */
+  --text-base: 1.0625rem; /* Body (17px, max 68ch) */
+  --text-base--line-height: 1.6;
+  --text-lg: 1.1875rem; /* Large body, About narrative (19px) */
+  --text-lg--line-height: 1.55;
+  --text-xl: clamp(1.1875rem, 1.05rem + 0.55vw, 1.375rem); /* Ledes (19 to 22px, max 42ch) */
   --text-xl--line-height: 1.45;
 
   /* Typography · display scale (fluid between 390px and 1440px) */
-  --text-display-xs: clamp(1.375rem, 1.2rem + 0.6vw, 1.625rem); /* Card and demo titles */
+  --text-display-xs: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem); /* Small titles, list statements (20 to 24px) */
   --text-display-xs--line-height: 1.25;
-  --text-display-xs--letter-spacing: -0.005em;
-  --text-display-sm: clamp(1.75rem, 1.45rem + 1.1vw, 2.25rem); /* H3, article H2 */
-  --text-display-sm--line-height: 1.2;
-  --text-display-sm--letter-spacing: -0.01em;
-  --text-display-md: clamp(2.125rem, 1.7rem + 1.7vw, 3rem); /* Section titles (H2), stat figures */
-  --text-display-md--line-height: 1.12;
-  --text-display-md--letter-spacing: -0.015em;
-  --text-display-lg: clamp(2.625rem, 1.9rem + 2.9vw, 4.25rem); /* Page titles (H1) */
-  --text-display-lg--line-height: 1.06;
-  --text-display-lg--letter-spacing: -0.02em;
-  --text-display-xl: clamp(3.125rem, 2rem + 4.6vw, 5.75rem); /* Hero statements only, one per page */
-  --text-display-xl--line-height: 1.02;
-  --text-display-xl--letter-spacing: -0.025em;
+  --text-display-xs--letter-spacing: -0.01em;
+  --text-display-sm: clamp(1.5rem, 1.2rem + 1vw, 2rem); /* Card and cover titles, chapter ledes (24 to 32px) */
+  --text-display-sm--line-height: 1.15;
+  --text-display-sm--letter-spacing: -0.015em;
+  --text-display-md: clamp(1.75rem, 1.2rem + 2.3vw, 3rem); /* Why Olivia lines, close lines, statements (28 to 48px) */
+  --text-display-md--line-height: 1.08;
+  --text-display-md--letter-spacing: -0.02em;
+  --text-display-lg: clamp(2.5rem, 1.6rem + 3.9vw, 4.5rem); /* Section H2s, chapter titles, About H1 (40 to 72px) */
+  --text-display-lg--line-height: 1;
+  --text-display-lg--letter-spacing: -0.03em;
+  --text-display-xl: clamp(3rem, 1.9rem + 5.6vw, 6.5rem); /* Inner-page H1s, closing statements, footer tagline (48 to 104px) */
+  --text-display-xl--line-height: 0.95;
+  --text-display-xl--letter-spacing: -0.035em;
+  --text-display-2xl: clamp(3.75rem, 1.6rem + 9.2vw, 9.375rem); /* Home H1 only (60 to 150px) */
+  --text-display-2xl--line-height: 0.9;
+  --text-display-2xl--letter-spacing: -0.04em;
+  --text-numeral: clamp(4rem, 2rem + 7.4vw, 8.125rem); /* Numbers band, chapter numerals (64 to 130px); lining tabular figures */
+  --text-numeral--line-height: 0.9;
+  --text-numeral--letter-spacing: -0.03em;
 
   /* ---------------------------------------------------------------- */
-  /* Spacing. Base unit 4px; utilities are multiples (p-4 = 16px).      */
-  /* Named tokens are fluid and used for page rhythm.                   */
+  /* Spacing. Base unit 8px (4px half step); utilities are multiples    */
+  /* of 4px (p-4 = 16px). Named tokens are fluid page rhythm.           */
   /* ---------------------------------------------------------------- */
-  --spacing: 0.25rem; /* Base unit (4px). p-1 = 4px, gap-6 = 24px */
-  --spacing-gutter: clamp(1.25rem, 4vw, 2.5rem); /* Page side padding: 20px → 40px */
-  --spacing-section-sm: clamp(3rem, 6vw, 5rem); /* Between sub-sections: 48px → 80px */
-  --spacing-section: clamp(4.5rem, 9vw, 8rem); /* Between page sections: 72px → 128px */
-  --spacing-section-lg: clamp(6rem, 12vw, 11rem); /* Hero and chapter breaks: 96px → 176px */
-  --spacing-header: clamp(4rem, 3.5rem + 1.5vw, 4.5rem); /* Fixed site header: 64px → 72px. <main> is offset by it (pt-header); a hero pulls under it with -mt-header */
+  --spacing: 0.25rem; /* Base unit (4px). p-2 = 8px, gap-6 = 24px */
+  --spacing-gutter: clamp(1.25rem, 0.5rem + 3.6vw, 4.5rem); /* Page side padding: 20px at 390, 40px at 768, 72px at 1440 */
+  --spacing-section-sm: clamp(3.5rem, 2.5rem + 4vw, 6rem); /* Bands inside a section: 56px to 96px */
+  --spacing-section: clamp(5rem, 3.5rem + 6vw, 10rem); /* Top and bottom of every section: 80px to 160px */
+  --spacing-section-lg: clamp(6rem, 12vw, 11rem); /* Legacy: hero and chapter breaks */
+  --spacing-header: clamp(4rem, 3.5rem + 1.5vw, 4.5rem); /* Fixed site header: 64px to 72px. <main> is offset by it (pt-header); a hero pulls under it with -mt-header */
 
   /* Layout widths → max-w-text, max-w-narrow, max-w-page, max-w-wide */
-  --container-text: 42rem; /* 672px: reading measure (~65ch) */
+  --container-text: 42rem; /* 672px: reading measure (68ch at 17px) */
   --container-narrow: 56rem; /* 896px: headings, forms, single column */
-  --container-page: 76rem; /* 1216px: default grid */
+  --container-page: 81rem; /* 1296px: the page container (12 columns, 24px gaps at 1024+) */
   --container-wide: 88rem; /* 1408px: full-bleed data, galleries, chrome */
 
   /* ---------------------------------------------------------------- */
-  /* Radii. Small on purpose: institutional, not consumer.              */
+  /* Shape: the shoulder (brief 2.4). One shape everywhere: three tight */
+  /* corners (radius-xs) and one large top-right corner that echoes the */
+  /* ring of the mark. Utilities shoulder-sm, shoulder, shoulder-lg.    */
+  /* Circles only where the ring is meant (radius-pill).                */
   /* ---------------------------------------------------------------- */
-  --radius-none: 0px; /* Images in prose, inverse sections */
-  --radius-xs: 2px; /* Buttons, tags, swatches, inputs */
-  --radius-sm: 4px; /* Cards, panels */
-  --radius-md: 8px; /* Modals, large media */
-  --radius-lg: 12px; /* Rare: hero media */
+  --radius-none: 0px; /* Images in prose, full-bleed media */
+  --radius-xs: 4px; /* The three tight corners of every shoulder; inputs */
+  --radius-sm: 4px; /* Legacy alias of radius-xs */
+  --radius-md: 8px; /* Legacy: admin panels */
+  --radius-lg: 12px; /* Legacy: admin media */
+  --radius-shoulder-sm: 24px; /* Small cards, format tiles, form fields' container */
+  --radius-shoulder: 40px; /* Cards, covers, figure plates, audience and pillar tiles */
+  --radius-shoulder-lg: clamp(4rem, 2rem + 9vw, 15rem); /* Photographs, flood panels (64px to 240px) */
+  --radius-pill: 999px; /* Buttons, chips, the Fig. tag, the gap pill */
 
   /* ---------------------------------------------------------------- */
-  /* Elevation. Warm ink at low alpha; hairlines are the default edge.  */
+  /* Elevation. None on the public site: a single 1px line is the only  */
+  /* edge treatment. The legacy shadows remain for the admin.           */
   /* ---------------------------------------------------------------- */
-  --shadow-xs: 0 1px 2px rgb(22 19 16 / 0.05); /* Inputs, pressed controls */
-  --shadow-sm: 0 1px 2px rgb(22 19 16 / 0.05), 0 2px 6px rgb(22 19 16 / 0.05); /* Hovered cards */
-  --shadow-md: 0 2px 4px rgb(22 19 16 / 0.04), 0 8px 20px -4px rgb(22 19 16 / 0.08); /* Elevated cards, popovers */
-  --shadow-lg: 0 4px 8px rgb(22 19 16 / 0.05), 0 20px 40px -8px rgb(22 19 16 / 0.12); /* Modals, drawers */
+  --shadow-xs: 0 1px 2px rgb(11 31 20 / 0.05); /* Legacy (admin): inputs, pressed controls */
+  --shadow-sm: 0 1px 2px rgb(11 31 20 / 0.05), 0 2px 6px rgb(11 31 20 / 0.05); /* Legacy (admin): hovered cards */
+  --shadow-md: 0 2px 4px rgb(11 31 20 / 0.04), 0 8px 20px -4px rgb(11 31 20 / 0.08); /* Legacy (admin): popovers */
+  --shadow-lg: 0 4px 8px rgb(11 31 20 / 0.05), 0 20px 40px -8px rgb(11 31 20 / 0.12); /* Legacy (admin): modals, drawers */
 
   /* ---------------------------------------------------------------- */
-  /* Motion. Short, decelerating, never bouncy. Every value here is     */
-  /* subject to prefers-reduced-motion (see globals.css and components).*/
+  /* Motion (brief 2.8). Native scroll only; server HTML is final;      */
+  /* every value collapses under prefers-reduced-motion (globals.css).  */
+  /* Each duration has a matching @utility in globals.css.              */
   /* ---------------------------------------------------------------- */
   --duration-instant: 80ms; /* Colour changes on hover */
   --duration-fast: 160ms; /* Buttons, links, small state changes */
-  --duration-page: 200ms; /* Route transitions: fade and 8px lift on entry */
-  --duration-base: 240ms; /* Cards, panels, most UI */
+  --duration-page: 200ms; /* Route transitions on client-side navigation only */
+  --duration-base: 240ms; /* Cards, panels, most UI; the `pop` of gap pills and end labels */
   --duration-slow: 400ms; /* Overlays, drawers, accordions */
   --duration-slower: 640ms; /* Large surfaces, demonstrations */
-  --duration-reveal: 400ms; /* Scroll reveals */
-  --duration-counter: 1400ms; /* AnimatedNumber count-up */
+  --duration-reveal: 600ms; /* `fade`: body blocks, opacity and a 16px lift; stagger 90ms */
+  --duration-mask: 800ms; /* `mask`: display headings clip up from their baseline */
+  --duration-wipe: 1000ms; /* `wipe`: photographs clip up; the image settles from 1.08 over duration-wipe-inner */
+  --duration-wipe-inner: 1400ms; /* `wipe`: the inner image scale 1.08 to 1 */
+  --duration-draw: 1200ms; /* `draw` of rings and chart lines, `sweep`, `close` */
+  --duration-draw-glyph: 900ms; /* `draw` of a glyph */
+  --duration-hatch: 600ms; /* `hatch`: the gap hatch fades and clips in after `sweep` */
+  --duration-pop: 240ms; /* `pop`: gap pill and end labels scale 0.92 to 1 after `hatch` */
+  --duration-light: 300ms; /* `light`: a Why Olivia line turns white and its flame bullet grows */
+  --duration-settle: 4500ms; /* `settle`: the hero photograph scales 1.06 to 1 once on load */
+  --duration-counter: 1400ms; /* `count`: AnimatedNumber count-up */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* Default for UI state changes */
   --ease-emphasized: cubic-bezier(0.32, 0.72, 0, 1); /* Larger movements: overlays, drawers */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* Reveals and counters: decelerate into place */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* `fade`, `hatch`, `light`, `settle`, counters: decelerate into place */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* `mask`, `pop` */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* `wipe`, `draw`, `sweep`, `close` */
   --ease-in: cubic-bezier(0.55, 0, 1, 0.45); /* Exits only */
   --ease-linear: linear; /* Progress indicators */
-  --motion-reveal-distance: 8px; /* Reveal lift distance */
+  --motion-reveal-distance: 16px; /* `fade` lift distance */
   --motion-stagger: 90ms; /* Delay between sibling reveals */
 }

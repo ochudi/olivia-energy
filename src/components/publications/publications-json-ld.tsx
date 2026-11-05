@@ -1,6 +1,6 @@
 import type { Graph, ScholarlyArticle } from "schema-dts";
 import { JsonLd } from "@/components/seo/json-ld";
-import { PUBLICATIONS } from "@/content/publications";
+import { RESEARCH_PAGE } from "@/content/publications";
 import { SEO } from "@/content/seo";
 import { SITE } from "@/content/site";
 import { isFounderName, schemaIds } from "@/lib/seo/json-ld";
@@ -65,8 +65,8 @@ export function PublicationsJsonLd({
         "@type": "CollectionPage",
         "@id": url,
         url,
-        name: `${PUBLICATIONS.eyebrow} · ${SITE.name}`,
-        description: SEO.publications.description,
+        name: `${RESEARCH_PAGE.hero.eyebrow} · ${SITE.name}`,
+        description: SEO.research.description,
         about: { "@id": ids.founder },
         isPartOf: { "@id": ids.website },
         publisher: { "@id": ids.organization },

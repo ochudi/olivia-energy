@@ -1,12 +1,13 @@
 import { readFile } from "node:fs/promises";
 import { ImageResponse } from "next/og";
 import { articleByline } from "@/components/insights/byline";
-import { INSIGHTS } from "@/content/insights";
+import { INSIGHTS, INSIGHTS_PAGE } from "@/content/insights";
 import { SITE } from "@/content/site";
 import {
+  MARK_COLORS,
   MARK_HEIGHT,
   MARK_LOCKUP,
-  MARK_MONO_PATH,
+  MARK_PATHS,
   MARK_VIEWBOX,
   MARK_WIDTH,
 } from "@/lib/brand/mark";
@@ -31,10 +32,12 @@ export async function generateStaticParams() {
 }
 export const dynamicParams = true;
 
-const GREEN_950 = "#002210";
-const GREEN_300 = "#79d88d";
-const NEUTRAL_50 = "#faf7f3";
-const NEUTRAL_300 = "#cecac3";
+/* The night ground of the site card (creative brief 3.4): night, white
+   type, night-muted labels, the lime rule. */
+const NIGHT = "#06170e";
+const LIME = MARK_COLORS.lime;
+const WHITE = "#ffffff";
+const MUTED = "#b9c7be";
 
 /**
  * Font files are bundled as assets by the build and read from disk (fetch()
@@ -42,7 +45,7 @@ const NEUTRAL_300 = "#cecac3";
  * template string makes the bundler treat the whole folder as the asset.
  */
 const SERIF_URL = new URL(
-  "../../../../assets/fonts/newsreader-72pt-500.ttf",
+  "../../../../assets/fonts/og/newsreader-400-opsz72.ttf",
   import.meta.url,
 );
 const SANS_URL = new URL(
@@ -57,8 +60,8 @@ const MARK_H = WORDMARK * MARK_LOCKUP.markEm;
 const DESCENT = 0.265;
 
 /**
- * Social card: the lockup (one-colour mark on the inverse green), serif
- * title, category. Fonts are the vendored static instances in
+ * Social card: the lockup (the true-colour mark on night), the serif
+ * title in Newsreader 400, the category. Fonts are the vendored static instances in
  * src/assets/fonts (the renderer needs TTF data).
  */
 export default async function Image({
@@ -74,7 +77,9 @@ export default async function Image({
   ]);
 
   const title = post?.title ?? INSIGHTS.name;
-  const category = post ? postCategoryLabel(post.category) : INSIGHTS.eyebrow;
+  const category = post
+    ? postCategoryLabel(post.category)
+    : INSIGHTS_PAGE.article.breadcrumb;
   const meta = post
     ? `${articleByline(post)} · ${formatDate(post.published_at)} · ${readingMinutes(post.word_count)} min read`
     : "";
@@ -90,8 +95,8 @@ export default async function Image({
         flexDirection: "column",
         justifyContent: "space-between",
         padding: "64px 72px",
-        backgroundColor: GREEN_950,
-        color: NEUTRAL_50,
+        backgroundColor: NIGHT,
+        color: WHITE,
         fontFamily: "Instrument Sans",
       }}
     >
@@ -117,7 +122,9 @@ export default async function Image({
               marginBottom: WORDMARK * (DESCENT - MARK_LOCKUP.overshootEm),
             }}
           >
-            <path d={MARK_MONO_PATH} fill={NEUTRAL_50} />
+            <path d={MARK_PATHS.lime} fill={MARK_COLORS.lime} />
+            <path d={MARK_PATHS.red} fill={MARK_COLORS.red} />
+            <path d={MARK_PATHS.ring} fill={MARK_COLORS.green} />
           </svg>
           <span
             style={{
@@ -133,7 +140,7 @@ export default async function Image({
         </div>
         <span
           style={{
-            color: NEUTRAL_300,
+            color: MUTED,
             letterSpacing: "0.14em",
             textTransform: "uppercase",
             fontSize: 18,
@@ -153,8 +160,8 @@ export default async function Image({
             display: "flex",
             alignItems: "center",
             gap: 14,
-            // Labels on the inverse ground are neutral; green is for the rule.
-            color: NEUTRAL_300,
+            // Labels on night are muted; lime is for the rule.
+            color: MUTED,
             letterSpacing: "0.14em",
             textTransform: "uppercase",
             fontSize: 18,
@@ -165,7 +172,7 @@ export default async function Image({
               display: "flex",
               width: 24,
               height: 1,
-              backgroundColor: GREEN_300,
+              backgroundColor: LIME,
             }}
           />
           {category}
@@ -190,10 +197,10 @@ export default async function Image({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          borderTop: "1px solid rgba(250,247,243,0.22)",
+          borderTop: "1px solid rgba(255,255,255,0.14)",
           paddingTop: 22,
           fontSize: 20,
-          color: NEUTRAL_300,
+          color: MUTED,
         }}
       >
         <span>{meta}</span>
@@ -203,7 +210,7 @@ export default async function Image({
     {
       ...size,
       fonts: [
-        { name: "Newsreader", data: serif, weight: 500, style: "normal" },
+        { name: "Newsreader", data: serif, weight: 400, style: "normal" },
         { name: "Instrument Sans", data: sans, weight: 500, style: "normal" },
       ],
     },

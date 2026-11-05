@@ -47,7 +47,8 @@ function makeFormatter(
  *    never re-renders during the tween.
  *  • Under `prefers-reduced-motion: reduce` it never animates.
  *  • Reads `--duration-counter` and `--ease-out` from the CSS tokens.
- *  • Uses tabular numerals so the width does not jitter while counting.
+ *  • Uses tabular numerals and reserves the final value's exact width, so
+ *    nothing beside it moves while it counts.
  */
 export function AnimatedNumber({
   value,
@@ -110,15 +111,22 @@ export function AnimatedNumber({
     suffix,
   ]);
 
-  // Reserve the width of the final value (tabular digits are 1ch each) so
-  // the count-up never shifts neighbouring layout.
+  // Reserve exactly the final value's width: an invisible copy of it (a
+  // pseudo-element, so it is not text in the document) shares one grid cell
+  // with the live number. A `ch` estimate over-reserves in the display face
+  // (the point and narrow figures are under 1ch) and left a gap before the
+  // unit ("2.2 billion").
   return (
     <span
-      ref={ref}
-      className={cn("inline-block tabular-nums", className)}
-      style={{ minWidth: `${finalText.length}ch` }}
+      data-final={finalText}
+      className={cn(
+        "inline-grid tabular-nums before:invisible before:content-[attr(data-final)] before:[grid-area:1/1]",
+        className,
+      )}
     >
-      {finalText}
+      <span ref={ref} className="[grid-area:1/1]">
+        {finalText}
+      </span>
     </span>
   );
 }

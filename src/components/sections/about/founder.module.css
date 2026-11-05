@@ -1,0 +1,94 @@
+/*
+ * The founder's credentials timeline (creative brief 4.3, section 6).
+ * Phones: vertical, the line on the left. From 768 px: horizontal, a 1 px
+ * line with a ring node above each dated item. The line draws when the
+ * timeline is 30% in view (Reveal variant="draw" writes data-reveal on
+ * .dated); each node pops as the line reaches it (--pos, 0 to 1). Server
+ * HTML is the final state; reduced motion collapses every transition.
+ */
+
+.dated {
+  position: relative;
+  padding: 0 0 0 2rem;
+}
+
+.list {
+  display: grid;
+  gap: 1.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 5.5px;
+  width: 1px;
+  background: var(--color-primary);
+  transform: none;
+  transform-origin: 50% 0;
+  transition: transform var(--duration-draw) var(--ease-in-out);
+}
+
+[data-reveal="hidden"] .line {
+  transform: scaleY(0);
+}
+
+.item {
+  position: relative;
+}
+
+.node {
+  position: absolute;
+  top: 0.3rem;
+  left: -2rem;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-primary);
+  border-radius: 999px;
+  background: var(--color-canvas);
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity var(--duration-pop) var(--ease-out-expo)
+      calc(var(--duration-draw) * var(--pos, 0)),
+    transform var(--duration-pop) var(--ease-out-expo)
+      calc(var(--duration-draw) * var(--pos, 0));
+}
+
+[data-reveal="hidden"] .node {
+  opacity: 0;
+  transform: scale(0.4);
+}
+
+@media (min-width: 48rem) {
+  .dated {
+    padding: 2rem 0 0;
+  }
+
+  .list {
+    grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .line {
+    top: 5.5px;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    width: auto;
+    height: 1px;
+    transform-origin: 0 50%;
+  }
+
+  [data-reveal="hidden"] .line {
+    transform: scaleX(0);
+  }
+
+  .node {
+    top: -2rem;
+    left: 0;
+  }
+}

@@ -14,36 +14,42 @@ const STATIC_ROUTES: {
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
   priority: number;
 }[] = [
-  { path: "/", updated: "2026-10-01", changeFrequency: "monthly", priority: 1 },
+  { path: "/", updated: "2026-10-03", changeFrequency: "monthly", priority: 1 },
   {
     path: "/what-we-do",
-    updated: "2026-10-01",
+    updated: "2026-10-03",
     changeFrequency: "monthly",
     priority: 0.8,
   },
   {
     path: "/about",
-    updated: "2026-10-01",
+    updated: "2026-10-03",
     changeFrequency: "monthly",
     priority: 0.7,
   },
   {
     path: "/insights",
-    updated: "2026-10-01",
+    updated: "2026-10-03",
     changeFrequency: "weekly",
     priority: 0.8,
   },
   {
-    path: "/publications",
-    updated: "2026-09-29",
+    path: "/research",
+    updated: "2026-10-03",
     changeFrequency: "monthly",
     priority: 0.7,
   },
   {
     path: "/contact",
-    updated: "2026-09-29",
+    updated: "2026-10-03",
     changeFrequency: "yearly",
     priority: 0.5,
+  },
+  {
+    path: "/credits",
+    updated: "2026-10-03",
+    changeFrequency: "yearly",
+    priority: 0.2,
   },
   {
     path: "/privacy",

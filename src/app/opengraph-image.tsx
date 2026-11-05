@@ -1,28 +1,49 @@
 import { readFile } from "node:fs/promises";
 import { ImageResponse } from "next/og";
-import { FOUNDER } from "@/content/about";
+import { TAGLINE } from "@/content/brand";
 import { SEO } from "@/content/seo";
 import { SITE } from "@/content/site";
 import {
+  MARK_COLORS,
   MARK_HEIGHT,
   MARK_LOCKUP,
-  MARK_MONO_PATH,
+  MARK_PATHS,
   MARK_VIEWBOX,
   MARK_WIDTH,
 } from "@/lib/brand/mark";
-import { siteUrl } from "@/lib/seo/urls";
 
 export const runtime = "nodejs";
 export const alt = `${SITE.name}: ${SEO.tagline}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const GREEN_950 = "#002210";
-const NEUTRAL_50 = "#faf7f3";
-const NEUTRAL_300 = "#cecac3";
+/**
+ * Colours of the brief's tokens (creative brief 2.1), as literals: the
+ * renderer cannot read CSS custom properties. night = --color-night,
+ * ink-night-muted = --color-ink-night-muted, lime = --color-brand-lime.
+ */
+const NIGHT = "#06170e";
+const WHITE = "#ffffff";
+const LIME = MARK_COLORS.lime;
+const NIGHT_MUTED = "#b9c7be";
 
-const SERIF_URL = new URL(
+/**
+ * Font files are read from disk (fetch() cannot open file: URLs in Node).
+ * The paths must be string literals: a template string makes the bundler
+ * treat the whole folder as the asset. The roman and italic in og/ are
+ * static instances of the variable Newsreader (see the fonts README); the
+ * wordmark keeps the 500 cut the logo lockup is drawn in.
+ */
+const WORDMARK_URL = new URL(
   "../assets/fonts/newsreader-72pt-500.ttf",
+  import.meta.url,
+);
+const ROMAN_URL = new URL(
+  "../assets/fonts/og/newsreader-400-opsz72.ttf",
+  import.meta.url,
+);
+const ITALIC_URL = new URL(
+  "../assets/fonts/og/newsreader-italic-400-opsz48.ttf",
   import.meta.url,
 );
 const SANS_URL = new URL(
@@ -30,43 +51,73 @@ const SANS_URL = new URL(
   import.meta.url,
 );
 
-/** Wordmark size on the card; the mark and gap follow the lockup ratios. */
-const WORDMARK = 96;
-const MARK_H = WORDMARK * MARK_LOCKUP.markEm;
+/** Lockup: the mark is 56 px tall; the wordmark and gap follow the lockup ratios. */
+const LOCKUP_MARK = 56;
+const WORDMARK = LOCKUP_MARK / MARK_LOCKUP.markEm;
 /** Newsreader's descent at line-height 1: lifts the mark onto the baseline. */
 const DESCENT = 0.265;
+/** The big mark: 440 px tall, bleeding 60 px off the right edge. */
+const BIG_MARK = 440;
+const BIG_MARK_BLEED = 60;
+
+/** The mark in its three true colours, painted lime, red, ring. */
+function Mark({ height }: { height: number }) {
+  return (
+    <svg
+      viewBox={MARK_VIEWBOX}
+      width={(height * MARK_WIDTH) / MARK_HEIGHT}
+      height={height}
+    >
+      <path d={MARK_PATHS.lime} fill={MARK_COLORS.lime} />
+      <path d={MARK_PATHS.red} fill={MARK_COLORS.red} />
+      <path d={MARK_PATHS.ring} fill={MARK_COLORS.green} />
+    </svg>
+  );
+}
 
 /**
- * Default social card: the lockup (one-colour mark, as on every dark ground)
- * and the search tagline on the inverse green, with who leads the practice
- * and the address along the foot. Nothing else: the card is read at
+ * Default social card (creative brief 3.4), on the night ground. The left
+ * 62%: the lockup, the two tagline lines, the footer line and who founded
+ * the firm. The right 38%: the mark, large, running off the edge. Read at
  * thumbnail size in a chat or a feed, so the tagline is set large.
  */
 export default async function Image() {
-  const [serif, sans] = await Promise.all([
-    readFile(SERIF_URL),
+  const [wordmark, roman, italic, sans] = await Promise.all([
+    readFile(WORDMARK_URL),
+    readFile(ROMAN_URL),
+    readFile(ITALIC_URL),
     readFile(SANS_URL),
   ]);
-  const host = new URL(siteUrl()).host;
   return new ImageResponse(
     <div
       style={{
+        position: "relative",
         width: "100%",
         height: "100%",
         display: "flex",
-        flexDirection: "column",
-        padding: "64px 72px",
-        backgroundColor: GREEN_950,
-        color: NEUTRAL_50,
+        backgroundColor: NIGHT,
+        color: WHITE,
         fontFamily: "Instrument Sans",
       }}
     >
       <div
         style={{
+          position: "absolute",
+          top: (size.height - BIG_MARK) / 2,
+          right: -BIG_MARK_BLEED,
+          display: "flex",
+        }}
+      >
+        <Mark height={BIG_MARK} />
+      </div>
+      <div
+        style={{
           display: "flex",
           flexDirection: "column",
-          flexGrow: 1,
-          justifyContent: "center",
+          justifyContent: "space-between",
+          width: "62%",
+          height: "100%",
+          padding: "64px 0 56px 72px",
         }}
       >
         <div
@@ -76,20 +127,19 @@ export default async function Image() {
             gap: WORDMARK * MARK_LOCKUP.gapEm,
           }}
         >
-          <svg
-            viewBox={MARK_VIEWBOX}
-            width={(MARK_H * MARK_WIDTH) / MARK_HEIGHT}
-            height={MARK_H}
+          <div
             style={{
+              display: "flex",
               marginBottom: WORDMARK * (DESCENT - MARK_LOCKUP.overshootEm),
             }}
           >
-            <path d={MARK_MONO_PATH} fill={NEUTRAL_50} />
-          </svg>
+            <Mark height={LOCKUP_MARK} />
+          </div>
           <div
             style={{
               display: "flex",
               fontFamily: "Newsreader",
+              fontWeight: 500,
               fontSize: WORDMARK,
               lineHeight: 1,
               letterSpacing: "-0.015em",
@@ -98,37 +148,83 @@ export default async function Image() {
             {SITE.name}
           </div>
         </div>
-        <div
-          style={{
-            display: "flex",
-            marginTop: 30,
-            fontSize: 40,
-            lineHeight: 1.25,
-            color: NEUTRAL_300,
-            maxWidth: 1056,
-          }}
-        >
-          {SEO.tagline}
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <div
+            style={{
+              display: "flex",
+              fontFamily: "Newsreader",
+              fontWeight: 400,
+              fontSize: 84,
+              lineHeight: 1.04,
+              letterSpacing: "-0.015em",
+              maxWidth: 640,
+            }}
+          >
+            {TAGLINE.line1}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              marginTop: 18,
+              fontFamily: "Newsreader",
+              fontStyle: "italic",
+              fontWeight: 400,
+              fontSize: 48,
+              lineHeight: 1.15,
+              color: LIME,
+            }}
+          >
+            {TAGLINE.line2}
+          </div>
         </div>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          borderTop: "1px solid rgba(250,247,243,0.22)",
-          paddingTop: 22,
-          fontSize: 20,
-          color: NEUTRAL_300,
-        }}
-      >
-        <span>Led by {FOUNDER.name}, energy economist</span>
-        <span>{host}</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              fontSize: 24,
+              lineHeight: 1.2,
+              color: NIGHT_MUTED,
+            }}
+          >
+            {SEO.socialCard.footer.split("·").map((part, index) => (
+              <div key={part} style={{ display: "flex" }}>
+                {index > 0 ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      width: 6,
+                      height: 6,
+                      margin: "0 14px",
+                      alignSelf: "center",
+                      borderRadius: 3,
+                      backgroundColor: NIGHT_MUTED,
+                    }}
+                  />
+                ) : null}
+                {part.trim()}
+              </div>
+            ))}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: 24,
+              lineHeight: 1.2,
+              color: WHITE,
+            }}
+          >
+            {SEO.socialCard.founder}
+          </div>
+        </div>
       </div>
     </div>,
     {
       ...size,
       fonts: [
-        { name: "Newsreader", data: serif, weight: 500, style: "normal" },
+        { name: "Newsreader", data: wordmark, weight: 500, style: "normal" },
+        { name: "Newsreader", data: roman, weight: 400, style: "normal" },
+        { name: "Newsreader", data: italic, weight: 400, style: "italic" },
         { name: "Instrument Sans", data: sans, weight: 500, style: "normal" },
       ],
     },

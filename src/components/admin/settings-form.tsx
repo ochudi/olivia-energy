@@ -73,7 +73,7 @@ export function SettingsForm({ initial }: { initial: SiteSettings }) {
         <Field
           label="NIPEX wording"
           htmlFor="nipex"
-          hint="Shown in the footer legal line. Leave empty to hide it until the number is confirmed."
+          hint="Shown under the footer legal line: the NIPEX vendor ID and categories. Clear it to hide the line."
         >
           <Input
             id="nipex"

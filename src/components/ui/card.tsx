@@ -2,8 +2,7 @@ import Link from "next/link";
 import type { ElementType, ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
 
-export type CardVariant =
-  "default" | "elevated" | "outline" | "muted" | "inverse";
+export type CardVariant = "default" | "elevated" | "outline" | "muted";
 export type CardPadding = "none" | "sm" | "md" | "lg";
 
 export type CardProps = {
@@ -20,10 +19,9 @@ export type CardProps = {
 
 const variants: Record<CardVariant, string> = {
   default: "border border-line bg-surface",
-  elevated: "border border-line bg-surface shadow-md",
+  elevated: "border border-line-strong bg-surface",
   outline: "border border-line-strong bg-transparent",
   muted: "border border-transparent bg-surface-muted",
-  inverse: "border border-transparent bg-inverse text-inverse-fg",
 };
 
 const paddings: Record<CardPadding, string> = {
@@ -34,8 +32,8 @@ const paddings: Record<CardPadding, string> = {
 };
 
 /**
- * Card — a bounded surface. Hairline borders do the work; shadows are
- * reserved for the `elevated` variant (overlays, featured items).
+ * Card — a bounded surface in the shoulder shape (brief 2.4). A single 1px
+ * line is the only edge treatment; `elevated` takes the stronger line.
  */
 export function Card({
   variant = "default",
@@ -48,31 +46,24 @@ export function Card({
 }: CardProps) {
   const isInteractive = interactive || href !== undefined;
   const classes = cn(
-    "relative block rounded-sm",
+    "shoulder relative block",
     variants[variant],
     paddings[padding],
     isInteractive && "group",
     isInteractive &&
-      "transition-[border-color,box-shadow,background-color] duration-base ease-standard hover:border-ink/35 active:shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
-    isInteractive &&
-      (variant === "elevated" ? "hover:shadow-lg" : "hover:shadow-sm"),
+      "transition-[border-color,background-color] duration-base ease-standard hover:border-ink/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
     className,
   );
 
-  // Dark surface: opts into the inverse tone remap (see globals.css).
-  const tone = variant === "inverse" ? "inverse" : undefined;
-
+  // A dark card is a <Section surface="night"> or a block with
+  // data-surface="night", not a Card variant.
   if (href !== undefined) {
     return (
-      <Link href={href} className={classes} data-tone={tone}>
+      <Link href={href} className={classes}>
         {children}
       </Link>
     );
   }
   const Tag = (as ?? "div") as ElementType;
-  return (
-    <Tag className={classes} data-tone={tone}>
-      {children}
-    </Tag>
-  );
+  return <Tag className={classes}>{children}</Tag>;
 }

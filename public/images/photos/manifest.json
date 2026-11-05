@@ -1,0 +1,259 @@
+{
+  "generator": "scripts/grade-photos.mjs",
+  "photos": {
+    "lagos-third-mainland": {
+      "source": "nigeria-lagos-third-mainland-sunset-orig3911.jpg",
+      "sourceSize": [
+        3911,
+        2933
+      ],
+      "crops": {
+        "16x9": {
+          "file": "/images/photos/lagos-third-mainland-16x9.jpg",
+          "width": 2400,
+          "height": 1350,
+          "focal": "60% 58%",
+          "bytes": 254365,
+          "md5": "007540756c7fcec659fb30203a643890",
+          "blurDataURL": "data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAADwAQCdASoQAAkAA4BaJbACdLoAAjMwrwAA/Yj1lEpF+pMiK92XsPZT+GQ/q7GZyOWgAA=="
+        },
+        "9x16": {
+          "file": "/images/photos/lagos-third-mainland-9x16.jpg",
+          "width": 1350,
+          "height": 2400,
+          "focal": "55% 52%",
+          "bytes": 257414,
+          "md5": "501aabdefde5142925758ce08f44c961",
+          "blurDataURL": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACQAwCdASoQABwAPu1mq04ppaQiMAgBMB2JZgCdOUACZnZv+CMAAPnKJdEqdkDUyOZ4rovWlv0XdKz/G8f3Kf9DLbBY7rt/WdvU20Lv0y0PiAAA"
+        }
+      }
+    },
+    "tarfaya-wind": {
+      "source": "wind-morocco-tarfaya-golden.jpg",
+      "sourceSize": [
+        1594,
+        2400
+      ],
+      "crops": {
+        "4x5": {
+          "file": "/images/photos/tarfaya-wind-4x5.jpg",
+          "width": 1594,
+          "height": 1993,
+          "focal": "50% 35%",
+          "bytes": 247768,
+          "md5": "8295abacea176547ced38c9345bda71f",
+          "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAwCdASoQABQALrV2u12jqampiYC0S2AE6ZQjgb0ABhAfDqUl3WMgAP6+Qrpx8ScYYlX525bEyBb/PHVXup8RY54tBVN2ll7wt36wvQtowu4Rhu3lIlFoAAA="
+        }
+      }
+    },
+    "abuja-city-gate": {
+      "source": "nigeria-abuja-citygate-sunset.jpg",
+      "sourceSize": [
+        2400,
+        1600
+      ],
+      "crops": {
+        "4x5": {
+          "file": "/images/photos/abuja-city-gate-4x5.jpg",
+          "width": 1280,
+          "height": 1600,
+          "focal": "40% 55%",
+          "bytes": 87159,
+          "md5": "4e2561c0a41968de3d2261e7ae3584f3",
+          "blurDataURL": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAABwAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JQBbZA9K2OZ0I3QAA/tAwMIEjV4nUV6lvZqfqX02y56QU2Ju+MInUrRXST4V1MAA="
+        }
+      }
+    },
+    "bayelsa-flare": {
+      "source": "nigeria-bayelsa-gas-flare.jpg",
+      "sourceSize": [
+        1799,
+        2400
+      ],
+      "crops": {
+        "4x5": {
+          "file": "/images/photos/bayelsa-flare-4x5.jpg",
+          "width": 1799,
+          "height": 2249,
+          "focal": "35% 62%",
+          "bytes": 181882,
+          "md5": "2028a8bff365e7066edb7639a73a21e9",
+          "blurDataURL": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABQBACdASoQABQAPu1mqk4ppaOiMAgBMB2JbACdMoADTsudrmCTQQdBFDmAAP4itBQFLxv7MONQbqSzAH2xumd9CiofY5MP+8IdB5++F8pDKz1uW5u4VN0/bxjIDAdzsxKAAA=="
+        }
+      }
+    },
+    "lagos-market": {
+      "source": "africa-light-market-aerial.jpg",
+      "sourceSize": [
+        2400,
+        3600
+      ],
+      "crops": {
+        "4x5": {
+          "file": "/images/photos/lagos-market-4x5.jpg",
+          "width": 1920,
+          "height": 2400,
+          "focal": "50% 0%",
+          "bytes": 990035,
+          "md5": "bf0af8a75640ef1cc9535a6e4f302a83",
+          "blurDataURL": "data:image/webp;base64,UklGRsAAAABXRUJQVlA4ILQAAACQBACdASoQABQAPu1iqU2ppaOiMAgBMB2JbACdMoMnJ0fpUaWs7tzX/JeAsQAA/sHLGojd3PkxLEXkczW4btVyKwVzLIJKTxuc4gjbtc5s/WCQMx+Ff8es7g1Zv+PUIMJCgwPgLrUtPwXIKbq2KWm3prB4fEV6LtLvWO+opHd0ladGYr4w11kx1CbocMk9kZlo96vuWcRXTCTbZrV/t4kSJiwc3jwkkA0dxY20s/ThYx/YcAA="
+        }
+      }
+    },
+    "lecture-hall": {
+      "source": "capacity-auditorium.jpg",
+      "sourceSize": [
+        2400,
+        1609
+      ],
+      "crops": {
+        "4x5": {
+          "file": "/images/photos/lecture-hall-4x5.jpg",
+          "width": 1287,
+          "height": 1609,
+          "focal": "70% 50%",
+          "bytes": 384435,
+          "md5": "63664fb8da88c50949577ccd44101f89",
+          "blurDataURL": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAACwAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JbACsABsBiDEiOASggAD+HrT1UmGsZfLVvGZskAujydX1vyVijAZZEwWXsqbMx+D7X1rvrhGM/SIBZVsyzQbl4NxJ0JHYAAA="
+        }
+      }
+    },
+    "ethiopia-lineman": {
+      "source": "grid-ethiopia-hvdc-lineman.jpg",
+      "sourceSize": [
+        2400,
+        1445
+      ],
+      "crops": {
+        "4x5": {
+          "file": "/images/photos/ethiopia-lineman-4x5.jpg",
+          "width": 1156,
+          "height": 1445,
+          "focal": "45% 45%",
+          "bytes": 138952,
+          "md5": "0da6a7da4eced345916b8787b6c47ed9",
+          "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAABwAwCdASoQABQAPu1iqU2ppaQiMAgBMB2JQBYdhDiKAPl5FkAA/I01LAIRzNuGcQ1lDRIwUe1pEGhuvrmJv/AFe+pT9trW4AAAAA=="
+        }
+      }
+    },
+    "lagos-lekki-night": {
+      "source": "hero-lagos-bridge-night.jpg",
+      "sourceSize": [
+        2400,
+        1602
+      ],
+      "crops": {
+        "16x9": {
+          "file": "/images/photos/lagos-lekki-night-16x9.jpg",
+          "width": 2400,
+          "height": 1350,
+          "focal": "70% 60%",
+          "bytes": 387467,
+          "md5": "bf527000006ebfb1b1225970c1a8be74",
+          "blurDataURL": "data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACwAQCdASoQAAkAA4BaJZwAAudc5uw4AP74Tpg86yoGivVc/yGhTVw+aTn8fAAA"
+        }
+      }
+    },
+    "abuja-lightpoles": {
+      "source": "nigeria-abuja-lightpoles-sunset.jpg",
+      "sourceSize": [
+        1600,
+        2400
+      ],
+      "crops": {
+        "21x9": {
+          "file": "/images/photos/abuja-lightpoles-21x9.jpg",
+          "width": 1600,
+          "height": 686,
+          "focal": "50% 72%",
+          "bytes": 89841,
+          "md5": "558b1eea53393629836237a3954077f8",
+          "blurDataURL": "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAADQAQCdASoQAAcAA4BaJbACdADHLsfOAAD+72WTEUxkhpBcYmE6NZFzHgztXKX3CmnuF7RkMX5x0bVN9jLpzkX3W1uQAA=="
+        },
+        "4x5": {
+          "file": "/images/photos/abuja-lightpoles-4x5.jpg",
+          "width": 1600,
+          "height": 2000,
+          "focal": "50% 30%",
+          "bytes": 179631,
+          "md5": "c0ed98681031cf67d43d8841806f03fd",
+          "blurDataURL": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADQAwCdASoQABQAPu1yrU+pp6QiMAgBMB2JbACdACHfx0AtiAp/+DAA/uLCFTBVOmlb+WgS+5/4NygG1v8A5ePj6X15yPqWT8Lw/2YoHRKq1Nd3JtUiphLovAA="
+        }
+      }
+    },
+    "bonny-night": {
+      "source": "nigeria-bonny-lng-night.jpg",
+      "sourceSize": [
+        2400,
+        1480
+      ],
+      "crops": {
+        "3x2": {
+          "file": "/images/photos/bonny-night-3x2.jpg",
+          "width": 2220,
+          "height": 1480,
+          "focal": "50% 50%",
+          "bytes": 178728,
+          "md5": "d215e263bfff187726ccaf8a5b348a8b",
+          "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAAAwAgCdASoQAAsAA4BaJZgCdAEPAG3fcmQYAAD++RcZJnkqlqFOdVmlcNrSAkYA2mElq900M/s8uuOHaYLv1YeusVyalS7+pwoG4AAA"
+        }
+      }
+    },
+    "noor-solar": {
+      "source": "solar-morocco-noor3-dusk.jpg",
+      "sourceSize": [
+        2400,
+        1800
+      ],
+      "crops": {
+        "3x2": {
+          "file": "/images/photos/noor-solar-3x2.jpg",
+          "width": 1440,
+          "height": 960,
+          "focal": "70% 50%",
+          "bytes": 203975,
+          "md5": "ec5280e3f02e7d8624b054437578c783",
+          "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADQAQCdASoQAAsAA4BaJZACdADWeAmAAAD+Mo3+Iq77L7WG2l0xBgs5XjwtD9/VY44FUySY0WCn3EYn34AAAA=="
+        }
+      }
+    },
+    "nanyuki-pylon": {
+      "source": "grid-kenya-nanyuki-pylon-moon.jpg",
+      "sourceSize": [
+        2400,
+        1600
+      ],
+      "crops": {
+        "3x2": {
+          "file": "/images/photos/nanyuki-pylon-3x2.jpg",
+          "width": 2400,
+          "height": 1600,
+          "focal": "60% 50%",
+          "bytes": 352516,
+          "md5": "0f5947cdbb4b3eb2da1f4de02a809c8e",
+          "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAADwAQCdASoQAAsAA4BaJZgCdADpzqG8SgAA/I7b+oylNw+scoFthZ0oqYRgUM5JKgNklnqStdey8xWWrzsFTBXuLtIidG9Bv3H9guU1QAA="
+        }
+      }
+    }
+  },
+  "heroes": {
+    "lagos-third-mainland-1920.webp": {
+      "file": "/images/photos/lagos-third-mainland-1920.webp",
+      "width": 1920,
+      "height": 1080,
+      "quality": 88,
+      "bytes": 118938,
+      "cap": 120000,
+      "md5": "e955a440deed56e8637e265cf8d14bf0"
+    },
+    "lagos-third-mainland-828.webp": {
+      "file": "/images/photos/lagos-third-mainland-828.webp",
+      "width": 828,
+      "height": 1472,
+      "quality": 81,
+      "bytes": 31016,
+      "cap": 35000,
+      "md5": "0303274c2360cb961dcf5b31ed3c5736"
+    }
+  }
+}

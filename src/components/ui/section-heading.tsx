@@ -56,14 +56,14 @@ export function SectionHeading({
       <Tag
         id={id}
         className={cn(
-          "font-display text-ink font-normal tracking-tight text-balance",
+          "font-display text-ink font-normal text-balance",
           sizes[size],
         )}
       >
         {title}
       </Tag>
       {lede ? (
-        <p className="max-w-text text-ink-muted mt-5 text-lg leading-relaxed text-pretty">
+        <p className="text-ink-muted mt-5 max-w-[42ch] text-xl text-pretty">
           {lede}
         </p>
       ) : null}

@@ -38,9 +38,14 @@ import localFont from "next/font/local";
  * The serif roman is the largest resource on the critical path of every
  * page's Largest Contentful Paint (the hero heading repaints when it
  * arrives), so it is a self-hosted subset: Google's latin cut instanced to
- * weights 400–500 and optical sizes 20–72, the only ranges the site sets.
- * 65 KB instead of 132 KB, still variable, still optically sized. See
+ * weights 400–500 and optical sizes 20–72. 65 KB instead of 132 KB, still
+ * variable, still optically sized. The site sets Newsreader at weight 400
+ * only; weight 500 remains for the wordmark in the logo lockup. See
  * src/assets/fonts/README.md and scripts/font-subset.py.
+ *
+ * First-load font budget (brief 2.2): at most 140 KB. Preloaded today:
+ * roman 65 KB + italic 23 KB + Instrument Sans roman (Google latin, about
+ * 30 KB) = about 118 KB.
  */
 export const displayFont = localFont({
   src: "../assets/fonts/newsreader-latin-wght400-500-opsz20-72.woff2",
@@ -53,21 +58,22 @@ export const displayFont = localFont({
 });
 
 /**
- * The serif italic is a separate family so it is NOT preloaded: it appears
- * only in pull quotes, citations and the About philosophy band, so it loads
- * on demand through the `--font-display-italic` token. It is instanced the
- * same way as the roman (weights 400–500, optical sizes 20–72), which cut
- * Google's 147 KB latin file to about half; on About that file used to
- * compete with the roman for the page's first paint.
+ * The serif italic is the turn: "Inspiring sustainable futures.", the
+ * closing line of a statement, the lime line on night. It appears above the
+ * fold on most pages, so it is preloaded; to stay inside the 35 KB budget
+ * for a preloaded file it is a static instance (weight 400, optical size 48,
+ * the middle of the 28 to 72px range the turn is set at) of Google's latin
+ * cut, subset to Latin-1 plus the typographic marks the copy uses: 23 KB
+ * against 147 KB for Google's file. Newsreader is set in weight 400 only.
  */
 export const displayItalicFont = localFont({
-  src: "../assets/fonts/newsreader-italic-latin-wght400-500-opsz20-72.woff2",
-  weight: "400 500",
+  src: "../assets/fonts/newsreader-italic-latin-wght400-opsz48.woff2",
+  weight: "400",
   style: "italic",
   variable: "--font-newsreader-italic",
   display: "swap",
   adjustFontFallback: "Times New Roman",
-  preload: false,
+  preload: true,
 });
 
 export const sansFont = Instrument_Sans({

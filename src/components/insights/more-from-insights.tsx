@@ -1,46 +1,43 @@
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
+import { Display } from "@/components/ui/display";
 import { Reveal } from "@/components/ui/reveal";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { INSIGHTS } from "@/content/insights";
+import { Section } from "@/components/ui/section";
+import { INSIGHTS_PAGE } from "@/content/insights";
 import type { PostSummary } from "@/lib/supabase/types";
 import { PostCard } from "./post-card";
+import { POST_GRID_CLASS, postGridCell } from "./post-grid";
+import { cn } from "@/lib/utils/cn";
 
-/** Three columns inside the page container: (1136 − 2 × 32) / 3 ≈ 357px. */
-const CARD_SIZES =
-  "(min-width: 76rem) 357px, (min-width: 48rem) 30vw, calc(100vw - 40px)";
+const STAGGER = 90;
 
-/** Three more articles: same category first, then the newest. */
+/**
+ * "More insights" (creative brief 4.5): three more articles, same category
+ * first, then the newest, as the Insights grid's cards on paper deep.
+ */
 export function MoreFromInsights({ posts }: { posts: PostSummary[] }) {
   if (posts.length === 0) return null;
   return (
-    <section
-      id="more"
-      aria-label={INSIGHTS.more}
-      className="border-line py-section border-t"
-    >
+    <Section surface="paper-deep" id="more" aria-labelledby="more-title">
       <Container>
-        <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-6">
-          <Reveal>
-            <SectionHeading
-              eyebrow={INSIGHTS.more}
-              title="Keep reading."
-              size="sm"
-            />
-          </Reveal>
-          <Button variant="ghost" href="/insights" icon={<ArrowRight />}>
-            All insights
-          </Button>
-        </div>
-        <ul className="mt-10 grid gap-x-8 gap-y-12 md:grid-cols-3">
-          {posts.map((post) => (
-            <li key={post.slug}>
-              <PostCard post={post} sizes={CARD_SIZES} />
-            </li>
-          ))}
+        <Display as="h2" size="lg" reveal="mask" id="more-title">
+          {INSIGHTS_PAGE.article.more}
+        </Display>
+        <ul className={cn(POST_GRID_CLASS, "mt-10 lg:mt-12")}>
+          {posts.map((post, i) => {
+            const cell = postGridCell(i, posts.length);
+            return (
+              <Reveal
+                key={post.slug}
+                as="li"
+                delay={(i % 3) * STAGGER}
+                className={cell.className}
+              >
+                <PostCard post={post} lead={cell.lead} sizes={cell.sizes} />
+              </Reveal>
+            );
+          })}
         </ul>
       </Container>
-    </section>
+    </Section>
   );
 }

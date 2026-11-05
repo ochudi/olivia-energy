@@ -64,8 +64,13 @@ const focusOnMount = (node: HTMLHeadingElement | null) => {
   node?.focus();
 };
 
-/** Keeps disabled controls at full strength inside the dimmed field group. */
-const pendingControl = "disabled:opacity-100!";
+/**
+ * Keeps disabled controls at full strength inside the dimmed field group,
+ * and restyles the shared controls for this form (brief 4.7): a 1px ink
+ * line, 4px corners, 48px tall, 17px text, a 2px flood-green focus ring.
+ */
+const pendingControl =
+  "disabled:opacity-100! border-ink! bg-card! rounded-xs! focus-visible:border-primary! focus-visible:ring-primary! focus-visible:ring-2! focus-visible:ring-offset-0! aria-invalid:border-error! aria-invalid:focus-visible:border-error!";
 
 export function ContactForm({ siteKey, contactEmail }: ContactFormProps) {
   const [state, formAction, pending] = useActionState(submitContact, INITIAL);
@@ -198,7 +203,14 @@ export function ContactForm({ siteKey, contactEmail }: ContactFormProps) {
       aria-busy={pending}
       className="flex flex-col gap-6"
     >
-      <h2 className="sr-only">{copy.heading}</h2>
+      <div>
+        <h2 className="font-display text-display-sm text-ink text-balance">
+          {copy.title}
+        </h2>
+        <p className="text-ink-muted mt-3 max-w-[48ch] text-base text-pretty">
+          {copy.intro}
+        </p>
+      </div>
 
       {banner ? (
         <div

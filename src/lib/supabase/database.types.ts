@@ -55,6 +55,7 @@ export type Database = {
           cover_path: string | null;
           created_at: string;
           excerpt: string | null;
+          format: string | null;
           id: string;
           published_at: string | null;
           seo_description: string | null;
@@ -73,6 +74,7 @@ export type Database = {
           cover_path?: string | null;
           created_at?: string;
           excerpt?: string | null;
+          format?: string | null;
           id?: string;
           published_at?: string | null;
           seo_description?: string | null;
@@ -91,6 +93,7 @@ export type Database = {
           cover_path?: string | null;
           created_at?: string;
           excerpt?: string | null;
+          format?: string | null;
           id?: string;
           published_at?: string | null;
           seo_description?: string | null;
@@ -152,9 +155,14 @@ export type Database = {
           created_at: string;
           featured: boolean;
           id: string;
+          kind: string;
+          published_on: string | null;
+          pull_quote: string | null;
           sort: number;
           summary: string | null;
+          syndication: boolean;
           title: string;
+          topics: string[];
           updated_at: string;
           url: string | null;
           venue: string | null;
@@ -165,9 +173,14 @@ export type Database = {
           created_at?: string;
           featured?: boolean;
           id?: string;
+          kind?: string;
+          published_on?: string | null;
+          pull_quote?: string | null;
           sort?: number;
           summary?: string | null;
+          syndication?: boolean;
           title: string;
+          topics?: string[];
           updated_at?: string;
           url?: string | null;
           venue?: string | null;
@@ -178,9 +191,14 @@ export type Database = {
           created_at?: string;
           featured?: boolean;
           id?: string;
+          kind?: string;
+          published_on?: string | null;
+          pull_quote?: string | null;
           sort?: number;
           summary?: string | null;
+          syndication?: boolean;
           title?: string;
+          topics?: string[];
           updated_at?: string;
           url?: string | null;
           venue?: string | null;

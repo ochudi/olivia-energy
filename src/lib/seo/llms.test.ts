@@ -6,6 +6,8 @@ vi.mock("./urls", () => ({
 
 import { parseSettings } from "@/lib/supabase/types";
 import type { PostSummary, Publication } from "@/lib/supabase/types";
+import type { OpEd } from "@/types/contracts";
+import { FOUNDER, ORIGIN } from "@/content/about";
 import { llmsText } from "./llms";
 
 const post = {
@@ -24,11 +26,22 @@ const paper = {
   url: "https://doi.org/10.1/x",
 } as Publication;
 
+const oped = {
+  slug: "gas-and-growth",
+  title: "Gas and growth",
+  outlet: "BusinessDay",
+  url: "https://businessday.ng/opinion/article/gas-and-growth/",
+  publishedOn: "2026-09-10",
+  topics: ["Economy"],
+  summary: "Argues  that gas\n can carry growth.",
+} as OpEd;
+
 describe("llmsText", () => {
   const text = llmsText({
     settings: parseSettings([]),
     posts: [post],
     publications: [paper],
+    opEds: [oped],
   });
 
   it("opens with the name and a one-paragraph summary, as llmstxt.org asks", () => {
@@ -48,13 +61,45 @@ describe("llmsText", () => {
     );
   });
 
-  it("leaves out the article and research sections while there is nothing to list", () => {
+  it("lists the op-eds under their own heading, before the journal articles", () => {
+    expect(text).toContain(`## Op-eds by ${FOUNDER.name}`);
+    expect(text).toContain(
+      "- [Gas and growth](https://businessday.ng/opinion/article/gas-and-growth/): Argues that gas can carry growth. (BusinessDay, 10 September 2026)",
+    );
+    expect(text.indexOf("## Op-eds")).toBeLessThan(
+      text.indexOf("## Research by"),
+    );
+  });
+
+  it("links Research, not Publications, and takes the founder and origin lines from the content", () => {
+    expect(text).toContain("- [Research](https://example.com/research): ");
+    expect(text).not.toContain("/publications");
+    expect(text).toContain(
+      `- Founded by ${FOUNDER.name}, its Founder/CEO, an energy economist based in Fort Worth, Texas.`,
+    );
+    expect(text).toContain(
+      "- Legal name: Olivia Energy and Power Company Limited, RC 1662525, registered in Nigeria.",
+    );
+    expect(text).toContain(
+      "- United States entity: Olivia Group LLC, Registration ID 805857089, formed 14 January 2025.",
+    );
+    expect(text).toContain("- NIPEX Vendor ID S77939994. Categories: ");
+    expect(text).toContain(`- ${ORIGIN.paragraph}`);
+    expect(text).not.toContain("chief executive");
+    // The client's instruction of 3 October 2026: the Nigerian location is
+    // the region only, so no line reads "<town>, <state>, Nigeria".
+    expect(text).toContain("Southwest Nigeria");
+    expect(text).not.toMatch(/\w+, \w+ State/);
+  });
+
+  it("leaves out the article, op-ed and research sections while there is nothing to list", () => {
     const empty = llmsText({
       settings: parseSettings([]),
       posts: [],
       publications: [],
     });
     expect(empty).not.toContain("## Insights");
+    expect(empty).not.toContain("## Op-eds");
     expect(empty).not.toContain("## Research");
     expect(empty).toContain("## Services");
   });

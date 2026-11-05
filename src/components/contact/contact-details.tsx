@@ -1,11 +1,5 @@
-import { SectionHeading } from "@/components/ui/section-heading";
-import { SocialIcon } from "@/components/ui/social-icon";
 import { CONTACT_PAGE } from "@/content/contact";
-import { SITE, SOCIALS } from "@/content/site";
 import type { SiteSettings } from "@/lib/supabase/types";
-
-const heading =
-  "tracking-caps text-ink-muted font-sans text-xs font-medium uppercase";
 
 /**
  * Safety net for Admin → Settings: drops an address line that is a
@@ -13,122 +7,67 @@ const heading =
  */
 const STAND_IN_LINE = /\bto follow\b|\bTBC\b|placeholder/i;
 
+const copy = CONTACT_PAGE.details;
+
 /**
- * Left column: invitation copy, one block per office that has address
- * lines (or, if none has, the countries on one line), the contact email,
- * phone numbers when there are any, and the social links. Every value
- * comes from settings (Admin → Settings).
+ * "Where we are" from settings: each office as one line, its address lines
+ * then its country ("Fort Worth, Texas, United States"). When no office has
+ * any lines, the city-level lines in content stand in.
+ */
+export function placesFrom(settings: SiteSettings): readonly string[] {
+  const places = settings.addresses
+    .map((address) => {
+      const lines = address.lines
+        .map((line) => line.trim())
+        .filter((line) => line && !STAND_IN_LINE.test(line));
+      return lines.length ? [...lines, address.country].join(", ") : null;
+    })
+    .filter((place): place is string => place !== null);
+  return places.length ? places : copy.whereLines;
+}
+
+const heading = "label text-ink-muted";
+
+/**
+ * The details column beside the form (creative brief 4.7): Email (from
+ * settings), Where we are (settings addresses), Company (name and RC
+ * number). Each block sits under a 1px rule.
  */
 export function ContactDetails({ settings }: { settings: SiteSettings }) {
-  const offices = settings.addresses
-    .map((address) => ({
-      ...address,
-      lines: address.lines
-        .map((line) => line.trim())
-        .filter((line) => line && !STAND_IN_LINE.test(line)),
-    }))
-    .filter((address) => address.lines.length > 0);
-  const countries = [
-    ...new Set(settings.addresses.map((address) => address.country)),
-  ];
-  const socials = SOCIALS.map((social) => ({
-    ...social,
-    href: settings.socials[social.id] ?? social.href,
-  }));
+  const places = placesFrom(settings);
   return (
-    <div>
-      <SectionHeading
-        as="h1"
-        size="lg"
-        eyebrow={CONTACT_PAGE.eyebrow}
-        title={CONTACT_PAGE.title}
-        lede={CONTACT_PAGE.invitation}
-      />
-
-      <div className="mt-12 grid gap-10 sm:grid-cols-2">
-        {offices.length ? (
-          offices.map((address, index) => (
-            <address
-              key={`${address.country}-${index}`}
-              className="text-ink text-base leading-relaxed not-italic"
-            >
-              <h2 className={heading}>{address.label ?? address.country}</h2>
-              <p className="mt-3">
-                {address.lines.map((line, i) => (
-                  <span key={i} className="block">
-                    {line}
-                  </span>
-                ))}
-                {address.label ? (
-                  <span className="text-ink-muted block">
-                    {address.country}
-                  </span>
-                ) : null}
-              </p>
-            </address>
-          ))
-        ) : countries.length ? (
-          <div className="sm:col-span-2">
-            <h2 className={heading}>{CONTACT_PAGE.headings.offices}</h2>
-            <p className="text-ink mt-3 text-base">
-              {countries.join(CONTACT_PAGE.countrySeparator)}
-            </p>
-          </div>
-        ) : null}
-
-        <div className="sm:col-span-2">
-          <h2 className={heading}>{CONTACT_PAGE.headings.email}</h2>
-          <p className="mt-3 [overflow-wrap:anywhere]">
-            <a
-              href={`mailto:${settings.contact_email}`}
-              className="hit-area text-ink hover:text-primary duration-fast ease-standard text-base transition-colors"
-            >
-              {settings.contact_email}
-            </a>
-          </p>
-          {settings.phones.length ? (
-            <>
-              <h2 className={`${heading} mt-8`}>
-                {CONTACT_PAGE.headings.phone}
-              </h2>
-              <ul className="mt-3 space-y-1">
-                {settings.phones.map((phone, i) => (
-                  <li key={`${phone.number}-${i}`} className="text-base">
-                    <a
-                      href={`tel:${phone.number.replace(/[^\d+]/g, "")}`}
-                      className="text-ink hover:text-primary duration-fast ease-standard transition-colors"
-                    >
-                      {phone.number}
-                    </a>
-                    {phone.label ? (
-                      <span className="text-ink-muted"> · {phone.label}</span>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            </>
-          ) : null}
-        </div>
-
-        <div className="sm:col-span-2">
-          <h2 className={heading}>{CONTACT_PAGE.headings.social}</h2>
-          <ul className="mt-3 flex gap-2" aria-label="Social">
-            {socials.map((social) => (
-              <li key={social.id}>
-                <a
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${SITE.name} on ${social.label} (opens in a new tab)`}
-                  className="border-line hover:border-line-strong hover:bg-surface-muted duration-fast ease-standard inline-flex size-10 items-center justify-center rounded-xs border transition-colors"
-                >
-                  <SocialIcon name={social.id} />
-                </a>
-              </li>
+    <dl className="flex flex-col">
+      <div className="border-line border-t pt-5 pb-8">
+        <dt className={heading}>{copy.email}</dt>
+        <dd className="mt-3 wrap-anywhere">
+          <a
+            href={`mailto:${settings.contact_email}`}
+            className="font-display text-display-xs text-ink decoration-primary hover:text-primary focus-visible:ring-focus focus-visible:ring-offset-canvas underline decoration-1 underline-offset-[0.2em] transition-colors duration-200 focus-visible:rounded-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+          >
+            {settings.contact_email}
+          </a>
+        </dd>
+      </div>
+      <div className="border-line border-t pt-5 pb-8">
+        <dt className={heading}>{copy.where}</dt>
+        <dd className="mt-3">
+          <ul className="text-ink space-y-1 text-base">
+            {places.map((place) => (
+              <li key={place}>{place}</li>
             ))}
           </ul>
-        </div>
+        </dd>
       </div>
-    </div>
+      <div className="border-line border-t pt-5">
+        <dt className={heading}>{copy.company}</dt>
+        <dd className="text-ink mt-3 text-base">
+          {copy.companyLines.map((line) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
+        </dd>
+      </div>
+    </dl>
   );
 }

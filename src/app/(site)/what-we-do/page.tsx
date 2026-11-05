@@ -1,12 +1,10 @@
-import { ClosingCta } from "@/components/sections/home";
-import { PhotoFigure } from "@/components/sections/photo-figure";
+import { CloseBand, WhoWeServe } from "@/components/blocks";
 import {
+  Chapters,
   Differentiators,
-  ServiceLines,
-  WhatWeDoIntro,
-  WhoWeServe,
+  Pillars,
+  WhatWeDoHero,
 } from "@/components/sections/what-we-do";
-import { PHOTOS } from "@/content/images";
 import { SEO } from "@/content/seo";
 import { pageMetadata } from "@/lib/seo/metadata";
 
@@ -16,26 +14,20 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * What we do — positioning statement, six anchored service-line sections
- * with a sticky in-page nav on desktop, a full-bleed photograph, who we
- * serve, three differentiators and the shared closing call to action.
- * Copy lives in content/what-we-do.
+ * What we do (creative brief 4.2): the green hero with Fig. 1, the chapter
+ * bar and six service chapters (Fig. 2 in chapter 02), what makes us
+ * different, the four pillars, who we serve and the red close. Copy lives
+ * in content/what-we-do, content/site and content/brand.
  */
 export default function Page() {
   return (
     <>
-      <WhatWeDoIntro />
-      <ServiceLines />
-      <PhotoFigure
-        photo={PHOTOS.whatWeDoBand}
-        bleed
-        frameClassName="aspect-[4/3] max-h-[36rem] w-full md:aspect-[21/9]"
-        sizes="100vw"
-        className="pb-section"
-      />
-      <WhoWeServe />
+      <WhatWeDoHero />
+      <Chapters />
       <Differentiators />
-      <ClosingCta />
+      <Pillars />
+      <WhoWeServe variant="full" />
+      <CloseBand variant="whatWeDo" />
     </>
   );
 }

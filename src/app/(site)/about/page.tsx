@@ -1,10 +1,12 @@
+import { CloseBand } from "@/components/blocks";
 import {
-  AboutStory,
+  AboutHero,
+  AboutStoryBand,
   Founder,
-  Philosophy,
-  Registrations,
+  Origin,
   Values,
   VisionMission,
+  WhoWeAre,
 } from "@/components/sections/about";
 import { SEO } from "@/content/seo";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -15,18 +17,21 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * About — story, vision and mission, values, philosophy, founder and
- * registrations. Copy lives in content/about.
+ * About (creative brief 4.3): ignition, our story, who we are, vision and
+ * mission, values, the founder, where we started, and the close. Copy
+ * lives in content/about and content/brand.
  */
 export default function Page() {
   return (
     <>
-      <AboutStory />
+      <AboutHero />
+      <AboutStoryBand />
+      <WhoWeAre />
       <VisionMission />
       <Values />
-      <Philosophy />
       <Founder />
-      <Registrations />
+      <Origin />
+      <CloseBand variant="about" />
     </>
   );
 }

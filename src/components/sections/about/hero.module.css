@@ -1,0 +1,124 @@
+/*
+ * About hero: the mark and the ignition host protocol (build spec 2.9).
+ *
+ * Final state in server HTML: the mark in its true colours, fills only.
+ * With JavaScript and motion allowed it either
+ *   - waits for Ignition (desktop query below): hidden until the host gets
+ *     data-ignition, with a safety reveal at 2.5 s if the chunk never
+ *     loads; hidden while `running`; shown on `done` (the canvas has
+ *     cross-faded into it); drawn in strokes on `skipped`; or
+ *   - draws itself on load everywhere Ignition can never run (phones,
+ *     tablets, coarse pointers), so there is no static frame first.
+ * Reduced motion and no JavaScript: the static mark.
+ *
+ * The draw-in (creative brief 4.3): ring 900 ms; red flame 700 ms from
+ * 300 ms; lime tongue 700 ms from 500 ms; then the fills fade in over
+ * 400 ms while the construction lines fade out, so the end state is the
+ * exact mark.
+ */
+
+.mark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.outline {
+  fill: none;
+  stroke-width: 1.5px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 0;
+  opacity: 0;
+}
+
+/* Everywhere Ignition never runs: draw on load. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (max-width: 1023.98px),
+  (scripting: enabled) and (prefers-reduced-motion: no-preference) and (pointer: coarse),
+  (scripting: enabled) and (prefers-reduced-motion: no-preference) and (pointer: none) {
+  .host .ring .outline {
+    animation:
+      mark-draw 900ms var(--ease-in-out) 0ms both,
+      mark-out 400ms var(--ease-out) 1100ms forwards;
+  }
+  .host .red .outline {
+    animation:
+      mark-draw 700ms var(--ease-in-out) 300ms both,
+      mark-out 400ms var(--ease-out) 1100ms forwards;
+  }
+  .host .lime .outline {
+    animation:
+      mark-draw 700ms var(--ease-in-out) 500ms both,
+      mark-out 400ms var(--ease-out) 1100ms forwards;
+  }
+  .host .fill {
+    animation: mark-in 400ms var(--ease-out) 1100ms both;
+  }
+}
+
+/* Where Ignition may run: wait for its decision. */
+@media (scripting: enabled) and (pointer: fine) and (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .host:not([data-ignition]) .mark {
+    opacity: 0;
+    animation: mark-in 400ms var(--ease-out) 2.5s forwards;
+  }
+  .host[data-ignition="running"] .mark {
+    opacity: 0;
+    animation: none;
+  }
+  .host[data-ignition="skipped"] .ring .outline {
+    animation:
+      mark-draw 900ms var(--ease-in-out) 0ms both,
+      mark-out 400ms var(--ease-out) 1100ms forwards;
+  }
+  .host[data-ignition="skipped"] .red .outline {
+    animation:
+      mark-draw 700ms var(--ease-in-out) 300ms both,
+      mark-out 400ms var(--ease-out) 1100ms forwards;
+  }
+  .host[data-ignition="skipped"] .lime .outline {
+    animation:
+      mark-draw 700ms var(--ease-in-out) 500ms both,
+      mark-out 400ms var(--ease-out) 1100ms forwards;
+  }
+  .host[data-ignition="skipped"] .fill {
+    animation: mark-in 400ms var(--ease-out) 1100ms both;
+  }
+}
+
+.host[data-ignition="done"] .mark,
+.host[data-ignition="skipped"] .mark {
+  opacity: 1;
+}
+
+@keyframes mark-draw {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes mark-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes mark-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

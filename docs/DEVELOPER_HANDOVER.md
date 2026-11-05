@@ -18,7 +18,7 @@ delivers mail through Resend. There is no CMS beyond the site's own `/admin`.
 ## 2. Repository layout
 
 ```
-src/app/(site)/        public pages (home, what-we-do, about, insights, publications, contact)
+src/app/(site)/        public pages (home, what-we-do, about, insights, research, contact, credits, privacy)
 src/app/(guide)/       /styleguide: the design-system contract, noindex
 src/app/not-found.tsx, (site)/error.tsx, admin/*/error.tsx, global-error.tsx   the error surfaces (copy in src/content/errors.ts)
 src/proxy.ts           the /admin route guard (Next.js 16 name for middleware)
@@ -56,10 +56,11 @@ after every write, and a Supabase Database Webhook can call
 anonymous key, so Row Level Security (RLS) decides what is visible: published
 posts with a past `published_at`, publications and settings.
 
-**Research data.** `/publications` also reads OpenAlex (a public, keyless
-scholarly index) for the founder's citation metrics and per-paper citation
-counts: `src/lib/research/openalex.ts`, cached for a day through the Data
-Cache and failing soft. The author id sits in `src/content/publications.ts`.
+**Research data.** `/research` lists the journal articles, op-eds and
+mentions from the `publications` table (with the op-eds in code as a
+fallback). `/publications` redirects there (308). The site no longer calls
+OpenAlex; the founder's OpenAlex author URL stays in `FOUNDER.profiles`
+(`src/content/about.ts`), where structured data reads it as `sameAs`.
 
 **Admin.** `/admin` is protected three times over: `src/proxy.ts`
 redirects any request without a session to the login page (all methods, with
@@ -339,10 +340,16 @@ Every factual line on the site traces to one of these sources (checked
   incorporated 26 February 2020 (Corporate Affairs Commission record as
   republished by an aggregator; confirm against the certificate).
 - **Company LinkedIn page.** Self-description as a technology-driven fuel
-  retailer; headquarters Otta, Ogun State; founded 2020.
-- **Brand Spur, 22 June 2020 and 5 November 2020.** The Sango Ota service
-  station (designed for more than 1,000 customers a day) and the Oju Ore,
-  Otta outlet; the "every litre dispensed" line.
+  retailer; headquarters in Southwest Nigeria; founded 2020. On the client's
+  instruction of 3 October 2026 the site names no town or state: the
+  Nigerian location reads "Southwest Nigeria" everywhere.
+- **Brand Spur, 22 June 2020 and 5 November 2020.** The two service
+  stations opened that year (the first designed for more than 1,000
+  customers a day); the "every litre dispensed" line.
+- **The client, 3 October 2026.** The United States entity (Olivia Group
+  LLC, registration ID 805857089, formed 14 January 2025), the NIPEX
+  registration (vendor ID S77939994; Consultancy QA/QC, Petroleum Products
+  Haulage/Logistics, Goods/Materials Haulage) and his title, Founder/CEO.
 - **BusinessDay, 6 January 2026 (author biography) and 27 March 2026
   (quote).** The founder's degrees (Ph.D. Economics, Covenant University;
   Master of Public Service, Clinton School of Public Service, University of
@@ -354,25 +361,19 @@ Every factual line on the site traces to one of these sources (checked
 - **Supplied by the client.** The email address, the three social profile
   URLs, the logo and the portrait.
 
-Removed until the client confirms them, because nothing online does:
-"registered in the United States and Nigeria" and "a NIPEX-registered
-partner", both from the client's brief. If confirmed, restore them in the
-What We Do positioning and third differentiator
-(`src/content/what-we-do.ts`) and the About description
-(`src/content/seo.ts`); the NIPEX line also has a field in Admin → Settings.
-The site otherwise carries only sourced facts (incorporation in 2020, the
-founder's name and field, the two cities).
+Two claims from the client's brief were held back until he confirmed them,
+which he did on 3 October 2026: the United States entity now appears in
+`REGISTRATIONS` (`src/content/about.ts`), on About, in structured data and
+in llms.txt, and the NIPEX line is the default of the NIPEX wording setting
+(`NIPEX_WORDING` in `src/content/site.ts`), shown in the footer and
+editable in Admin → Settings. The site otherwise carries only sourced facts
+(incorporation in 2020, the founder's name and field, the two places).
 
 **The client should confirm or supply:**
 
 - The RC number and incorporation date against the certificate.
-- The United States entity (name, state, number) and the NIPEX registration
-  number, or the removal of those two claims. A confirmed row goes in
-  `REGISTRATIONS` (`src/content/about.ts`); the NIPEX wording goes in
-  Admin → Settings and appears in the footer.
-- The founder's title ("Founder and Chief Executive Officer") and whether
-  Fort Worth, Texas may stand as the United States location on the contact
-  page (Admin → Settings → addresses).
+- The state of registration of Olivia Group LLC, if it is to be named (the
+  site gives the registration ID and date only).
 - Street addresses and phone numbers, if any are to be published (none are).
 - Whether to show the figures band on the homepage (Admin → Settings).
   The four figures are true as seeded.

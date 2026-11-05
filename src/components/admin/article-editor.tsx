@@ -48,12 +48,15 @@ import { mediaUrl, uploadImage } from "@/lib/admin/upload";
 import { formatDate } from "@/lib/insights/text";
 import {
   POST_CATEGORIES,
+  POST_FORMATS,
+  POST_FORMAT_LABELS,
   postBody,
   postCategoryLabel,
   type Post,
   type PostBody,
   type PostCategory,
   type PostStatus,
+  postFormatOf,
 } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils/cn";
 import { Field, Input, Select, Textarea, controlClass } from "./field";
@@ -70,7 +73,10 @@ const SizedImage = Image.extend({
   },
 });
 
-type Feedback = { tone: "success" | "error"; text: ReactNode } | null;
+type Feedback = {
+  tone: "success" | "error" | "info";
+  text: ReactNode;
+} | null;
 
 /** Shared focus ring, matching the site-wide `focus-visible:ring-2 ring-focus ring-offset-2 ring-offset-canvas`. */
 const focusRing =
@@ -104,6 +110,7 @@ export function ArticleEditor({
   );
   const [excerpt, setExcerpt] = useState(post.excerpt ?? "");
   const [category, setCategory] = useState<PostCategory>(post.category);
+  const [format, setFormat] = useState<string>(postFormatOf(post) ?? "");
   const [tags, setTags] = useState<string[]>(post.tags);
   const [tagDraft, setTagDraft] = useState("");
   const [coverPath, setCoverPath] = useState<string | null>(post.cover_path);
@@ -183,6 +190,7 @@ export function ArticleEditor({
     slug,
     excerpt,
     category,
+    format,
     tags,
     cover_path: coverPath,
     seo_title: seoTitle,
@@ -206,7 +214,7 @@ export function ArticleEditor({
       setDirty(false);
       const live = `${siteOrigin}/insights/${result.slug}`;
       setFeedback({
-        tone: "success",
+        tone: result.degraded ? "info" : "success",
         text:
           result.status === "published" ? (
             <>
@@ -497,6 +505,28 @@ export function ArticleEditor({
               {POST_CATEGORIES.map((c) => (
                 <option key={c} value={c}>
                   {postCategoryLabel(c)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field
+            label="Format"
+            htmlFor="format"
+            hint="Which Insights format this article belongs to."
+            error={errors.format}
+          >
+            <Select
+              id="format"
+              value={format}
+              onChange={(e) => {
+                setFormat(e.target.value);
+                touch();
+              }}
+            >
+              <option value="">No format</option>
+              {POST_FORMATS.map((f) => (
+                <option key={f} value={f}>
+                  {POST_FORMAT_LABELS[f]}
                 </option>
               ))}
             </Select>

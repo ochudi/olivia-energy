@@ -86,9 +86,27 @@ export function siteGraph(settings: SiteSettings): Graph {
       propertyID: "CAC RC",
       value: registration.number,
     },
+    // The other registered entities (the United States company).
+    ...(REGISTRATIONS.length > 1
+      ? {
+          subOrganization: REGISTRATIONS.slice(1).map((r) => ({
+            "@type": "Organization" as const,
+            name: r.label,
+            legalName: r.label,
+            foundingDate: r.founded,
+            identifier: {
+              "@type": "PropertyValue" as const,
+              propertyID: r.registry,
+              value: r.number,
+            },
+            parentOrganization: { "@id": ids.organization },
+          })),
+        }
+      : {}),
     url: siteUrl(),
     logo: absoluteUrl("/brand/logo-512.png"),
     description: SEO.home.description,
+    slogan: SEO.tagline,
     email: settings.contact_email,
     address: settings.addresses.map((address) => postalAddress(address)),
     areaServed: settings.addresses.map((address) => address.country),

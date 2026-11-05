@@ -1,0 +1,94 @@
+/*
+ * The article body (creative brief 4.5): the shared Prose, restyled for
+ * the rebuild without touching src/styles/prose.css. These rules are not
+ * in a cascade layer, so they win over the `components` layer that prose
+ * lives in.
+ */
+
+.body {
+  /* 19 px Instrument Sans at about 68 characters a line (the `ch` unit is
+     the width of a zero, wider than an average letter, so 68ch would run to
+     about a hundred characters). */
+  font-size: var(--text-lg);
+  line-height: var(--text-lg--line-height);
+  max-width: var(--container-text);
+  text-wrap: pretty;
+}
+
+.body :where(h2) {
+  font-size: var(--text-display-sm);
+  line-height: var(--text-display-sm--line-height);
+  letter-spacing: var(--text-display-sm--letter-spacing);
+  margin-top: 2em;
+}
+
+.body :where(h3) {
+  font-size: var(--text-display-xs);
+  line-height: var(--text-display-xs--line-height);
+  letter-spacing: var(--text-display-xs--letter-spacing);
+}
+
+/* Links: underlined in the surface's primary (flood green on paper). */
+.body a {
+  color: var(--color-primary);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: currentColor;
+  text-underline-offset: 0.22em;
+}
+.body a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.body :where(li)::marker {
+  color: var(--color-primary);
+}
+
+/* Blockquotes: display-xs italic with the red flame as the quotation mark
+   (TiptapContent renders the flame as the first child). */
+.body blockquote {
+  position: relative;
+  margin: 2.4em 0;
+  padding: 0 0 0 3rem;
+  border: 0;
+  font-family: var(--font-display-italic);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--text-display-xs);
+  line-height: var(--text-display-xs--line-height);
+  letter-spacing: var(--text-display-xs--letter-spacing);
+  color: var(--color-ink);
+}
+@media (min-width: 64rem) {
+  .body blockquote {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 3.5rem;
+    padding-right: 0;
+  }
+}
+.body blockquote > :global(.flame-bullet) {
+  position: absolute;
+  top: 0.1em;
+  left: 0;
+  height: 1.9em;
+  color: var(--color-accent);
+}
+
+/* Figures: the shoulder (4 px, with the rounded top-right). */
+.body img,
+.body video,
+.body :global(.embed) {
+  border: 0;
+  border-radius: var(--radius-xs) var(--radius-shoulder) var(--radius-xs)
+    var(--radius-xs);
+}
+.body figcaption {
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+}
+
+/* The body opens flush, whatever block the author starts with. */
+.body > :first-child {
+  margin-top: 0;
+}

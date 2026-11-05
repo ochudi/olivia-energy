@@ -1,7 +1,8 @@
 /**
  * Visual QA: screenshots a route at phone / tablet / desktop widths using the
- * locally installed Google Chrome (no browser download), and reports console
- * errors, horizontal overflow and the reduced-motion state.
+ * locally installed Google Chrome (no browser download; set CHROME_PATH to use
+ * another Chrome binary), and reports console errors, horizontal overflow and
+ * the reduced-motion state.
  *
  *   npm run shots                       # /styleguide at 390, 768, 1440
  *   npm run shots -- /  --widths=390    # another route, custom widths
@@ -25,7 +26,14 @@ const base = process.env.BASE_URL ?? "http://localhost:3000";
 const outDir = path.resolve(".screenshots");
 fs.mkdirSync(outDir, { recursive: true });
 
-const browser = await chromium.launch({ channel: "chrome", headless: true });
+// The installed Google Chrome, or the binary at CHROME_PATH when it is set
+// (e.g. a cached Chrome for Testing on a machine without Chrome).
+const browser = await chromium.launch({
+  ...(process.env.CHROME_PATH
+    ? { executablePath: process.env.CHROME_PATH }
+    : { channel: "chrome" }),
+  headless: true,
+});
 const slug =
   route === "/" ? "home" : route.replace(/^\//, "").replace(/\//g, "-");
 

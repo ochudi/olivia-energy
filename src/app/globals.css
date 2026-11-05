@@ -27,8 +27,87 @@
 @utility duration-reveal {
   transition-duration: var(--duration-reveal);
 }
+@utility duration-mask {
+  transition-duration: var(--duration-mask);
+}
+@utility duration-wipe {
+  transition-duration: var(--duration-wipe);
+}
+@utility duration-wipe-inner {
+  transition-duration: var(--duration-wipe-inner);
+}
+@utility duration-draw {
+  transition-duration: var(--duration-draw);
+}
+@utility duration-draw-glyph {
+  transition-duration: var(--duration-draw-glyph);
+}
+@utility duration-hatch {
+  transition-duration: var(--duration-hatch);
+}
+@utility duration-pop {
+  transition-duration: var(--duration-pop);
+}
+@utility duration-light {
+  transition-duration: var(--duration-light);
+}
+@utility duration-settle {
+  transition-duration: var(--duration-settle);
+}
 @utility duration-counter {
   transition-duration: var(--duration-counter);
+}
+
+/* ------------------------------------------------------------------ */
+/* Shape utilities: the shoulder (brief 2.4). Three tight corners and   */
+/* one large top-right corner. Order: top-left, top-right, bottom-      */
+/* right, bottom-left.                                                  */
+/* ------------------------------------------------------------------ */
+@utility shoulder-sm {
+  border-radius: var(--radius-xs) var(--radius-shoulder-sm) var(--radius-xs)
+    var(--radius-xs);
+}
+@utility shoulder {
+  border-radius: var(--radius-xs) var(--radius-shoulder) var(--radius-xs)
+    var(--radius-xs);
+}
+@utility shoulder-lg {
+  border-radius: var(--radius-xs) var(--radius-shoulder-lg) var(--radius-xs)
+    var(--radius-xs);
+}
+
+/* ------------------------------------------------------------------ */
+/* Type utilities (brief 2.2).                                          */
+/* ------------------------------------------------------------------ */
+@utility label {
+  /* 12px uppercase 600, tracked: eyebrows, chips, the Fig. tag, table heads. */
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: var(--text-xs--line-height);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+@utility source-line {
+  /* 12px regular, sentence case: the source line under every figure. */
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: var(--text-xs--line-height);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+@utility turn {
+  /* The italic turn: Newsreader italic in the surface's turn colour. At
+     most once per screen. */
+  font-family: var(--font-display-italic);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--turn-color);
+}
+@utility numerals {
+  /* Lining tabular figures for numbers that are compared or counted. */
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 /* Route transition. The (site) template re-mounts on every navigation, so
@@ -71,7 +150,20 @@
   animation: field-error-enter var(--duration-fast) var(--ease-out) both;
 }
 
-/* Height for the large button (52px) — outside the 4px scale on purpose. */
+/* `settle`: the hero photograph scales 1.06 to 1 once on load (brief 2.8). */
+@keyframes settle {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@utility animate-settle {
+  animation: settle var(--duration-settle) var(--ease-out) both;
+}
+
+/* Height for the legacy large button (52px), outside the 4px scale. */
 @utility h-13 {
   height: 3.25rem;
 }
@@ -97,6 +189,13 @@
     text-wrap: balance;
   }
 
+  p,
+  li,
+  figcaption,
+  blockquote {
+    text-wrap: pretty;
+  }
+
   ::selection {
     background-color: var(--color-selection);
     color: var(--color-ink);
@@ -108,53 +207,340 @@
   }
 
   /* ---------------------------------------------------------------- */
-  /* Inverse tone. Add data-tone="inverse" to any dark surface (footer, */
-  /* dark hero, inverse card, the mobile menu) and every semantic token */
-  /* remaps inside it. Components keep using bg-surface, text-ink,      */
-  /* border-line, bg-primary … and need no dark variants of their own.  */
-  /* The site header joins the list when it sits transparent over a     */
-  /* dark hero, or while the mobile menu is open.                       */
+  /* Surfaces (creative brief 2.1). The paper values are the defaults   */
+  /* in tokens.css; each surface below remaps the semantic tokens, the  */
+  /* chart variables, the hatch, the turn colour and the logo variables.*/
+  /* The site header mirrors them through data-on="<surface>", which   */
+  /* it sets to the surface under its bottom edge (build spec 2.8).     */
+  /* Until the header has hydrated (no data-on yet) it takes the        */
+  /* surface of the page's hero section, read here with :has(), so the  */
+  /* first paint already matches the hero: a paper button on a red or   */
+  /* green hero, never lime. Without scripting data-on never arrives,   */
+  /* so the header stays solid in the hero's colour (see .site-header). */
+  /*                                                                    */
+  /* Chart variables: --chart-1 lead series, --chart-2 second, --chart-3*/
+  /* third (areas only on paper), --chart-gap the gap hatch, --chart-   */
+  /* axis, --chart-grid. Hatch: --hatch-color, --hatch-outline (ink on  */
+  /* lime, transparent elsewhere). Turn: --turn-color. Logo: --brand-   */
+  /* mark-green|red|lime (true colours or currentColor for mono).       */
+  /* Three more semantic colours follow the surface: --color-accent-fg  */
+  /* (text on the gap pill), --color-error (form errors) and            */
+  /* --color-glyph (the line glyphs, brief 2.5).                         */
   /* ---------------------------------------------------------------- */
+  :root {
+    --chart-1: var(--color-flood-green);
+    --chart-2: var(--color-ink-paper);
+    --chart-3: rgba(4, 146, 63, 0.6);
+    --chart-gap: var(--color-brand-red);
+    --chart-axis: var(--color-ink-paper-muted);
+    --chart-grid: rgba(11, 31, 20, 0.1);
+    --hatch-color: rgba(213, 40, 27, 0.85);
+    --hatch-outline: transparent;
+    --turn-color: var(--color-flood-green);
+    --brand-mark-green: var(--color-brand-green);
+    --brand-mark-red: var(--color-brand-red);
+    --brand-mark-lime: var(--color-brand-lime);
+    color-scheme: light;
+  }
+
+  [data-surface="paper"],
+  [data-on="paper"],
+  body:has(main [data-hero][data-surface="paper"])
+    .site-header[data-menu-open="false"]:not([data-on]) {
+    --color-canvas: var(--color-paper);
+    --color-surface: var(--color-card);
+    --color-surface-muted: var(--color-paper-deep);
+    --color-ink: var(--color-ink-paper);
+    --color-ink-muted: var(--color-ink-paper-muted);
+    --color-ink-subtle: var(--color-ink-paper-subtle);
+    --color-line: rgba(11, 31, 20, 0.14);
+    --color-line-strong: rgba(11, 31, 20, 0.32);
+    --color-primary: var(--color-flood-green);
+    --color-primary-hover: #03632c;
+    --color-primary-fg: var(--color-white);
+    --color-primary-soft: rgba(4, 122, 54, 0.1);
+    --color-primary-soft-fg: var(--color-flood-green);
+    --color-accent: var(--color-brand-red);
+    --color-accent-fg: var(--color-white);
+    --color-error: var(--color-red-ink);
+    --color-glyph: var(--color-flood-green);
+    --color-inverse: var(--color-night);
+    --color-inverse-fg: var(--color-white);
+    --color-inverse-muted: var(--color-ink-night-muted);
+    --color-focus: var(--color-flood-green);
+    --color-selection: rgba(136, 192, 41, 0.4);
+    --chart-1: var(--color-flood-green);
+    --chart-2: var(--color-ink-paper);
+    --chart-3: rgba(4, 146, 63, 0.6);
+    --chart-gap: var(--color-brand-red);
+    --chart-axis: var(--color-ink-paper-muted);
+    --chart-grid: rgba(11, 31, 20, 0.1);
+    --hatch-color: rgba(213, 40, 27, 0.85);
+    --hatch-outline: transparent;
+    --turn-color: var(--color-flood-green);
+    --brand-mark-green: var(--color-brand-green);
+    --brand-mark-red: var(--color-brand-red);
+    --brand-mark-lime: var(--color-brand-lime);
+  }
+
+  [data-surface="paper-deep"],
+  [data-on="paper-deep"],
+  body:has(main [data-hero][data-surface="paper-deep"])
+    .site-header[data-menu-open="false"]:not([data-on]) {
+    --color-canvas: var(--color-paper-deep);
+    --color-surface: var(--color-card);
+    --color-surface-muted: var(--color-paper);
+    --color-ink: var(--color-ink-paper);
+    --color-ink-muted: var(--color-ink-paper-muted);
+    --color-ink-subtle: var(--color-ink-paper-muted);
+    --color-line: rgba(11, 31, 20, 0.16);
+    --color-line-strong: rgba(11, 31, 20, 0.34);
+    --color-primary: var(--color-flood-green);
+    --color-primary-hover: #03632c;
+    --color-primary-fg: var(--color-white);
+    --color-primary-soft: rgba(4, 122, 54, 0.12);
+    --color-primary-soft-fg: var(--color-flood-green);
+    --color-accent: var(--color-brand-red);
+    --color-accent-fg: var(--color-white);
+    --color-error: var(--color-red-ink);
+    --color-glyph: var(--color-flood-green);
+    --color-inverse: var(--color-night);
+    --color-inverse-fg: var(--color-white);
+    --color-inverse-muted: var(--color-ink-night-muted);
+    --color-focus: var(--color-flood-green);
+    --color-selection: rgba(136, 192, 41, 0.45);
+    --chart-1: var(--color-flood-green);
+    --chart-2: var(--color-ink-paper);
+    --chart-3: rgba(4, 146, 63, 0.6);
+    --chart-gap: var(--color-brand-red);
+    --chart-axis: var(--color-ink-paper-muted);
+    --chart-grid: rgba(11, 31, 20, 0.12);
+    --hatch-color: rgba(213, 40, 27, 0.85);
+    --hatch-outline: transparent;
+    --turn-color: var(--color-flood-green);
+    --brand-mark-green: var(--color-brand-green);
+    --brand-mark-red: var(--color-brand-red);
+    --brand-mark-lime: var(--color-brand-lime);
+  }
+
+  /* Night. data-tone="inverse" (the styleguide's inverse logo specimens)
+     shares these values; it alone also turns the full-colour logo
+     one-colour, as before. */
+  [data-surface="night"],
+  [data-on="night"],
   [data-tone="inverse"],
-  .site-header[data-menu-open="true"],
-  body:has(main [data-hero="dark"])
-    .site-header[data-scrolled="false"][data-menu-open="false"] {
-    --color-canvas: var(--color-inverse);
-    --color-surface: color-mix(
-      in oklab,
-      var(--color-inverse-fg) 6%,
-      var(--color-inverse)
-    );
-    --color-surface-muted: color-mix(
-      in oklab,
-      var(--color-inverse-fg) 10%,
-      var(--color-inverse)
-    );
-    --color-ink: var(--color-inverse-fg);
-    --color-ink-muted: var(--color-inverse-muted);
-    --color-ink-subtle: var(--color-neutral-400);
-    --color-line: color-mix(in oklab, var(--color-inverse-fg) 14%, transparent);
-    --color-line-strong: color-mix(
-      in oklab,
-      var(--color-inverse-fg) 28%,
-      transparent
-    );
-    --color-primary: var(--color-neutral-50);
-    --color-primary-hover: var(--color-neutral-200);
-    --color-primary-fg: var(--color-green-950);
-    --color-primary-soft: color-mix(
-      in oklab,
-      var(--color-green-300) 14%,
-      transparent
-    );
-    --color-primary-soft-fg: var(--color-green-200);
-    --color-focus: var(--color-green-300);
-    --color-selection: var(--color-green-800);
+  body:has(main [data-hero][data-surface="night"])
+    .site-header[data-menu-open="false"]:not([data-on]) {
+    --color-canvas: var(--color-night);
+    --color-surface: var(--color-night-raised);
+    --color-surface-muted: rgba(255, 255, 255, 0.08);
+    --color-ink: var(--color-white);
+    --color-ink-muted: var(--color-ink-night-muted);
+    --color-ink-subtle: var(--color-ink-night-muted);
+    --color-line: rgba(255, 255, 255, 0.14);
+    --color-line-strong: rgba(255, 255, 255, 0.36);
+    --color-primary: var(--color-brand-lime);
+    --color-primary-hover: #9bd23a;
+    --color-primary-fg: var(--color-ink-paper);
+    --color-primary-soft: rgba(136, 192, 41, 0.14);
+    --color-primary-soft-fg: var(--color-brand-lime);
+    --color-accent: var(--color-brand-red);
+    --color-accent-fg: var(--color-white);
+    --color-error: #ffb4aa;
+    --color-glyph: var(--color-white);
+    --color-inverse: var(--color-paper);
+    --color-inverse-fg: var(--color-ink-paper);
+    --color-inverse-muted: var(--color-ink-paper-muted);
+    --color-focus: var(--color-brand-lime);
+    --color-selection: rgba(136, 192, 41, 0.35);
+    --chart-1: var(--color-brand-lime);
+    --chart-2: var(--color-paper);
+    --chart-3: var(--color-chart-tint);
+    --chart-gap: var(--color-brand-red);
+    --chart-axis: var(--color-ink-night-muted);
+    --chart-grid: rgba(255, 255, 255, 0.12);
+    --hatch-color: rgba(213, 40, 27, 0.85);
+    --hatch-outline: transparent;
+    --turn-color: var(--color-brand-lime);
+    --brand-mark-green: var(--color-brand-green);
+    --brand-mark-red: var(--color-brand-red);
+    --brand-mark-lime: var(--color-brand-lime);
+    color-scheme: dark;
+  }
+  [data-tone="inverse"] {
     /* The full-colour mark (<Logo tone="color">) goes one-colour here: its
        three fills read these, so it takes the surface's ink. */
     --brand-mark-lime: currentColor;
     --brand-mark-red: currentColor;
     --brand-mark-green: currentColor;
+  }
+
+  [data-surface="green"],
+  [data-on="green"],
+  .site-header[data-menu-open="true"],
+  body:has(main [data-hero][data-surface="green"])
+    .site-header[data-menu-open="false"]:not([data-on]) {
+    --color-canvas: var(--color-flood-green);
+    --color-surface: rgba(255, 255, 255, 0.08);
+    --color-surface-muted: rgba(255, 255, 255, 0.12);
+    --color-ink: var(--color-white);
+    --color-ink-muted: var(--color-ink-green-muted);
+    --color-ink-subtle: var(--color-ink-green-muted);
+    --color-line: rgba(255, 255, 255, 0.28);
+    --color-line-strong: rgba(255, 255, 255, 0.5);
+    --color-primary: var(--color-paper);
+    --color-primary-hover: var(--color-white);
+    --color-primary-fg: var(--color-ink-paper);
+    --color-primary-soft: rgba(255, 255, 255, 0.12);
+    --color-primary-soft-fg: var(--color-white);
+    --color-accent: var(--color-white);
+    --color-accent-fg: var(--color-flood-green);
+    --color-error: var(--color-white);
+    --color-glyph: var(--color-white);
+    --color-inverse: var(--color-paper);
+    --color-inverse-fg: var(--color-ink-paper);
+    --color-inverse-muted: var(--color-ink-paper-muted);
+    --color-focus: var(--color-white);
+    --color-selection: rgba(255, 255, 255, 0.3);
+    --chart-1: var(--color-white);
+    --chart-2: var(--color-ink-green-muted);
+    --chart-3: rgba(255, 255, 255, 0.6);
+    --chart-gap: var(--color-white);
+    --chart-axis: var(--color-ink-green-muted);
+    --chart-grid: rgba(255, 255, 255, 0.14);
+    --hatch-color: rgba(255, 255, 255, 0.85);
+    --hatch-outline: transparent;
+    --turn-color: var(--color-white);
+    --brand-mark-green: currentColor;
+    --brand-mark-red: currentColor;
+    --brand-mark-lime: currentColor;
+    color-scheme: dark;
+  }
+
+  [data-surface="lime"],
+  [data-on="lime"],
+  body:has(main [data-hero][data-surface="lime"])
+    .site-header[data-menu-open="false"]:not([data-on]) {
+    --color-canvas: var(--color-brand-lime);
+    --color-surface: rgba(255, 255, 255, 0.22);
+    --color-surface-muted: rgba(11, 31, 20, 0.08);
+    --color-ink: var(--color-ink-paper);
+    --color-ink-muted: var(--color-ink-lime-muted);
+    --color-ink-subtle: var(--color-ink-lime-muted);
+    --color-line: rgba(11, 31, 20, 0.24);
+    --color-line-strong: rgba(11, 31, 20, 0.44);
+    --color-primary: var(--color-ink-paper);
+    --color-primary-hover: #000000;
+    --color-primary-fg: var(--color-brand-lime);
+    --color-primary-soft: rgba(11, 31, 20, 0.1);
+    --color-primary-soft-fg: var(--color-ink-paper);
+    --color-accent: var(--color-brand-red);
+    --color-accent-fg: var(--color-white);
+    --color-error: var(--color-ink-paper);
+    --color-glyph: var(--color-ink-paper);
+    --color-inverse: var(--color-night);
+    --color-inverse-fg: var(--color-white);
+    --color-inverse-muted: var(--color-ink-night-muted);
+    --color-focus: var(--color-ink-paper);
+    --color-selection: rgba(11, 31, 20, 0.18);
+    --chart-1: var(--color-ink-paper);
+    --chart-2: var(--color-ink-lime-muted);
+    --chart-3: var(--color-ink-lime-muted);
+    --chart-gap: var(--color-brand-red);
+    --chart-axis: var(--color-ink-lime-muted);
+    --chart-grid: rgba(11, 31, 20, 0.18);
+    --hatch-color: var(--color-brand-red);
+    --hatch-outline: var(--color-ink-paper);
+    --turn-color: var(--color-ink-paper);
+    --brand-mark-green: currentColor;
+    --brand-mark-red: currentColor;
+    --brand-mark-lime: currentColor;
+    color-scheme: light;
+  }
+
+  /* Red: white only; hierarchy by size and weight, no muted step. */
+  [data-surface="red"],
+  [data-on="red"],
+  body:has(main [data-hero][data-surface="red"])
+    .site-header[data-menu-open="false"]:not([data-on]) {
+    --color-canvas: var(--color-brand-red);
+    --color-surface: rgba(255, 255, 255, 0.1);
+    --color-surface-muted: rgba(255, 255, 255, 0.14);
+    --color-ink: var(--color-white);
+    --color-ink-muted: var(--color-white);
+    --color-ink-subtle: var(--color-white);
+    --color-line: rgba(255, 255, 255, 0.32);
+    --color-line-strong: rgba(255, 255, 255, 0.56);
+    --color-primary: var(--color-paper);
+    --color-primary-hover: var(--color-white);
+    --color-primary-fg: var(--color-ink-paper);
+    --color-primary-soft: rgba(255, 255, 255, 0.14);
+    --color-primary-soft-fg: var(--color-white);
+    --color-accent: var(--color-white);
+    --color-accent-fg: var(--color-brand-red);
+    --color-error: var(--color-white);
+    --color-glyph: var(--color-white);
+    --color-inverse: var(--color-paper);
+    --color-inverse-fg: var(--color-ink-paper);
+    --color-inverse-muted: var(--color-ink-paper-muted);
+    --color-focus: var(--color-white);
+    --color-selection: rgba(255, 255, 255, 0.3);
+    --chart-1: var(--color-white);
+    --chart-2: var(--color-paper);
+    --chart-3: rgba(255, 255, 255, 0.6);
+    --chart-gap: var(--color-white);
+    --chart-axis: var(--color-white);
+    --chart-grid: rgba(255, 255, 255, 0.16);
+    --hatch-color: rgba(255, 255, 255, 0.85);
+    --hatch-outline: transparent;
+    --turn-color: var(--color-white);
+    --brand-mark-green: currentColor;
+    --brand-mark-red: currentColor;
+    --brand-mark-lime: currentColor;
+    color-scheme: dark;
+  }
+
+  /* Photo: a photograph under a night scrim; the canvas is night so the
+     text sits on something before the image arrives. */
+  [data-surface="photo"],
+  [data-on="photo"],
+  body:has(main [data-hero][data-surface="photo"])
+    .site-header[data-menu-open="false"]:not([data-on]) {
+    --color-canvas: var(--color-night);
+    --color-surface: rgba(6, 23, 14, 0.72);
+    --color-surface-muted: rgba(255, 255, 255, 0.1);
+    --color-ink: var(--color-white);
+    --color-ink-muted: var(--color-ink-photo-muted);
+    --color-ink-subtle: var(--color-ink-photo-muted);
+    --color-line: rgba(255, 255, 255, 0.3);
+    --color-line-strong: rgba(255, 255, 255, 0.52);
+    --color-primary: var(--color-paper);
+    --color-primary-hover: var(--color-white);
+    --color-primary-fg: var(--color-ink-paper);
+    --color-primary-soft: rgba(255, 255, 255, 0.12);
+    --color-primary-soft-fg: var(--color-white);
+    --color-accent: var(--color-brand-red);
+    --color-accent-fg: var(--color-white);
+    --color-error: #ffb4aa;
+    --color-glyph: var(--color-white);
+    --color-inverse: var(--color-paper);
+    --color-inverse-fg: var(--color-ink-paper);
+    --color-inverse-muted: var(--color-ink-paper-muted);
+    --color-focus: var(--color-white);
+    --color-selection: rgba(211, 237, 166, 0.4);
+    --chart-1: var(--color-brand-lime);
+    --chart-2: var(--color-white);
+    --chart-3: var(--color-chart-tint);
+    --chart-gap: var(--color-brand-red);
+    --chart-axis: var(--color-ink-photo-muted);
+    --chart-grid: rgba(255, 255, 255, 0.14);
+    --hatch-color: rgba(213, 40, 27, 0.85);
+    --hatch-outline: transparent;
+    --turn-color: var(--color-lime-pale);
+    --brand-mark-green: currentColor;
+    --brand-mark-red: currentColor;
+    --brand-mark-lime: currentColor;
+    color-scheme: dark;
   }
 
   /* Belt-and-braces reduced motion: components already check in JS, and
@@ -176,10 +562,199 @@
 
 @layer components {
   /* ---------------------------------------------------------------- */
-  /* Site header. Fixed; solid by default. Over a hero (the page's      */
-  /* first section carries data-hero="light|dark") it is transparent   */
-  /* until the page scrolls. The bottom border is always present so     */
-  /* the height never changes.                                          */
+  /* Scroll reveals (brief 2.8). <Reveal> writes data-reveal on itself: */
+  /* "static" in server HTML (final state, always visible), "hidden"    */
+  /* only when the block is still below the fold after hydration, then  */
+  /* "visible" when it enters. Each variant class sets the pre-state    */
+  /* under [data-reveal="hidden"] and the transition on the element;    */
+  /* the descendant classes (draw, sweep, hatch, pop, ring-close, wipe- */
+  /* inner, light) respond to the nearest Reveal's state. Delays come   */
+  /* from --reveal-delay (Reveal's `delay` prop) and the duration       */
+  /* tokens, so a stagger needs no JavaScript.                          */
+  /* ---------------------------------------------------------------- */
+
+  /* fade: opacity 0 to 1 and a 16px lift. */
+  .reveal-fade {
+    transition:
+      opacity var(--duration-reveal) var(--ease-out) var(--reveal-delay, 0ms),
+      transform var(--duration-reveal) var(--ease-out) var(--reveal-delay, 0ms);
+  }
+  .reveal-fade[data-reveal="hidden"] {
+    opacity: 0;
+    transform: translateY(var(--motion-reveal-distance));
+  }
+
+  /* mask: a display heading clips up from its baseline. The clip and the
+     lift sit on the inner wrapper Reveal renders (`mask-clip`), never on
+     the observed element: Chromium measures intersection on the clipped
+     box, and a box clipped to nothing never crosses its threshold. A hair
+     of bleed keeps ascenders and descenders out of the clip at line-height
+     0.9. */
+  .reveal-mask .mask-clip {
+    clip-path: inset(-0.15em -0.25em -0.2em -0.25em);
+    transition:
+      clip-path var(--duration-mask) var(--ease-out-expo)
+        var(--reveal-delay, 0ms),
+      transform var(--duration-mask) var(--ease-out-expo)
+        var(--reveal-delay, 0ms);
+  }
+  .reveal-mask[data-reveal="hidden"] .mask-clip {
+    clip-path: inset(-0.15em -0.25em 100% -0.25em);
+    transform: translateY(0.3em);
+  }
+
+  /* wipe: a photograph clips up (on the inner `wipe-clip`, as above); the
+     image inside settles from 1.08. */
+  .reveal-wipe .wipe-clip {
+    clip-path: inset(0);
+    transition: clip-path var(--duration-wipe) var(--ease-in-out)
+      var(--reveal-delay, 0ms);
+  }
+  .reveal-wipe[data-reveal="hidden"] .wipe-clip {
+    clip-path: inset(100% 0 0 0);
+  }
+  .wipe-inner {
+    transform: scale(1);
+    transition: transform var(--duration-wipe-inner) var(--ease-in-out)
+      var(--reveal-delay, 0ms);
+  }
+  [data-reveal="hidden"] .wipe-inner {
+    transform: scale(1.08);
+  }
+
+  /* draw: strokes with pathLength="1" draw in (glyphs 900ms, rings and
+     chart lines 1200ms). Dots cannot draw, so they fade. */
+  .draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset var(--duration-draw) var(--ease-in-out)
+      var(--reveal-delay, 0ms);
+  }
+  .draw-glyph {
+    transition-duration: var(--duration-draw-glyph);
+  }
+  [data-reveal="hidden"] .draw {
+    stroke-dashoffset: 1;
+  }
+  .draw-dot {
+    opacity: 1;
+    transition: opacity var(--duration-base) var(--ease-out)
+      calc(var(--reveal-delay, 0ms) + var(--duration-draw-glyph) * 0.6);
+  }
+  [data-reveal="hidden"] .draw-dot {
+    opacity: 0;
+  }
+
+  /* sweep: chart lines revealed left to right by a clip; the bleed keeps
+     end markers whole. hatch follows sweep; pop follows hatch. */
+  .sweep {
+    clip-path: inset(-12% -6% -12% -6%);
+    transition: clip-path var(--duration-draw) var(--ease-in-out)
+      var(--reveal-delay, 0ms);
+  }
+  [data-reveal="hidden"] .sweep {
+    clip-path: inset(-12% 106% -12% -6%);
+  }
+  .hatch {
+    opacity: 1;
+    clip-path: inset(-6% -6% -6% -6%);
+    transition:
+      opacity var(--duration-hatch) var(--ease-out)
+        calc(var(--reveal-delay, 0ms) + var(--duration-draw)),
+      clip-path var(--duration-hatch) var(--ease-out)
+        calc(var(--reveal-delay, 0ms) + var(--duration-draw));
+  }
+  [data-reveal="hidden"] .hatch {
+    opacity: 0;
+    clip-path: inset(-6% 106% -6% -6%);
+  }
+  .pop {
+    opacity: 1;
+    transform: scale(1);
+    transition:
+      opacity var(--duration-pop) var(--ease-out-expo)
+        calc(
+          var(--reveal-delay, 0ms) + var(--duration-draw) +
+            var(--duration-hatch)
+        ),
+      transform var(--duration-pop) var(--ease-out-expo)
+        calc(
+          var(--reveal-delay, 0ms) + var(--duration-draw) +
+            var(--duration-hatch)
+        );
+  }
+  [data-reveal="hidden"] .pop {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  /* close: the ring's gap (--ring-gap, a fraction of the circumference,
+     on a path with pathLength="1") closes to a full circle. A dash as long
+     as the path with an offset of the gap draws an open ring; the offset
+     transitions to 0 (dashoffset, like `draw`: dasharray transitions do
+     not repaint reliably in Chromium). */
+  .ring-close {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset var(--duration-draw) var(--ease-in-out)
+      var(--reveal-delay, 0ms);
+  }
+  [data-reveal="hidden"] .ring-close {
+    stroke-dashoffset: var(--ring-gap, 0.25);
+  }
+
+  /* light: a Why Olivia line turns from the unlit green to white and its
+     flame bullet grows. Driven by data-lit="false" (P1's observer) or
+     by a hidden Reveal; without JavaScript every line is lit. */
+  .light {
+    color: var(--color-white);
+    transition: color var(--duration-light) var(--ease-out)
+      var(--reveal-delay, 0ms);
+  }
+  .light .flame-bullet {
+    transform: scale(1);
+    transform-origin: 50% 100%;
+    transition: transform var(--duration-light) var(--ease-out)
+      var(--reveal-delay, 0ms);
+  }
+  .light[data-lit="false"],
+  [data-reveal="hidden"] .light {
+    color: var(--color-light-unlit);
+  }
+  .light[data-lit="false"] .flame-bullet,
+  [data-reveal="hidden"] .light .flame-bullet {
+    transform: scale(0);
+  }
+
+  /* The line glyphs take the surface's glyph colour (brief 2.5); a text-*
+     utility on the glyph still wins. */
+  .glyph {
+    color: var(--color-glyph);
+  }
+
+  /* Hover motion (brief 2.8): the button arrow, card photographs and
+     covers. The classes are applied by the primitives. */
+  .hover-arrow {
+    transition: transform var(--duration-page) var(--ease-out);
+  }
+  a:hover .hover-arrow,
+  a:focus-visible .hover-arrow,
+  button:hover .hover-arrow,
+  button:focus-visible .hover-arrow {
+    transform: translateX(4px);
+  }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- */
+  /* Site header. Fixed; solid by default in the colour of the surface  */
+  /* under its bottom edge (data-on, set by the header's observer).     */
+  /* Over a hero (the page's first section carries data-hero) it is     */
+  /* transparent until the page scrolls, with the hero's own surface    */
+  /* values. Transparency needs scripting: without it data-scrolled     */
+  /* never changes, so the header stays solid and page text never shows */
+  /* through it. The bottom border is always present so the height      */
+  /* never changes.                                                     */
   /* ---------------------------------------------------------------- */
   .site-header {
     color: var(--color-ink);
@@ -191,14 +766,16 @@
       color var(--duration-base) var(--ease-standard);
   }
 
-  body:has(main [data-hero])
-    .site-header[data-scrolled="false"][data-menu-open="false"] {
-    background-color: transparent;
-    border-bottom-color: transparent;
+  @media (scripting: enabled) {
+    body:has(main [data-hero])
+      .site-header[data-scrolled="false"][data-menu-open="false"] {
+      background-color: transparent;
+      border-bottom-color: transparent;
+    }
   }
 
   .site-header[data-menu-open="true"] {
-    background-color: var(--color-inverse);
+    background-color: var(--color-flood-green);
     border-bottom-color: transparent;
   }
 }
@@ -206,7 +783,7 @@
 @layer components {
   /* ---------------------------------------------------------------- */
   /* Draw-in underline. A single background layer under the text that  */
-  /* grows from 0 to full width on hover/focus — used by ghost buttons  */
+  /* grows from 0 to full width on hover/focus — used by text buttons   */
   /* and inline text links in place of a static text-decoration.       */
   /* ---------------------------------------------------------------- */
   .link-underline {
@@ -266,7 +843,7 @@
   @keyframes menu-item-enter {
     from {
       opacity: 0;
-      transform: translateY(var(--motion-reveal-distance, 8px));
+      transform: translateY(var(--motion-reveal-distance, 16px));
     }
     to {
       opacity: 1;

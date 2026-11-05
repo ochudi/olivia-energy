@@ -1,6 +1,5 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -10,10 +9,11 @@ import {
   useState,
   type CSSProperties,
 } from "react";
+import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Logo } from "@/components/ui/logo";
-import { SocialIcon } from "@/components/ui/social-icon";
-import { CONTACT, NAV, SITE, SOCIALS } from "@/content/site";
+import { CONTACT, HEADER_COPY, NAV, NAV_CTA } from "@/content/site";
+import { MARK_MONO_PATH, MARK_VIEWBOX } from "@/lib/brand/mark";
 import { cn } from "@/lib/utils/cn";
 import { parseDurationSeconds, readCssToken } from "@/lib/utils/motion";
 import { useReducedMotion } from "@/lib/utils/use-motion";
@@ -27,6 +27,34 @@ const RING =
 const DESKTOP_QUERY = "(min-width: 64rem)";
 /** Regions made inert while the mobile menu is open. */
 const OUTSIDE_IDS = ["content", "site-footer"];
+/** Regions whose [data-surface] elements the header reads. */
+const SURFACE_ROOTS =
+  "#content [data-surface], #site-footer[data-surface], #site-footer [data-surface]";
+/**
+ * A surface counts for the header only when it runs edge to edge under it
+ * (a page band, a pinned scene's layer, the sticky chapter bar, the footer),
+ * within this many px. Tiles, covers and figure plates sit inside the
+ * container, so they keep data-surface for their own colours but never
+ * repaint the header: on a phone, where a tile is nearly as wide as the
+ * screen, the header no longer flashes red, green, night and lime as tiles
+ * pass under it (client review P1-1). Two half-width panels that read as
+ * one band say so with data-header-surface on their section.
+ */
+const FULL_BLEED_SLACK = 1;
+/**
+ * A surface marked data-header-priority (the What we do chapter bar,
+ * sticky directly under the header) wins over any other surface in the
+ * band, whatever the document order.
+ */
+const PRIORITY_ATTR = "data-header-priority";
+/**
+ * data-header-surface="<surface>" on a surface element tells the header
+ * which colour to take while that element wins, when its own data-surface
+ * is not what shows under the header's edge (the home opening once the
+ * green flood covers the photograph; the About vision and mission split,
+ * whose two half-width panels are each too narrow to count).
+ */
+const OVERRIDE_ATTR = "data-header-surface";
 
 function isCurrent(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -38,22 +66,146 @@ function ariaCurrent(pathname: string, href: string) {
   return pathname === href ? "page" : "true";
 }
 
+/** Of the candidates, the innermost; among equals, the last in the document. */
+function innermost(candidates: Element[]): Element | undefined {
+  const leaves = candidates.filter(
+    (el) => !candidates.some((other) => other !== el && el.contains(other)),
+  );
+  return leaves[leaves.length - 1];
+}
+
 /**
- * SiteHeader — fixed chrome for every public page.
- *
- *  • Solid (canvas + hairline, no blur) by default; transparent while the
- *    page is at the top and its first section carries `data-hero`. The
- *    switch is pure CSS (globals.css); JS only reports `data-scrolled`.
- *  • Over a dark hero, and while the menu is open, the header takes the
- *    inverse tone so every colour token remaps, and the logo turns from
- *    full colour to one colour with it.
- *  • The mobile menu is a full-screen dialog: focus is trapped, the rest of
- *    the page is made inert, Escape closes, focus returns to the toggle.
- *    It closes on navigation and when the viewport reaches `lg`. Its
- *    enter and exit are CSS keyframes (globals.css); the component only
- *    keeps the sheet mounted for the length of the exit token.
+ * Surface protocol (build spec 2.8): every section declares data-surface.
+ * One IntersectionObserver watches them with a root margin that leaves a
+ * 1 px band at the header's bottom edge; the innermost full-bleed surface in that
+ * band is written to the header as data-on, and globals.css maps data-on to
+ * the header's background, text, line and logo colours. Written straight
+ * to the DOM, so scrolling never re-renders React. Re-scans when the page's
+ * sections change (client navigation, streamed content) and on resize.
  */
-export function SiteHeader() {
+function useSurfaceUnderHeader(
+  headerRef: React.RefObject<HTMLElement | null>,
+  pathname: string,
+) {
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header || typeof IntersectionObserver === "undefined") return;
+
+    const hits = new Set<Element>();
+    let observer: IntersectionObserver | null = null;
+    let frame = 0;
+
+    const write = () => {
+      const right = document.documentElement.clientWidth - FULL_BLEED_SLACK;
+      const wide = Array.from(hits).filter((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.left > FULL_BLEED_SLACK || rect.right < right) return false;
+        // A surface laid over another but not shown yet (a pinned scene's
+        // later layer at opacity 0) does not count until it appears.
+        const style = getComputedStyle(el);
+        return style.visibility !== "hidden" && Number(style.opacity) >= 0.5;
+      });
+      const first = wide.filter((el) => el.hasAttribute(PRIORITY_ATTR));
+      const winner = innermost(first.length > 0 ? first : wide);
+      const surface =
+        winner?.getAttribute(OVERRIDE_ATTR) ??
+        winner?.getAttribute("data-surface");
+      if (surface) header.dataset.on = surface;
+      else delete header.dataset.on;
+    };
+
+    const build = () => {
+      observer?.disconnect();
+      hits.clear();
+      const edge = Math.round(header.getBoundingClientRect().height);
+      const below = Math.max(0, window.innerHeight - edge - 1);
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) hits.add(entry.target);
+            else hits.delete(entry.target);
+          }
+          write();
+        },
+        // The 1 px row just below the header's bottom edge, so a sticky
+        // bar pinned at top: header overlaps it rather than touching it.
+        { rootMargin: `-${edge}px 0px -${below}px 0px`, threshold: 0 },
+      );
+      document
+        .querySelectorAll(SURFACE_ROOTS)
+        .forEach((el) => observer?.observe(el));
+    };
+
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(build);
+    };
+
+    // Layers that fade in while pinned change no intersection, so the
+    // winner is re-read once a frame while scrolling and when a transition
+    // ends (a handful of elements: cheap).
+    let tick = 0;
+    const rewrite = () => {
+      cancelAnimationFrame(tick);
+      tick = requestAnimationFrame(write);
+    };
+
+    build();
+    window.addEventListener("resize", schedule, { passive: true });
+    window.addEventListener("scroll", rewrite, { passive: true });
+    document.addEventListener("transitionend", rewrite, { passive: true });
+    const content = document.getElementById("content");
+    // New sections rebuild the observer; a changed data-header-surface
+    // (written by a scene's own frame loop) only re-reads the winner.
+    const mutations = new MutationObserver((records) => {
+      if (records.some((record) => record.type === "childList")) schedule();
+      else rewrite();
+    });
+    if (content) {
+      mutations.observe(content, {
+        childList: true,
+        subtree: true,
+        attributeFilter: [OVERRIDE_ATTR],
+      });
+    }
+
+    return () => {
+      cancelAnimationFrame(frame);
+      cancelAnimationFrame(tick);
+      observer?.disconnect();
+      mutations.disconnect();
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("scroll", rewrite);
+      document.removeEventListener("transitionend", rewrite);
+    };
+  }, [headerRef, pathname]);
+}
+
+/**
+ * SiteHeader — fixed chrome for every public page (creative brief 3.1).
+ *
+ *  • Takes the surface beneath its bottom edge (data-on, see above), with a
+ *    1 px line in that surface's line colour. Transparent while the page is
+ *    at the top and its first section carries data-hero, in that hero's own
+ *    surface values (paper button on a red or green hero, never lime).
+ *    Before hydration CSS reads the hero's surface itself; without
+ *    scripting the header is never transparent (globals.css). JS only
+ *    reports data-scrolled from window.scrollY and data-on from the
+ *    observer.
+ *  • Desktop: the four links (current page underlined, aria-current) and
+ *    the "Start a conversation" button.
+ *  • Phone: a "Menu" pill opening a full-screen green flood: the four links
+ *    in display-lg, the button, the email. Focus is trapped, the rest of the
+ *    page is inert, Escape closes, focus returns to the pill. It closes on
+ *    navigation (and on a tap on the current page's link) and when the
+ *    viewport reaches lg. Enter and exit are CSS keyframes (globals.css).
+ */
+export function SiteHeader({
+  email = CONTACT.email,
+}: {
+  /** The contact email from settings; the static default if omitted. */
+  email?: string;
+}) {
   const pathname = usePathname();
   const reduce = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
@@ -67,6 +219,8 @@ export function SiteHeader() {
   const toggleRef = useRef<HTMLButtonElement>(null);
   const restoreFocus = useRef(false);
   const exitTimer = useRef(0);
+
+  useSurfaceUnderHeader(headerRef, pathname);
 
   const openMenu = useCallback(() => {
     window.clearTimeout(exitTimer.current);
@@ -169,56 +323,56 @@ export function SiteHeader() {
       data-menu-open={open}
       className="site-header h-header fixed inset-x-0 top-0 z-50"
     >
-      <Container
-        size="wide"
-        className="relative z-10 flex h-full items-center justify-between gap-8"
-      >
+      <Container className="relative z-10 flex h-full items-center justify-between gap-8">
         <Link
           href="/"
           className={cn(
-            "flex shrink-0 rounded-xs text-[1.3125rem] leading-none md:text-[1.375rem]",
+            "flex shrink-0 rounded-xs text-[1.375rem] leading-none",
             RING,
           )}
         >
-          {/* Full colour on the canvas; one colour (the header's ink) over a
-              dark hero and while the menu is open, through the inverse tone. */}
+          {/* True colours on paper, paper-deep and night; one colour on the
+              floods, photographs, a dark hero and the open menu (the
+              surface's --brand-mark-* variables, globals.css). */}
           <Logo />
           <span className="sr-only">, home</span>
         </Link>
 
-        <nav aria-label="Primary" className="hidden lg:block">
-          <ul className="flex items-center gap-7">
-            {NAV.map((item) => {
-              const current = isCurrent(pathname, item.href);
-              const isCta = item.href === "/contact";
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    aria-current={ariaCurrent(pathname, item.href)}
-                    className={cn(
-                      "duration-fast ease-standard active:text-ink/60 relative inline-flex items-center rounded-xs font-medium tracking-[0.005em] transition-colors",
-                      RING,
-                      "after:absolute after:-bottom-0.5 after:left-1/2 after:size-1 after:-translate-x-1/2 after:rounded-full after:transition-opacity",
-                      isCta
-                        ? "h-9 border px-4 text-sm"
-                        : "text-ink/75 hover:text-ink py-2 text-[0.9375rem]",
-                      isCta &&
-                        (current
-                          ? "border-ink"
-                          : "border-ink/30 hover:border-ink hover:bg-ink/5"),
-                      current
-                        ? "text-ink after:bg-accent after:duration-base after:opacity-100 after:ease-out"
-                        : "after:bg-ink/25 after:duration-fast after:ease-standard after:opacity-0 hover:after:opacity-100",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+        <div className="hidden items-center gap-9 lg:flex">
+          <nav aria-label="Primary">
+            <ul className="flex items-center gap-8">
+              {NAV.map((item) => {
+                const current = isCurrent(pathname, item.href);
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      aria-current={ariaCurrent(pathname, item.href)}
+                      className={cn(
+                        "text-ink duration-fast ease-standard relative inline-flex items-center rounded-xs py-2 text-[0.9375rem] font-medium transition-opacity",
+                        RING,
+                        // The current page: a 2 px underline in currentColor.
+                        "after:duration-base after:absolute after:inset-x-0 after:bottom-0.5 after:h-0.5 after:origin-left after:bg-current after:transition-transform after:ease-out",
+                        current
+                          ? "after:scale-x-100"
+                          : "after:scale-x-0 hover:opacity-75 hover:after:scale-x-100",
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+          <Button
+            href={NAV_CTA.href}
+            size="sm"
+            aria-current={ariaCurrent(pathname, NAV_CTA.href)}
+          >
+            {NAV_CTA.label}
+          </Button>
+        </div>
 
         <button
           ref={toggleRef}
@@ -227,32 +381,38 @@ export function SiteHeader() {
           aria-controls={open ? "site-menu" : undefined}
           onClick={() => (open ? closeMenu(true) : openMenu())}
           className={cn(
-            "text-ink hover:bg-ink/5 duration-fast ease-standard -mr-2 inline-flex size-11 items-center justify-center rounded-xs transition-colors lg:hidden",
+            "rounded-pill border-line-strong text-ink hover:border-ink active:duration-instant duration-fast ease-standard -mr-1 inline-flex h-10 min-w-22 items-center justify-center gap-2 border px-4 text-sm font-medium transition-colors active:translate-y-px motion-reduce:transform-none lg:hidden",
             RING,
           )}
         >
-          <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
-          <span aria-hidden className="relative inline-flex size-6">
-            <Menu
-              strokeWidth={1.5}
+          <span
+            aria-hidden="true"
+            className="flex w-3.5 flex-col items-stretch gap-0.75"
+          >
+            <span
               className={cn(
-                "duration-fast ease-standard absolute inset-0 transition-opacity",
-                open ? "opacity-0" : "opacity-100",
+                "duration-fast ease-standard h-px bg-current transition-transform",
+                open && "translate-y-0.5 rotate-45",
               )}
             />
-            <X
-              strokeWidth={1.5}
+            <span
               className={cn(
-                "duration-fast ease-standard absolute inset-0 transition-opacity",
-                open ? "opacity-100" : "opacity-0",
+                "duration-fast ease-standard h-px bg-current transition-transform",
+                open && "-translate-y-0.5 -rotate-45",
               )}
             />
           </span>
+          {open ? HEADER_COPY.close : HEADER_COPY.menu}
         </button>
       </Container>
 
       {open || exiting ? (
-        <MobileMenu pathname={pathname} state={open ? "open" : "exiting"} />
+        <MobileMenu
+          pathname={pathname}
+          email={email}
+          state={open ? "open" : "exiting"}
+          onNavigate={() => closeMenu(false)}
+        />
       ) : null}
     </header>
   );
@@ -260,10 +420,14 @@ export function SiteHeader() {
 
 function MobileMenu({
   pathname,
+  email,
   state,
+  onNavigate,
 }: {
   pathname: string;
+  email: string;
   state: "open" | "exiting";
+  onNavigate: () => void;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -279,46 +443,60 @@ function MobileMenu({
       id="site-menu"
       role="dialog"
       aria-modal="true"
-      aria-label="Site menu"
+      aria-label={HEADER_COPY.menu}
       aria-hidden={state === "exiting" ? true : undefined}
       tabIndex={-1}
-      data-tone="inverse"
+      data-surface="green"
       data-state={state}
-      className="site-menu bg-inverse text-ink fixed inset-0 overflow-y-auto outline-none lg:hidden"
+      className="site-menu bg-canvas text-ink fixed inset-0 overflow-y-auto outline-none lg:hidden"
     >
-      <Container
-        size="wide"
-        className="pt-header flex min-h-full flex-col pb-8"
+      {/* The ghosted mark, as on the close band: white at 7%, bleeding off
+          the bottom right of the flood. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        <nav aria-label="Primary" className="pt-4">
-          <ul className="border-line border-t">
+        <svg
+          viewBox={MARK_VIEWBOX}
+          focusable="false"
+          className="absolute right-0 bottom-0 h-[62%] w-auto translate-x-[28%] translate-y-[12%] text-white opacity-[0.07]"
+        >
+          <path d={MARK_MONO_PATH} fill="currentColor" />
+        </svg>
+      </div>
+      <Container className="pt-header relative flex min-h-full flex-col pb-10">
+        <nav aria-label="Primary" className="pt-6">
+          <ul>
             {NAV.map((item, index) => {
               const current = isCurrent(pathname, item.href);
               return (
                 <li
                   key={item.href}
-                  className="site-menu-item border-line border-b"
+                  className="site-menu-item border-line border-b first:border-t"
                   style={itemStyle(index)}
                 >
                   <Link
                     href={item.href}
                     aria-current={ariaCurrent(pathname, item.href)}
+                    onClick={current ? onNavigate : undefined}
                     className={cn(
-                      "font-display text-display-md hover:text-primary active:duration-instant duration-fast ease-standard flex items-baseline gap-5 rounded-xs py-4 tracking-tight transition-[color,opacity] active:opacity-70",
+                      "font-display text-display-lg active:duration-instant duration-fast ease-standard flex items-baseline justify-between gap-5 rounded-xs py-4 font-normal transition-opacity active:opacity-70",
                       RING,
                     )}
                   >
-                    <span className="text-ink-subtle font-mono text-xs tabular-nums">
-                      0{index + 1}
-                    </span>
-                    <span className="relative">
+                    <span
+                      className={cn(
+                        "decoration-2 underline-offset-[0.14em]",
+                        current && "underline",
+                      )}
+                    >
                       {item.label}
-                      {current ? (
-                        <span
-                          aria-hidden
-                          className="bg-accent absolute top-1/2 -right-3.5 size-1 -translate-y-1/2 rounded-full"
-                        />
-                      ) : null}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="label text-ink-muted numerals"
+                    >
+                      {String(index + 1).padStart(2, "0")}
                     </span>
                   </Link>
                 </li>
@@ -327,47 +505,31 @@ function MobileMenu({
           </ul>
         </nav>
 
+        <div className="site-menu-item mt-10" style={itemStyle(NAV.length)}>
+          <Button
+            href={NAV_CTA.href}
+            size="lg"
+            arrow
+            aria-current={ariaCurrent(pathname, NAV_CTA.href)}
+            onClick={pathname === NAV_CTA.href ? onNavigate : undefined}
+          >
+            {NAV_CTA.label}
+          </Button>
+        </div>
+
         <div
           className="site-menu-item mt-auto pt-12"
-          style={itemStyle(NAV.length)}
+          style={itemStyle(NAV.length + 1)}
         >
-          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-6">
-            <div>
-              <p className="tracking-caps text-ink-muted text-xs font-medium uppercase">
-                General enquiries
-              </p>
-              <a
-                href={`mailto:${CONTACT.email}`}
-                className={cn(
-                  "hover:text-primary active:text-primary-hover active:duration-instant duration-fast ease-standard mt-2 inline-block rounded-xs text-lg transition-colors",
-                  RING,
-                )}
-              >
-                {CONTACT.email}
-              </a>
-              <p className="text-ink-muted mt-3 text-sm">
-                {CONTACT.offices.join(" · ")}
-              </p>
-            </div>
-            <ul className="flex gap-2" aria-label="Social">
-              {SOCIALS.map((social) => (
-                <li key={social.id}>
-                  <a
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${SITE.name} on ${social.label} (opens in a new tab)`}
-                    className={cn(
-                      "border-line text-ink-muted hover:border-line-strong hover:bg-surface-muted hover:text-ink active:duration-instant duration-fast ease-standard inline-flex size-11 items-center justify-center rounded-xs border transition-[color,border-color,background-color,transform] active:translate-y-px motion-reduce:transform-none",
-                      RING,
-                    )}
-                  >
-                    <SocialIcon name={social.id} />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <a
+            href={`mailto:${email}`}
+            className={cn(
+              "link-underline active:duration-instant inline-block rounded-xs text-lg break-all",
+              RING,
+            )}
+          >
+            {email}
+          </a>
         </div>
       </Container>
     </div>

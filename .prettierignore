@@ -8,3 +8,11 @@ next-env.d.ts
 .screenshots
 # hand-formatted: one token per line with its usage note
 src/styles/tokens.css
+# byte copies of the research series files (build spec 2.5: points copied,
+# never recomputed); scripts/build-figure-data.mjs writes them
+src/content/data/series/*.json
+# script output: written by scripts/grade-photos.mjs on every run
+public/images/photos/manifest.json
+# the verified research list (trimmed) that scripts/build-commentary.mjs
+# reads; kept in the layout it was written in
+supabase/seeds/source/commentary.json

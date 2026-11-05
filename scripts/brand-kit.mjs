@@ -27,7 +27,14 @@ const KIT = [
 ];
 
 await fs.mkdir(outDir, { recursive: true });
-const browser = await chromium.launch({ channel: "chrome", headless: true });
+// The installed Google Chrome, or the binary at CHROME_PATH when it is set
+// (e.g. a cached Chrome for Testing on a machine without Chrome).
+const browser = await chromium.launch({
+  ...(process.env.CHROME_PATH
+    ? { executablePath: process.env.CHROME_PATH }
+    : { channel: "chrome" }),
+  headless: true,
+});
 const context = await browser.newContext({
   viewport: { width: 1440, height: 900 },
   deviceScaleFactor: 4,

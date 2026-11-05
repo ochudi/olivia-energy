@@ -1,7 +1,4 @@
 import type { Token } from "@/lib/utils/tokens";
-import { cn } from "@/lib/utils/cn";
-import { contrastRatio, formatRatio, wcagLevel } from "@/lib/utils/color";
-import { Tag } from "@/components/ui/tag";
 
 function step(name: string): string {
   return name.split("-").pop() ?? name;
@@ -69,76 +66,6 @@ export function ColorRamp({
           );
         })}
       </dl>
-    </div>
-  );
-}
-
-/** Single large swatch, used for the accent and for spot tokens. */
-export function Swatch({
-  token,
-  label,
-  className,
-}: {
-  token: Token;
-  label?: string;
-  className?: string;
-}) {
-  return (
-    <div className={cn("flex flex-col gap-3", className)}>
-      <div
-        className="border-line h-24 w-full rounded-xs border"
-        style={{ backgroundColor: token.resolved }}
-      />
-      <div>
-        {label ? <p className="text-ink text-sm font-medium">{label}</p> : null}
-        <p className="text-ink font-mono text-xs">{token.name}</p>
-        <p className="text-ink-subtle font-mono text-[0.6875rem] uppercase">
-          {token.resolved}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-/** Contrast proof for a foreground/background token pair. */
-export function ContrastPair({
-  fg,
-  bg,
-  sample = "Aa",
-  caption,
-}: {
-  fg: Token;
-  bg: Token;
-  sample?: string;
-  caption: string;
-}) {
-  const ratio = contrastRatio(fg.resolved, bg.resolved);
-  const level = wcagLevel(ratio);
-  return (
-    <div className="border-line overflow-hidden rounded-xs border">
-      <div
-        className="flex h-24 items-center justify-between px-5"
-        style={{ backgroundColor: bg.resolved, color: fg.resolved }}
-      >
-        <span className="font-display text-display-sm leading-none">
-          {sample}
-        </span>
-        <span className="font-sans text-sm">{caption}</span>
-      </div>
-      <div className="bg-surface flex items-center justify-between gap-3 px-4 py-3">
-        <div className="text-ink-subtle min-w-0 font-mono text-[0.6875rem] leading-relaxed">
-          <p className="truncate">{fg.name}</p>
-          <p className="truncate">on {bg.name}</p>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <span className="text-ink font-mono text-xs tabular-nums">
-            {formatRatio(ratio)}
-          </span>
-          <Tag size="sm" variant={level === "Fail" ? "outline" : "primary"}>
-            {level}
-          </Tag>
-        </div>
-      </div>
     </div>
   );
 }

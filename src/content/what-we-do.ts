@@ -1,161 +1,352 @@
 /**
- * What We Do page copy: the positioning statement, two sentences and five
- * bullets per service line, the "Who we serve" grid and the "What makes us
- * different" list. This is positioning. The facts it relies on are the
- * retail outlets opened in Ogun State in 2020 (Brand Spur), the company
- * record and the founder's published research (OpenAlex). Two claims from
- * the client's brief, a United States registration and NIPEX registration,
- * are left out until the client supplies the entity name and the numbers;
- * the NIPEX line then goes in Admin → Settings.
+ * What we do page copy (creative brief 4.2): the hero with Fig. 1, the
+ * chapter bar, six service chapters (Fig. 2 inside chapter 02), what makes
+ * us different, the four pillars, who we serve and the close. Service
+ * titles, numbers and slugs come from ./site and are joined here by slug;
+ * the pillars, differentiators and audiences live in ./brand.
  *
- * Service names, order and slugs come from ./site so the home index,
- * the footer and this page can never disagree.
+ * Every numeral is a verified figure named by its fact or series id.
  */
+import type {
+  FactId,
+  FactTag,
+  GlyphSpec,
+  PhotoKey,
+  SeriesId,
+  ServiceSlug,
+  SourceRef,
+  Surface,
+} from "@/types/contracts";
+import { POSITIONING } from "./brand";
+import { RETRIEVED, type FigureCopy } from "./home";
 import type { Service } from "./site";
 
-export const INTRO = {
+export const WWD_HERO: {
+  eyebrow: string;
+  title: string;
+  lede: string;
+  figure: FigureCopy & { labels: { start: string; end: string }; pill: string };
+} = {
   eyebrow: "What we do",
-  title: "What clients hire us to do.",
-  positioning:
-    "Olivia Energy is an independent energy consultancy working in the United States and Nigeria. We advise the producers, distributors, investors and public institutions that operate, finance and regulate oil, gas and power in both markets, and we bring to that work our own experience of fuel retail in Nigeria and published research in energy and environmental economics.",
-} as const;
-
-export type ServiceLine = {
-  slug: Service["slug"];
-  /** Two sentences in plain English. */
-  description: string;
-  /** Five bullets: the work the line covers. */
-  bullets: readonly [string, string, string, string, string];
+  title: "Research, strategic advice and practical solutions.",
+  /**
+   * A light reframe of the positioning statement that opens the client's
+   * guideline document (his instruction of 3 October 2026): same meaning,
+   * no new claims. The home hero carries the shorter reframe (POSITIONING).
+   */
+  lede: "Olivia Energy is a strategic energy advisory, research and sustainability consultancy, committed to accelerating the move to a cleaner, more secure and more inclusive energy future. We partner with governments, businesses, investors and development organisations on evidence-based solutions in energy transition, climate policy, ESG, sustainable infrastructure and the transformation of energy markets.",
+  figure: {
+    n: 1,
+    title: "The price of solar modules, 1975 to 2024",
+    subtitle: "US dollars per watt, constant 2025 prices, log scale",
+    interpretation:
+      "Solar modules now cost a fraction of what they did. Africa holds 60% of the world’s best solar resources, yet had less than 1% of the world’s installed solar capacity at the end of 2025.",
+    sources: [
+      {
+        org: "Our World in Data",
+        title: "from IRENA (2025), Nemet (2009), and Farmer and Lafond (2016)",
+        licence: "CC BY 4.0",
+        url: "https://ourworldindata.org/grapher/solar-pv-prices",
+      },
+      {
+        org: "International Energy Agency",
+        title: "Africa Energy Outlook 2022",
+        url: "https://www.iea.org/reports/africa-energy-outlook-2022/key-findings",
+      },
+      {
+        org: "IRENA",
+        title: "Renewable Capacity Statistics 2026",
+        url: "https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2026/Mar/IRENA_DAT_RE_capacity_statistics_2026.pdf",
+      },
+    ],
+    retrieved: RETRIEVED,
+    series: "solar_pv_module_price",
+    /** The start and end values are labelled through `labels`. */
+    endLabels: {},
+    labels: { start: "$132.38 in 1975", end: "$0.27 in 2024" },
+    /** Lime pill, ink text. */
+    pill: "99.8% cheaper",
+  },
 };
 
-export const SERVICE_LINES: readonly ServiceLine[] = [
-  {
-    slug: "strategy",
-    description:
-      "We help energy businesses decide where to compete and how. The work runs from a first assessment of a market to a full entry or expansion plan.",
-    bullets: [
-      "Market assessment and sizing",
-      "Entry and expansion strategy",
-      "Business model and pricing design",
-      "Partner and route-to-market selection",
-      "Board and investment committee papers",
-    ],
-  },
-  {
-    slug: "regulatory",
-    description:
-      "Energy is a licensed business in both of our markets, and the rules move. We help clients obtain and keep the permissions they need, and we give regulators and policymakers an operator’s reading of what they propose.",
-    bullets: [
-      "Licensing and permit applications",
-      "Compliance reviews and audits",
-      "Regulatory impact analysis",
-      "Engagement with regulators and ministries",
-      "Policy design and position papers",
-    ],
-  },
-  {
-    slug: "transactions",
-    description:
-      "Buying, selling or financing an energy asset turns on questions that operators answer best. We support investors, lenders and owners through diligence, structuring and negotiation, with an honest view of what the asset can earn.",
-    bullets: [
-      "Commercial and technical due diligence",
-      "Valuation and financial modelling",
-      "Deal structuring and term sheets",
-      "Negotiation and closing support",
-      "Post-acquisition integration planning",
-    ],
-  },
-  {
-    slug: "downstream",
-    description:
-      "Fuel retail is where Olivia Energy began, with two retail outlets opened in Ogun State in 2020. We bring that operating experience to clients building, buying or improving downstream businesses, from forecourt economics to supply and offtake agreements.",
-    bullets: [
-      "Retail network strategy and site economics",
-      "Storage, terminal and depot planning",
-      "Supply, logistics and inventory management",
-      "Gas distribution and offtake agreements",
-      "Operational turnaround and margin recovery",
-    ],
-  },
-  {
-    slug: "transition",
-    description:
-      "The transition looks different from Nigeria than from the United States, and we advise in both. We help clients set decarbonisation pathways that hold up commercially, with particular attention to the role of gas, power and cleaner fuels in growing markets.",
-    bullets: [
-      "Decarbonisation pathways and target setting",
-      "Gas-to-power and cleaner fuel strategies",
-      "Renewable and distributed energy assessment",
-      "Sustainability reporting and disclosure",
-      "Transition finance and investment cases",
-    ],
-  },
-  {
-    slug: "research",
-    description:
-      "Our research is led by a PhD economist whose work on energy use and environmental quality in Africa is published in academic journals. We take on commissioned studies, market reports and policy briefings, and publish our own analysis of the questions that matter in the markets we serve.",
-    bullets: [
-      "Commissioned studies and market reports",
-      "Economic and econometric analysis",
-      "Data collection and survey design",
-      "Policy briefings and white papers",
-      "Conference papers and peer-reviewed publication",
-    ],
-  },
-];
+/**
+ * Accessible name of the sticky chapter navigation (`<nav aria-label>`). The
+ * brief gives no wording; approved in the Q2 copy audit (3 Oct 2026).
+ */
+export const CHAPTER_BAR_LABEL: string = "Services on this page";
 
-export type ClientSegment = { title: string; body: string };
+/** "01 / 06": the label above each chapter title. */
+export function chapterLabel(service: Pick<Service, "number">): string {
+  return `${service.number} / ${String(SERVICE_LINES.length).padStart(2, "0")}`;
+}
 
-export const WHO_WE_SERVE_HEADING = {
-  eyebrow: "Who we serve",
-  title: "Six kinds of client, in both markets.",
-  lede: "The kinds of organisation we work with. We do not publish client names.",
+export type NumeralCard = {
+  fact?: FactId;
+  series?: SeriesId;
+  numeral: number;
+  decimals?: number;
+  suffix?: string;
+  unit?: string;
+  tag: FactTag;
+  caption: string;
+  glyph?: GlyphSpec;
+  source: SourceRef;
+  retrieved: string;
+};
+
+export type ServiceLine = {
+  slug: ServiceSlug;
+  /** Chapter lede, set in Newsreader roman. */
+  lede: string;
+  body: string;
+  /** The five services of the line, from the guideline. */
+  bullets: readonly [string, string, string, string, string];
+  surface: Surface;
+  /** Side of the photograph at 1440. */
+  photoSide: "left" | "right";
+  card?: NumeralCard;
+  figure?: "installed-not-delivered";
+};
+
+const CHAPTERS = [
+  {
+    slug: "energy-transition-advisory",
+    lede: "Innovation accelerates progress.",
+    body: "We help organisations set net-zero strategies and turn them into decarbonisation roadmaps and transition plans that integrate renewables and build climate resilience.",
+    bullets: [
+      "Net-zero strategies",
+      "Decarbonisation roadmaps",
+      "Renewable integration",
+      "Transition planning",
+      "Climate resilience",
+    ],
+    surface: "paper",
+    photoSide: "left",
+    card: {
+      fact: "nigeria-power-2060-277gw",
+      numeral: 277,
+      unit: "GW",
+      tag: "Target",
+      caption:
+        "of installed power capacity by 2060 is the target in Nigeria’s updated Energy Transition Plan, with electricity generation rising 6.5 times from 2020.",
+      source: {
+        org: "Nigeria Energy Transition Plan",
+        title: "2024 update, hosted by Sustainable Energy for All",
+        url: "https://www.seforall.org/system/files/2025-05/Nigeria-ETIP-u.pdf",
+      },
+      retrieved: RETRIEVED,
+    },
+  },
+  {
+    slug: "energy-economics-policy",
+    lede: "Policy shapes markets.",
+    body: "We analyse energy markets, advise on regulation and tariffs, and measure the economic impact of policy, so that decisions rest on evidence.",
+    bullets: [
+      "Energy market analysis",
+      "Regulatory advisory",
+      "Economic impact studies",
+      "Tariff analysis",
+      "Policy development",
+    ],
+    surface: "night",
+    photoSide: "left",
+    figure: "installed-not-delivered",
+  },
+  {
+    slug: "esg-sustainability",
+    lede: "Growth, environmental protection and social impact, in balance.",
+    body: "We help organisations set an ESG strategy, report against it with confidence and manage their carbon.",
+    bullets: [
+      "ESG strategy",
+      "ESG reporting",
+      "Materiality assessments",
+      "Sustainability reporting",
+      "Carbon management",
+    ],
+    surface: "paper",
+    photoSide: "right",
+    card: {
+      fact: "nigeria-flaring-rank-2025",
+      numeral: 83,
+      suffix: "%",
+      tag: "Gap",
+      caption:
+        "of global gas flaring in 2025 came from nine countries, Nigeria among them, which together produced 46% of the world’s oil.",
+      glyph: {
+        kind: "compare",
+        a: { value: 83, label: "Gas flaring" },
+        b: { value: 46, label: "Oil production" },
+        mode: "gap",
+      },
+      source: {
+        org: "World Bank",
+        title: "Global Gas Flaring Tracker Report, June 2026",
+        url: "https://documents1.worldbank.org/curated/en/099071626222036730/pdf/P507104-60bded2c-d259-4881-a42f-d24e983b3eca.pdf",
+      },
+      retrieved: RETRIEVED,
+    },
+  },
+  {
+    slug: "research-analytics",
+    lede: "Knowledge drives transformation.",
+    body: "We turn data into decisions: market intelligence, industry reports, feasibility studies and scenario models built for the question at hand.",
+    bullets: [
+      "Market intelligence",
+      "Industry reports",
+      "Feasibility studies",
+      "Data analytics",
+      "Scenario modelling",
+    ],
+    surface: "paper-deep",
+    photoSide: "left",
+    card: {
+      series: "electricity_per_person",
+      numeral: 175,
+      unit: "kWh",
+      tag: "Gap",
+      caption:
+        "of electricity was generated per person in Nigeria in 2025, against a world average of 3,860 kWh.",
+      glyph: {
+        kind: "compare",
+        a: { value: 175, label: "Nigeria" },
+        b: { value: 3860, label: "World" },
+        mode: "gap",
+      },
+      source: {
+        org: "Our World in Data",
+        title: "from Ember (2026)",
+        licence: "CC BY 4.0",
+        url: "https://ourworldindata.org/grapher/per-capita-electricity-generation",
+      },
+      retrieved: RETRIEVED,
+    },
+  },
+  {
+    slug: "capacity-development",
+    lede: "Training that bridges industry, academia and public policy.",
+    body: "We design executive training, workshops and seminars that build the skills the energy transition needs, for leaders in government and industry.",
+    bullets: [
+      "Executive training",
+      "Energy transition workshops",
+      "ESG education",
+      "Leadership development",
+      "Public policy seminars",
+    ],
+    surface: "paper",
+    photoSide: "right",
+    card: {
+      fact: "ssa-population-growth-2054",
+      numeral: 2.2,
+      decimals: 1,
+      unit: "billion",
+      tag: "Context",
+      caption:
+        "people will live in sub-Saharan Africa by 2054, after 79% growth in thirty years, on United Nations projections.",
+      source: {
+        org: "United Nations",
+        title: "World Population Prospects 2024",
+        url: "https://population.un.org/wpp/assets/Files/WPP2024_Summary-of-Results.pdf",
+      },
+      retrieved: RETRIEVED,
+    },
+  },
+  {
+    slug: "project-advisory",
+    lede: "Disciplined execution, from first plan to final evaluation.",
+    body: "We bring project and programme management discipline to energy projects, with stakeholder engagement, risk management, and monitoring and evaluation.",
+    bullets: [
+      "Project management",
+      "Programme management",
+      "Stakeholder engagement",
+      "Risk management",
+      "Monitoring and evaluation",
+    ],
+    surface: "paper-deep",
+    photoSide: "left",
+    card: {
+      fact: "africa-energy-investment-fall-debt",
+      numeral: 85,
+      suffix: "%+",
+      tag: "Gap",
+      caption:
+        "Debt service costs equalled more than 85% of Africa’s total energy investment in 2025, and that investment was a third lower than in 2015 (IEA estimates).",
+      /**
+       * The 85% share is the hatched part. The brief names one label; the
+       * second is left empty for the bar's remainder.
+       */
+      glyph: {
+        kind: "share",
+        value: 85,
+        total: 100,
+        labels: ["Debt service as a share of energy investment", ""],
+      },
+      source: {
+        org: "International Energy Agency",
+        title: "World Energy Investment 2025",
+        url: "https://www.iea.org/reports/world-energy-investment-2025/executive-summary",
+      },
+      retrieved: RETRIEVED,
+    },
+  },
+] as const satisfies readonly ServiceLine[];
+
+/** The six chapters, in the order of SERVICES in ./site. */
+export const SERVICE_LINES: readonly ServiceLine[] = CHAPTERS;
+
+/** Fig. 2 in chapter 02 (facts nigeria-grid-installed-vs-available-q1-2026, nigeria-grid-delivered-q1-2026). */
+export const INSTALLED_FIGURE: {
+  n: number;
+  title: string;
+  legend: { unit: string; hatched: string; outline: string };
+  note: string;
+  steps: readonly { label: string; heading: string; body: string }[];
+  photo: PhotoKey;
+  photoCaption: string;
+  sources: SourceRef[];
+  retrieved: string;
+  /** 17 x 8 squares of 100 MW; state 2 lights `available`, state 3 keeps `generated` lit and hatches the rest. */
+  squares: { total: number; available: number; generated: number };
+} = {
+  n: 2,
+  title: "Installed is not delivered: Nigeria’s grid, first quarter of 2026",
+  legend: {
+    unit: "Each square is 100 MW",
+    hatched: "Available, not generated",
+    outline: "Unavailable",
+  },
+  note: "Squares are rounded to the nearest 100 MW.",
+  steps: [
+    {
+      label: "01 Installed",
+      heading: "Installed: 13,625 MW",
+      body: "Nigeria’s 28 grid-connected power plants have 13,625 MW of installed capacity. Each square is 100 MW.",
+    },
+    {
+      label: "02 Available",
+      heading: "Available: 4,458 MW",
+      body: "On average in the quarter, less than a third of it could run: a plant availability factor of 32.7%.",
+    },
+    {
+      label: "03 Delivered",
+      heading: "Delivered: 4,113 MWh an hour",
+      body: "That is what the grid actually generated, on average, each hour of the quarter: 8,883 GWh in total. The red squares were available but not generated.",
+    },
+  ],
+  photo: "lagos-lekki-night",
+  photoCaption:
+    "Lekki-Ikoyi Link Bridge, Lagos. Photo: Opeyemi Adisa, Unsplash",
+  sources: [
+    {
+      org: "Nigerian Electricity Regulatory Commission",
+      title: "Quarterly Report, first quarter 2026",
+      url: "https://nerc.gov.ng/wp-content/uploads/2026/07/2026_Q1-Report.pdf",
+    },
+  ],
+  retrieved: RETRIEVED,
+  squares: { total: 136, available: 45, generated: 41 },
+};
+
+/** Read by llms.txt: `INTRO.positioning` is its summary line. */
+export const INTRO = {
+  positioning: POSITIONING,
 } as const;
-
-export const WHO_WE_SERVE: readonly ClientSegment[] = [
-  {
-    title: "Producers and operators",
-    body: "Upstream and midstream companies weighing strategy, regulation and the commercial case for new investment.",
-  },
-  {
-    title: "Downstream and retail",
-    body: "Fuel marketers, storage owners and gas distributors improving networks, margins and supply arrangements.",
-  },
-  {
-    title: "Investors and lenders",
-    body: "Funds, banks and development finance institutions that need an operator’s view before they commit capital.",
-  },
-  {
-    title: "Power developers",
-    body: "Independent power producers and gas-to-power sponsors from feasibility through to financial close.",
-  },
-  {
-    title: "Regulators and policymakers",
-    body: "Ministries, agencies and regulators testing how a rule, a tariff or a reform will land in the market.",
-  },
-  {
-    title: "Research institutions",
-    body: "Universities, multilateral agencies and think tanks commissioning evidence on energy in growing economies.",
-  },
-];
-
-export type Differentiator = { title: string; body: string };
-
-export const DIFFERENTIATORS_HEADING = {
-  eyebrow: "In short",
-  title: "Three things you can hold us to.",
-} as const;
-
-export const DIFFERENTIATORS: readonly Differentiator[] = [
-  {
-    title: "We have run an energy business.",
-    body: "The practice grew out of fuel retail: Olivia Energy opened two fuel retail outlets in Ogun State in 2020. We know what a plan costs to carry out because we have carried one out.",
-  },
-  {
-    title: "Research you can check.",
-    body: "Every recommendation cites the evidence behind it, and the founder’s research is published in academic journals, where others can test it.",
-  },
-  {
-    title: "Working in both markets.",
-    body: "Olivia Energy is incorporated in Nigeria and its founder is based in Fort Worth, Texas. What we learn in one market informs the work in the other.",
-  },
-];

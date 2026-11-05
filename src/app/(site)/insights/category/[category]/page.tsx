@@ -1,8 +1,10 @@
 import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
-import { InsightsArchive } from "@/components/insights";
+import { CloseBand } from "@/components/blocks";
+import { Articles, RelatedOpEds } from "@/components/sections/insights";
 import { JsonLd } from "@/components/seo/json-ld";
-import { CATEGORY_TOPICS, INSIGHTS } from "@/content/insights";
+import { CATEGORY_TOPICS, INSIGHTS, INSIGHTS_PAGE } from "@/content/insights";
+import { capitalise } from "@/lib/content/format";
 import { SITE } from "@/content/site";
 import { breadcrumbList } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -33,7 +35,7 @@ export async function generateMetadata(
   const topics = CATEGORY_TOPICS[category];
   const metadata = await pageMetadata({
     title: `${label} | Insights | ${SITE.name}`,
-    description: `${topics.charAt(0).toUpperCase()}${topics.slice(1)}. Analysis from Olivia Insights.`,
+    description: `${capitalise(topics)}. Analysis from ${INSIGHTS.name}.`,
     path: `/insights/category/${category}`,
   })(undefined, parent);
   // A category with nothing in it yet stays out of search results.
@@ -44,10 +46,12 @@ export async function generateMetadata(
 }
 
 /**
- * One Insights category: the same cached, tagged post list /insights reads,
- * scoped to this category (heading, featured post and grid). The category
- * is a fixed enum, so a segment outside it 404s rather than rendering an
- * empty page.
+ * One Insights category (creative brief 4.4 section 3): the Articles
+ * section as the page's hero, headed by the category label, over the same
+ * cached, tagged post list /insights reads; then the founder's op-eds on
+ * the category's topics (RelatedOpEds) and the red close. The
+ * category is a fixed enum, so a segment outside it 404s rather than
+ * rendering an empty page.
  */
 export default async function Page({ params }: { params: Params }) {
   const { category } = await params;
@@ -56,10 +60,12 @@ export default async function Page({ params }: { params: Params }) {
   const posts = await getPublishedPosts();
   return (
     <>
-      <InsightsArchive posts={posts} active={category} />
+      <Articles posts={posts} active={category} />
+      <RelatedOpEds category={category} />
+      <CloseBand variant="insights" />
       <JsonLd
         data={breadcrumbList([
-          { name: INSIGHTS.eyebrow, path: "/insights" },
+          { name: INSIGHTS_PAGE.article.breadcrumb, path: "/insights" },
           {
             name: postCategoryLabel(category),
             path: `/insights/category/${category}`,

@@ -1,11 +1,11 @@
+export { ArticleBody } from "./article-body";
 export { ArticleFooter } from "./article-footer";
 export { ArticleHeader } from "./article-header";
 export { ArticleJsonLd } from "./article-json-ld";
+export { AuthorCard } from "./author-card";
 export { CategoryFilter } from "./category-filter";
-export { CoverImage } from "./cover-image";
-export { FeaturedPost } from "./featured-post";
-export { InsightsArchive } from "./insights-archive";
+export { CoverImage, coverCaption, coverEntry } from "./cover-image";
 export { MoreFromInsights } from "./more-from-insights";
-export { PostCard } from "./post-card";
+export { POST_CARD_SIZES, PostCard } from "./post-card";
 export { ShareLinks } from "./share-links";
 export { TiptapContent } from "./tiptap-content";

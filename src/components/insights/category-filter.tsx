@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { INSIGHTS } from "@/content/insights";
+import { INSIGHTS_PAGE } from "@/content/insights";
 import {
   POST_CATEGORIES,
   postCategoryLabel,
@@ -12,60 +12,81 @@ export type CategoryFilterProps = {
   active: PostCategory | null;
   counts: Partial<Record<PostCategory, number>>;
   total: number;
+  className?: string;
 };
 
 /**
- * Category filter as plain links: each chip is a static route
- * (/insights or /insights/category/[category]), so a filter change is a
+ * The topic filter (creative brief 4.4 section 3) as a row of chips: "All
+ * topics" and each category that has articles. Each chip is a static
+ * route (/insights or /insights/category/[category]), so a change is a
  * server-rendered navigation with nothing fetched on the client. A small
- * client child (ChipPendingMarker) reports whichever chip is currently
- * navigating so the list can dim itself while the next page loads.
+ * client child (ChipPendingMarker) flags the chip that is navigating so the
+ * row can dim itself while the next page loads. On phones the row scrolls
+ * sideways inside the gutter rather than wrapping into a block.
  */
-export function CategoryFilter({ active, counts, total }: CategoryFilterProps) {
+export function CategoryFilter({
+  active,
+  counts,
+  total,
+  className,
+}: CategoryFilterProps) {
+  const copy = INSIGHTS_PAGE.articles;
+  const first = {
+    href: "/insights#articles",
+    label: copy.allTopics,
+    on: active === null,
+    count: total,
+  };
+  // Every category with articles, and the one being viewed even when it
+  // has none; the one being viewed comes straight after "All topics", so it
+  // is in view on a phone without scrolling the row.
+  const categories = POST_CATEGORIES.map((category) => ({
+    href: `/insights/category/${category}`,
+    label: postCategoryLabel(category),
+    on: active === category,
+    count: counts[category] ?? 0,
+  })).filter((item) => item.on || item.count > 0);
   const items = [
-    {
-      href: "/insights",
-      label: INSIGHTS.allLabel,
-      on: active === null,
-      count: total,
-    },
-    ...POST_CATEGORIES.map((category) => ({
-      href: `/insights/category/${category}`,
-      label: postCategoryLabel(category),
-      on: active === category,
-      count: counts[category] ?? 0,
-    })),
-    // "All" always shows, and so does the category being viewed; every
-    // other chip hides once its count is zero.
-  ].filter((item) => item.href === "/insights" || item.on || item.count > 0);
+    first,
+    ...categories.filter((item) => item.on),
+    ...categories.filter((item) => !item.on),
+  ];
 
   return (
-    <nav aria-label={INSIGHTS.filterLabel}>
-      <ul
-        key={active ?? "all"}
-        className="animate-page-enter -mx-gutter px-gutter duration-fast flex [scrollbar-width:none] flex-nowrap gap-2 overflow-x-auto transition-opacity has-data-[pending=true]:opacity-60 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden"
-      >
+    <nav
+      aria-label={copy.filterLabel}
+      className={cn(
+        // Phones: the rail scrolls sideways, so its right edge fades out
+        // as a cue that more chips follow (client review P2-17).
+        "after:-right-gutter after:from-canvas relative after:pointer-events-none after:absolute after:inset-y-0 after:w-6 after:bg-linear-to-l after:to-transparent md:after:hidden",
+        className,
+      )}
+    >
+      <ul className="-mx-gutter px-gutter duration-fast flex [scrollbar-width:none] flex-nowrap gap-2 overflow-x-auto transition-opacity has-data-[pending=true]:opacity-60 md:mx-0 md:flex-wrap md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
         {items.map((item) => (
           <li key={item.href} className="shrink-0">
             <Link
               href={item.href}
-              scroll={false}
-              aria-current={item.on ? "true" : undefined}
+              aria-current={item.on ? "page" : undefined}
               className={cn(
-                "duration-fast ease-standard active:duration-instant focus-visible:ring-focus focus-visible:ring-offset-canvas inline-flex h-8 items-center gap-2 rounded-xs border px-3 font-sans text-xs font-medium tracking-[0.1em] whitespace-nowrap uppercase transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+                "label rounded-pill duration-fast ease-standard focus-visible:ring-focus focus-visible:ring-offset-canvas inline-flex h-10 items-center gap-2 border px-4 whitespace-nowrap transition-[border-color,background-color,color] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                 item.on
-                  ? "border-ink bg-ink text-canvas"
-                  : "border-line-strong text-ink-muted hover:border-ink hover:text-ink active:bg-ink/[0.06]",
+                  ? "bg-ink text-canvas border-transparent"
+                  : "border-line-strong text-ink hover:border-ink hover:bg-ink/[0.06]",
               )}
             >
               {item.label}
               <span
+                aria-hidden="true"
                 className={cn(
-                  "font-mono tracking-normal tabular-nums",
-                  item.on ? "text-canvas/70" : "text-ink-subtle",
+                  "numerals font-normal tracking-normal",
+                  item.on ? "text-canvas/70" : "text-ink-muted",
                 )}
               >
                 {item.count}
+              </span>
+              <span className="sr-only">
+                {`, ${item.count} ${item.count === 1 ? "article" : "articles"}`}
               </span>
               <ChipPendingMarker />
             </Link>

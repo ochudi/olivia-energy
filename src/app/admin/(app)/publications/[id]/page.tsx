@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/admin";
 import { PublicationForm } from "@/components/admin/publication-form";
+import { OPED_TOPICS } from "@/content/commentary";
 import { requireAdmin } from "@/lib/admin/auth";
 import { createServerSupabase } from "@/lib/supabase/server";
 
@@ -24,7 +25,7 @@ export default async function Page({
   return (
     <>
       <PageHeader title="Edit publication" />
-      <PublicationForm publication={data} />
+      <PublicationForm publication={data} topics={OPED_TOPICS} />
     </>
   );
 }

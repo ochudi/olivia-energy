@@ -1,6 +1,7 @@
 import type { JSONContent } from "@tiptap/react";
 import { getImageProps } from "next/image";
 import type { ReactNode } from "react";
+import { FlameBullet } from "@/components/ui/flame-bullet";
 import { getMediaUrl } from "@/lib/supabase/queries";
 import embedHosts from "@/lib/insights/embed-hosts.json";
 import { typeset } from "@/lib/insights/text";
@@ -10,7 +11,7 @@ import { typeset } from "@/lib/insights/text";
  *
  * Supported: paragraph, heading (2–4), text with bold / italic / underline /
  * strike / code / link marks, bullet and ordered lists, blockquote (set as a
- * pull quote by prose.css), code block, horizontal rule, hard break, image
+ * pull quote, with the flame as its mark), code block, horizontal rule, hard break, image
  * (figure with caption), YouTube and generic iframe embeds from an
  * allow-list of hosts, and simple tables. Unknown nodes render their
  * children so a new extension never blanks a page.
@@ -94,7 +95,13 @@ function renderNode(
     case "listItem":
       return <li key={key}>{children}</li>;
     case "blockquote":
-      return <blockquote key={key}>{children}</blockquote>;
+      // The red flame is the quotation mark (creative brief 4.5).
+      return (
+        <blockquote key={key}>
+          <FlameBullet />
+          {children}
+        </blockquote>
+      );
     case "codeBlock":
       return (
         <pre key={key}>

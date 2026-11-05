@@ -1,4 +1,4 @@
-export { WhatWeDoIntro } from "./intro";
-export { ServiceLines } from "./service-lines";
-export { WhoWeServe } from "./who-we-serve";
+export { WhatWeDoHero } from "./hero";
+export { Chapters } from "./chapters";
 export { Differentiators } from "./differentiators";
+export { Pillars } from "./pillars";

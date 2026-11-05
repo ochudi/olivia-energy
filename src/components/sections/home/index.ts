@@ -1,6 +1,8 @@
-export { ClosingCta } from "./closing-cta";
-export { Heritage } from "./heritage";
-export { Hero } from "./hero";
-export { LatestInsights } from "./latest-insights";
-export { ServicesGrid } from "./services-grid";
-export { StatsBand } from "./stats-band";
+/**
+ * Home body sections (P2). The opening (hero and Why Olivia) lives in
+ * ./opening and is imported from there.
+ */
+export { HomeCommentary } from "./commentary";
+export { HomeEvidence } from "./evidence";
+export { HomeFounder } from "./founder-band";
+export { HomeServices } from "./services";

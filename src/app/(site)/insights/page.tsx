@@ -1,4 +1,10 @@
-import { InsightsArchive } from "@/components/insights";
+import { CloseBand } from "@/components/blocks";
+import {
+  Articles,
+  BusinessDay,
+  InsightsHero,
+  WhatWePublish,
+} from "@/components/sections/insights";
 import { SEO } from "@/content/seo";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getPublishedPosts } from "@/lib/supabase/queries";
@@ -9,12 +15,25 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * Insights index: the latest article set large, the rest below. Fully
- * static — the category filter is a set of static routes of its own
- * (/insights/category/[category]), so this page reads no searchParams and
- * needs no per-request render.
+ * Insights (creative brief 4.4): the lime hero with Fig. 1, the op-eds in
+ * BusinessDay (#businessday) with the reports that quote him, the articles,
+ * the eight formats and the red close. Q3 moved the BusinessDay section up
+ * from fourth to second (client review P0-2): the founder's published work
+ * comes before the formats that are still "First issue coming". The brief's
+ * order was hero, formats, articles, BusinessDay; to restore it, swap the
+ * two lines below. Fully static: the topic
+ * filter is a set of static routes of its own (/insights/category/[slug]),
+ * so this page reads no searchParams.
  */
 export default async function Page() {
   const posts = await getPublishedPosts();
-  return <InsightsArchive posts={posts} active={null} />;
+  return (
+    <>
+      <InsightsHero />
+      <BusinessDay />
+      <Articles posts={posts} active={null} />
+      <WhatWePublish />
+      <CloseBand variant="insights" />
+    </>
+  );
 }

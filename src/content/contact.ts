@@ -1,31 +1,34 @@
 /**
- * Contact page copy. Addresses, phones, the email and social links come
- * from settings (src/lib/supabase/types.ts); this file holds the page
- * furniture and the form's states.
+ * Contact page copy (creative brief 4.7). Addresses, phones, the email and
+ * social links come from settings (src/lib/supabase/types.ts); this file
+ * holds the page furniture and the form's states. The form's labels, help
+ * text, validation messages and success message are unchanged.
  */
 export const CONTACT_PAGE = {
-  eyebrow: "Contact",
-  title: "Write to us.",
-  /** Makes no promise about response time or fees. */
-  invitation:
-    "Whether you are weighing an investment, a licence, a market entry or a policy position, start with a short note on the question. We read every message and reply by email.",
-  description:
-    "Write to Olivia Energy about an investment, a licence, a market entry or a policy question. We work from Fort Worth, Texas, and Otta, Ogun State.",
-  headings: {
-    offices: "Offices",
-    email: "Email",
-    phone: "Phone",
-    social: "Follow",
+  /** Red hero with the dotted Africa map. */
+  hero: {
+    eyebrow: "Contact",
+    title: "Start a conversation.",
+    lede: "Governments need evidence. Investors require clarity. Tell us what you are working on, and we will be in touch.",
+    /** Beside the ring that marks the region (a region, not a town). */
+    mapLabel: "Southwest Nigeria",
+    /** Under the map, as separate text. The map itself is decorative (`alt=""`). */
+    mapSecondary: "And in Fort Worth, Texas, United States",
   },
-  /**
-   * Each office in Admin → Settings → addresses is listed with its lines
-   * (city level: Fort Worth, Texas; Otta, Ogun State). If no office has
-   * any lines, the page lists the countries instead, joined with this.
-   */
-  countrySeparator: " · ",
+  /** Details column beside the form. */
+  details: {
+    email: "Email",
+    where: "Where we are",
+    /** Shown when settings carry no city-level addresses. */
+    whereLines: ["Fort Worth, Texas, United States", "Southwest Nigeria"],
+    company: "Company",
+    companyLines: ["Olivia Energy and Power Company Limited", "RC 1662525"],
+  },
   form: {
-    /** Visually hidden; names the form for assistive technology. */
-    heading: "Send a message",
+    /** The form card's heading (h2). */
+    title: "Send a message",
+    intro:
+      "Tell us about your organisation and the question you are working on.",
     name: "Name",
     email: "Email",
     organization: "Organisation",

@@ -26,8 +26,8 @@ export const MARK_VIEWBOX = `0 0 ${MARK_WIDTH} ${MARK_HEIGHT}`;
  * Colours sampled from the legacy artwork (median of solid interior pixels)
  * in both the 157px original and the 1024px upscale; each value is the mean
  * of the two samples. Green matches the green-500 token exactly. The red is
- * the mark's own and is warmer than the UI accent (--color-accent, #c5372b),
- * which was toned for interface use; do not substitute one for the other.
+ * the mark's own; the UI accent (--color-accent) is now this red itself
+ * (var(--color-brand-red)), so the mark and the interface share one red.
  */
 export const MARK_COLORS = {
   green: "#04923F",

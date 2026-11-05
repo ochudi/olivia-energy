@@ -5,7 +5,9 @@ const linkClass =
   "hit-area text-ink hover:text-primary active:text-primary-hover duration-fast ease-standard underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-current";
 
 /**
- * Share row as text links: LinkedIn · X · Email · Copy link. Copy link is
+ * Share row as text links: LinkedIn · X · Email · Copy link, named as
+ * brief 3.6 has it ("Share on LinkedIn, opens in a new tab", "Share by
+ * email"). Copy link is
  * the CopyLinkButton in its text form, which swaps its label to "Copied"
  * for two seconds and announces it.
  */
@@ -22,14 +24,17 @@ export function ShareLinks({
   const links = [
     {
       label: "LinkedIn",
+      verb: "Share on",
       href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}`,
     },
     {
       label: "X",
+      verb: "Share on",
       href: `https://x.com/intent/post?text=${enc(title)}&url=${enc(url)}`,
     },
     {
       label: "Email",
+      verb: "Share by",
       href: `mailto:?subject=${enc(title)}&body=${enc(url)}`,
     },
   ];
@@ -61,10 +66,18 @@ export function ShareLinks({
                   link.label.length <= 2 && "inline-block min-w-6 text-center",
                 )}
               >
-                {link.label}
-                <span className="sr-only">
-                  {external ? " (share, opens in a new tab)" : " (share)"}
-                </span>
+                <span className="sr-only">{`${link.verb} `}</span>
+                {link.verb === "Share by" ? (
+                  <>
+                    <span aria-hidden="true">{link.label}</span>
+                    <span className="sr-only">email</span>
+                  </>
+                ) : (
+                  link.label
+                )}
+                {external ? (
+                  <span className="sr-only">, opens in a new tab</span>
+                ) : null}
               </a>
               <span aria-hidden className="text-ink-subtle">
                 ·

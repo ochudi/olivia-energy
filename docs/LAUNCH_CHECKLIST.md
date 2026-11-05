@@ -100,7 +100,11 @@ project folder holding the production values.
    `revoke` statements; they apply to the new schema only. The result is one
    row: 9 settings, 9 publications, 4 articles, 1 media bucket. Running it a
    second time changes nothing and says so. If a run stops with an error, run
-   `rollback;` on its own before trying again.
+   `rollback;` on its own before trying again. On a project that ran an
+   earlier `hosted-setup.sql`, paste and run the files in
+   `supabase/hosted-updates/` instead, oldest first
+   (`2026-10-03-commentary-and-formats.sql`, then
+   `2026-11-05-location-and-nipex.sql`); each is safe to run twice.
 2. **Project Settings → Data API → Exposed schemas.** Add `olivia_energy` at
    the end of the list, leave `public` first, save. Change nothing else, and
    nothing under Authentication.
@@ -181,7 +185,7 @@ project folder holding the production values.
   an update to the privacy notice and the CSP).
 - Uptime monitoring on `/` and `/admin/login`.
 - Quarterly: `npm outdated`, `npm audit`, a Lighthouse run, and a check that
-  the OpenAlex figures on `/publications` still match Google Scholar.
+  the publication list on `/research` is complete.
 - If the site ever collects more than 200 people's details in six months,
   ask counsel whether registration with the Nigeria Data Protection
   Commission applies.

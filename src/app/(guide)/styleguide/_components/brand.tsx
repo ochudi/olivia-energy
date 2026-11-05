@@ -57,17 +57,17 @@ const SWATCHES: {
   {
     name: "Ring",
     hex: MARK_COLORS.green,
-    note: "Equal to green-500, the one mark colour that is also a token.",
+    note: "Equal to --color-brand-green. The flood green is a different, darker colour and never the mark.",
   },
   {
     name: "Middle tongue",
     hex: MARK_COLORS.red,
-    note: "The mark's own red. Interface red is the accent, #C5372B.",
+    note: "Equal to --color-brand-red, which is also the accent: the gap hatch and the gap pill.",
   },
   {
     name: "Outer tongue",
     hex: MARK_COLORS.lime,
-    note: "Lime lives in the mark and nowhere else on the site.",
+    note: "Equal to --color-brand-lime: the lime flood, the lead data colour on night, the turn on night.",
   },
 ];
 

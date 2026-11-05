@@ -1,6 +1,6 @@
 import type { Article as ArticleSchema, WithContext } from "schema-dts";
 import { JsonLd } from "@/components/seo/json-ld";
-import { INSIGHTS } from "@/content/insights";
+import { INSIGHTS_PAGE } from "@/content/insights";
 import { authorNode, breadcrumbList, schemaIds } from "@/lib/seo/json-ld";
 import { absoluteUrl } from "@/lib/seo/urls";
 import { getMediaUrl, type Article } from "@/lib/supabase/queries";
@@ -38,7 +38,7 @@ export function ArticleJsonLd({ post, url }: { post: Article; url: string }) {
     inLanguage: "en-GB",
   };
   const trail = breadcrumbList([
-    { name: INSIGHTS.eyebrow, path: "/insights" },
+    { name: INSIGHTS_PAGE.hero.eyebrow, path: "/insights" },
     {
       name: postCategoryLabel(post.category),
       path: `/insights/category/${post.category}`,

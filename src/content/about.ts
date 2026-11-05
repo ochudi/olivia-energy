@@ -1,129 +1,227 @@
 /**
- * About page copy: story, vision and mission, values, philosophy, founder
- * and registrations.
+ * About page copy (creative brief 4.3): hero, our story, who we are,
+ * vision and mission, values, the founder, where we started, the close.
+ * Guideline blocks come from ./brand.
  *
  * Sources for the dated facts: the company's CAC record (incorporation,
  * RC number), Brand Spur's reports of June and November 2020 (the two
- * retail outlets), and for the founder his BusinessDay author biography
- * (January 2026), a BusinessDay report quoting him (March 2026), his
- * LinkedIn profile, and his Google Scholar, OpenAlex and ORCID records.
- * Vision, mission, values and philosophy are positioning, not fact.
+ * retail outlets), and the client's message of 3 October 2026 (the United
+ * States entity, his title, and the Nigerian location, which reads
+ * "Southwest Nigeria": no town or state is named anywhere on the site).
+ * For the founder: degrees and dates as self-declared on
+ * his ORCID record; the Master of Public Service and USAEE membership from
+ * his BusinessDay author notes; citations from Google Scholar on
+ * 2 October 2026. Employers, years of experience and talks are left out
+ * until the client supplies evidence (decision 13).
  */
+import type { Counts, PhotoKey } from "@/types/contracts";
+import { countWords } from "@/lib/content/format";
+import { BRAND_STORY, VALUES_LIST } from "./brand";
 
-export const STORY = {
-  eyebrow: "About",
-  title: "A practice built in Nigeria’s downstream.",
-  lede: "An advisory and research practice for energy markets in the United States and Nigeria, grown from a fuel retail business in Ogun State.",
-  sectionEyebrow: "Our story",
-  paragraphs: [
-    "Olivia Energy and Power Company Limited was incorporated in Nigeria in February 2020 as a fuel retailer.",
-    "Its first service station opened at Sango Ota, Ogun State, in June 2020, designed to serve more than 1,000 customers a day with fuel, lubricants, a bakery, a car wash and an ATM on site. A second outlet opened at Oju Ore, Otta, that November. The company’s stated principle was that every litre dispensed is a litre the customer receives.",
-    "The advisory and research practice builds on that operating record and on the work of its founder, Dr Olugbenga Olaoye, an energy economist with downstream experience across continents. His research on energy use and environmental quality in Africa has appeared in academic journals since 2022. The practice now works in the United States and Nigeria.",
-  ],
-} as const;
+export const ABOUT_HERO: { eyebrow: string; title: string; lede: string } = {
+  eyebrow: BRAND_STORY.eyebrow,
+  title: BRAND_STORY.headline,
+  lede: BRAND_STORY.lede,
+};
 
-export const VISION_MISSION = {
-  vision: {
-    label: "Vision",
-    statement:
-      "Energy markets where investment and policy decisions rest on evidence.",
-  },
-  mission: {
-    label: "Mission",
-    statement:
-      "To give investors, operators and regulators in the United States and Nigeria advice grounded in operating experience and published research.",
-  },
-} as const;
+export const ABOUT_STORY: {
+  eyebrow: string;
+  paragraph: string;
+  statement: string;
+  photo: PhotoKey;
+  caption: string;
+} = {
+  eyebrow: BRAND_STORY.storyEyebrow,
+  paragraph: BRAND_STORY.paragraph,
+  statement: BRAND_STORY.statement,
+  photo: "abuja-lightpoles",
+  caption: "Street lights at sunset, Abuja. Photo: Habila Mazawaje, Unsplash",
+};
 
-export type Value = { title: string; body: string };
+export type FounderPageCounter = {
+  key: "articles" | "citations" | "opeds" | "mentions";
+  /** Fixed value; when absent the counter reads Counts[key]. */
+  value?: string;
+  label: string;
+};
 
-export const VALUES: readonly Value[] = [
-  {
-    title: "Evidence",
-    body: "We start from the data and say what it shows, including when it is unwelcome.",
-  },
-  {
-    title: "Independence",
-    body: "We have no vendor, lender or technology to favour. Our advice answers to the client’s question.",
-  },
-  {
-    title: "Experience",
-    body: "Advice from people who have run an energy business, not only studied one.",
-  },
-  {
-    title: "Integrity",
-    body: "We say plainly what we can and cannot do, and we put our name to what we publish.",
-  },
-];
-
-/** Set as a serif pull-quote block. */
-export const PHILOSOPHY = {
-  eyebrow: "Our philosophy",
-  lines: [
-    "Evidence before opinion.",
-    "Experience before theory.",
-    "Outcomes before output.",
-  ],
-} as const;
-
-export const FOUNDER = {
-  eyebrow: "Founder",
+export const FOUNDER_PAGE: {
+  eyebrow: string;
+  name: string;
+  role: string;
+  points: (c: Counts) => readonly string[];
+  timeline: {
+    heading: string;
+    dated: readonly { year: string; label: string }[];
+    undated: readonly string[];
+    source: string;
+  };
+  counters: readonly FounderPageCounter[];
+  /** Pills under the portrait; URLs from FOUNDER.links and settings. */
+  profileLabels: readonly string[];
+} = {
+  eyebrow: "Our founder",
   name: "Dr Olugbenga Olaoye",
-  /** Founder per the client's brief; chief executive per his LinkedIn headline. */
-  role: "Founder and Chief Executive Officer",
-  /** As listed in the client's brief; the biography spells them out. */
-  credentials: ["PhD Economics", "MPS", "MBA", "PMP", "CSM"],
+  role: "Founder/CEO, Olivia Energy · Energy economist · Fort Worth, Texas",
+  points: (c) => [
+    "A PhD in Economics from Covenant University, with a focus on energy and environmental economics.",
+    "A Master of Public Service from the Clinton School of Public Service, University of Arkansas, grounded in governance and policy.",
+    "An executive MBA from Lagos Business School, and PMP and Certified ScrumMaster credentials for strategy execution.",
+    "A published energy policy analyst, with nine journal articles since 2022, and a BusinessDay contributor.",
+    `A commentator on downstream reform, energy security and the energy transition, quoted as an energy economist in ${countWords(c.mentions)} BusinessDay reports.`,
+    "Someone who bridges industry, academia and public policy, and a member of the United States Association for Energy Economics.",
+  ],
+  timeline: {
+    heading: "Credentials",
+    dated: [
+      { year: "2000", label: "BSc Economics, Obafemi Awolowo University" },
+      { year: "2019", label: "Executive MBA, Lagos Business School" },
+      { year: "2022", label: "MSc Economics, Bells University of Technology" },
+      { year: "2025", label: "PhD Economics, Covenant University" },
+    ],
+    undated: [
+      "Master of Public Service, Clinton School of Public Service",
+      "Project Management Professional (PMP)",
+      "Certified ScrumMaster (CSM)",
+      "Member, United States Association for Energy Economics",
+    ],
+    source:
+      "Degrees and dates as listed on his ORCID record (0000-0003-2658-916X). Master of Public Service and USAEE membership as stated in his BusinessDay author notes.",
+  },
+  counters: [
+    { key: "articles", value: "9", label: "journal articles" },
+    {
+      key: "citations",
+      value: "200+",
+      label: "citations, Google Scholar, 2 October 2026",
+    },
+    { key: "opeds", label: "op-eds in BusinessDay" },
+    { key: "mentions", label: "BusinessDay reports quoting him" },
+  ],
+  profileLabels: ["ORCID", "Google Scholar", "LinkedIn"],
+};
+
+/** "Where we started": the retail origin, told once (decision 8). */
+export const ORIGIN: {
+  eyebrow: string;
+  title: string;
+  paragraph: string;
+  facts: readonly { term: string; detail: string }[];
+} = {
+  eyebrow: "Where we started",
+  title: "Real-world operations, since 2020.",
+  paragraph:
+    "Olivia Energy and Power Company Limited was incorporated in Nigeria on 26 February 2020. That year it opened two fuel retail outlets in Southwest Nigeria, in June and in November. Running them is where our practical view of energy markets began.",
+  /** One row per registered entity (REGISTRATIONS, in order), then the places. */
+  facts: [
+    {
+      term: "Nigeria",
+      detail:
+        "Olivia Energy and Power Company Limited · RC 1662525 · Incorporated 26 February 2020",
+    },
+    {
+      term: "United States",
+      detail:
+        "Olivia Group LLC · Registration ID 805857089 · Formed 14 January 2025",
+    },
+    { term: "Locations", detail: "Fort Worth, Texas · Southwest Nigeria" },
+  ],
+};
+
+/** "Our values" (About section 5): header plus the five rows of VALUES_LIST. */
+export const ABOUT_VALUES: {
+  eyebrow: string;
+  title: string;
+  items: typeof VALUES_LIST;
+} = {
+  eyebrow: "Our values",
+  title: "What we hold ourselves to.",
+  items: VALUES_LIST,
+};
+
+/**
+ * The founder, for structured data, bylines and the profile pills.
+ * json-ld.ts reads name, alternateNames, role, portrait.src, credentials,
+ * alumniOf, memberOf and profiles; llms.ts reads name and profiles; the
+ * social card and article bylines read name.
+ */
+export const FOUNDER = {
+  name: "Dr Olugbenga Olaoye",
+  /** Person.jobTitle in structured data. */
+  role: "Founder/CEO",
+  /** Person.hasCredential; the page sets them as "PhD · MPS · MBA · PMP · CSM". */
+  credentials: [
+    "PhD in Economics",
+    "Master of Public Service",
+    "Executive MBA",
+    "Project Management Professional (PMP)",
+    "Certified ScrumMaster (CSM)",
+  ],
   /**
-   * For structured data and llms.txt, so search and answer engines resolve
-   * the founder to one person. Sources: his ORCID and OpenAlex records, the
-   * bylines on his papers, and his BusinessDay biography.
+   * sameAs in structured data, so search and answer engines resolve the
+   * founder to one person. Google Scholar comes from settings (scholar_url).
    */
   profiles: [
     "https://orcid.org/0000-0003-2658-916X",
     "https://openalex.org/A5091615039",
   ],
+  /** The profile pills. Settings (scholar_url) overrides `scholar`. */
+  links: {
+    orcid: "https://orcid.org/0000-0003-2658-916X",
+    scholar: "https://scholar.google.com/citations?user=7U3pwDIAAAAJ",
+  },
   alternateNames: ["Olugbenga O. Olaoye", "Olugbenga Olaposi Olaoye"],
+  /** Self-declared on ORCID, plus the Clinton School (BusinessDay author note). */
   alumniOf: [
     "Covenant University",
     "Clinton School of Public Service, University of Arkansas",
     "Lagos Business School",
+    "Bells University of Technology",
+    "Obafemi Awolowo University",
   ],
   memberOf: "United States Association for Energy Economics",
-  bio: [
-    "Dr Olugbenga Olaoye is an economist and energy professional with extensive experience in the oil and gas industry, including downstream operations across continents. He founded Olivia Energy, leads it as chief executive and is based in Fort Worth, Texas. He holds a PhD in economics from Covenant University, where he specialised in energy economics, a Master of Public Service from the Clinton School of Public Service at the University of Arkansas, and an executive MBA from Lagos Business School. He also holds PMP and CSM certifications.",
-    "His research examines energy consumption, environmental quality and economic growth in Africa, including the roles of environmental regulation, financial inclusion and trade, and has appeared since 2022 in journals including the International Journal of Energy Economics and Policy and Scientific African. He is a member of the United States Association for Energy Economics and has written for BusinessDay on energy security. Quoted by the paper in March 2026 on the surge in oil prices, he said that Nigeria “exports crude but still imports fuel, so rising prices increase both revenues and costs at the same time.”",
-  ],
   portrait: {
     /** Supplied 2026-09-06 as a 622×622 PNG on white; cropped to 4:5 on the page. */
     src: "/founder/dr-olugbenga-olaoye.png" as string | null,
     aspect: "4 / 5",
     alt: "Dr Olugbenga Olaoye, founder of Olivia Energy",
     /** Shown under the frame only if the portrait file is removed. */
-    caption: "Dr Olugbenga Olaoye, Founder and Chief Executive Officer",
+    caption: "Dr Olugbenga Olaoye, Founder/CEO and energy economist",
   },
-  link: { label: "Publications", href: "/publications" },
 } as const;
 
 export type Registration = {
   region: string;
   label: string;
   detail: string;
+  /** What the registry calls its number ("RC", "Registration ID"). */
+  registry: string;
   /** Registry number and incorporation date, for structured data. */
   number: string;
   founded: string;
 };
 
 /**
- * Company registrations, one hairline row each. Source: the CAC record
- * (RC number and year of incorporation). Add a row here when another
- * registration can be shown with its entity name and number.
+ * Company registrations, the Nigerian company first (it is the site's
+ * legal name). Sources: the CAC record (RC number and date of
+ * incorporation); the client's message of 3 October 2026 (the United States
+ * entity). Read by structured data, llms.txt and ORIGIN.facts on About.
  */
 export const REGISTRATIONS: readonly Registration[] = [
   {
     region: "Nigeria",
     label: "Olivia Energy and Power Company Limited",
     detail: "RC 1662525 · Incorporated 2020",
+    registry: "RC",
     number: "1662525",
     founded: "2020-02-26",
+  },
+  {
+    region: "United States",
+    label: "Olivia Group LLC",
+    detail: "Registration ID 805857089 · Formed 2025",
+    registry: "Registration ID",
+    number: "805857089",
+    founded: "2025-01-14",
   },
 ];

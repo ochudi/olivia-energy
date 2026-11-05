@@ -26,7 +26,7 @@ export function Demo({
   return (
     <article
       className={cn(
-        "border-line bg-surface overflow-hidden rounded-sm border",
+        "border-line bg-surface shoulder-sm overflow-hidden border",
         className,
       )}
     >

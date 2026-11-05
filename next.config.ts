@@ -83,6 +83,18 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname),
   },
   poweredByHeader: false,
+  async redirects() {
+    // Publications became Research (October 2026 rebuild). Permanent, so
+    // search engines move the old URL's standing to the new one.
+    return [
+      { source: "/publications", destination: "/research", permanent: true },
+      {
+        source: "/publications/:path*",
+        destination: "/research",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },
@@ -112,8 +124,8 @@ const nextConfig: NextConfig = {
     // name when replaced, so an optimised copy can be kept for a month
     // rather than the four-hour default.
     minimumCacheTTL: 2678400,
-    // Photographs are served at 60 (see CoverImage and PhotoFigure); 75 stays
-    // for anything that does not pass a quality.
+    // Photographs are served at 60 or 75 (CoverImage, ShoulderImage, the
+    // home hero); 75 is also the default for anything that passes none.
     qualities: [60, 75],
   },
 };

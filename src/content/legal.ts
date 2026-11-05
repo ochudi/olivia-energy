@@ -7,8 +7,11 @@
  */
 export const PRIVACY = {
   eyebrow: "Privacy",
-  title: "How we handle your information.",
+  /** The H1 (creative brief 4.9). */
+  title: "Privacy",
   lede: "This site collects personal information in one place, the contact form, and uses it for one purpose, replying to you. This notice sets out what that involves.",
+  /** Printed before `updated` at the top of the notice. */
+  updatedLabel: "Last updated",
   updated: "29 September 2026",
   metadata: {
     title: "Privacy Notice | Olivia Energy",

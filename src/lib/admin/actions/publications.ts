@@ -2,90 +2,105 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { z } from "zod";
 import { assertAdmin } from "@/lib/admin/auth";
+import {
+  FALLBACK_MESSAGE,
+  isMissingColumnError,
+} from "@/lib/admin/publication-fields";
+import { formValues, parsePublication } from "@/lib/admin/publication-input";
 import { revalidatePublications } from "@/lib/supabase/revalidate";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { ActionState } from "./types";
 
-const input = z.object({
-  title: z.string().trim().min(1, "Add a title.").max(300),
-  authors: z.string().trim(),
-  venue: z.string().trim().max(200),
-  year: z
-    .string()
-    .trim()
-    .regex(/^\d{4}$|^$/, "Four-digit year."),
-  url: z
-    .string()
-    .trim()
-    .regex(/^(https?:\/\/.+|)$/i, "Must start with https://"),
-  summary: z.string().trim().max(1000),
-  featured: z.boolean(),
-});
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 function bump(): void {
   revalidatePublications();
   revalidatePath("/admin/publications");
 }
 
-/** Create (id null) or update a publication from its form. */
+/**
+ * Create (id null) or update a publication from its form. A form that has
+ * just created a row on an older database (see below) sends that row's id as
+ * `created_id`, so saving again updates it instead of adding a second one.
+ *
+ * When the database has not run the October update (no `kind`, `published_on`,
+ * `topics`, `pull_quote` or `syndication` column) the write is retried once
+ * with the original columns only, and the result says so.
+ */
 export async function savePublication(
   id: string | null,
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
   await assertAdmin();
-  const parsed = input.safeParse({
-    title: formData.get("title") ?? "",
-    authors: formData.get("authors") ?? "",
-    venue: formData.get("venue") ?? "",
-    year: formData.get("year") ?? "",
-    url: formData.get("url") ?? "",
-    summary: formData.get("summary") ?? "",
-    featured: formData.get("featured") === "on",
-  });
-  if (!parsed.success) {
-    const errors: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const key = String(issue.path[0] ?? "form");
-      if (!errors[key]) errors[key] = issue.message;
-    }
-    return { ok: false, message: "Fix the highlighted fields.", errors };
+  const parsed = parsePublication(formData);
+  if (!parsed.ok) {
+    return {
+      ok: false,
+      message: "Fix the highlighted fields.",
+      errors: parsed.errors,
+      values: formValues(formData),
+    };
   }
-  const v = parsed.data;
-  const row = {
-    title: v.title,
-    authors: v.authors
-      .split(/[;,]/)
-      .map((a) => a.trim())
-      .filter(Boolean),
-    venue: v.venue || null,
-    year: v.year ? Number(v.year) : null,
-    url: v.url || null,
-    summary: v.summary || null,
-    featured: v.featured,
-  };
+  const createdId = formData.get("created_id");
+  const targetId =
+    id ??
+    (typeof createdId === "string" && UUID.test(createdId) ? createdId : null);
+  const { base, extra } = parsed;
   const supabase = await createServerSupabase();
-  if (id) {
-    const { error } = await supabase
-      .from("publications")
-      .update(row)
-      .eq("id", id);
-    if (error) return { ok: false, message: error.message };
-  } else {
+
+  let sort = 0;
+  if (!targetId) {
     const { data: last } = await supabase
       .from("publications")
       .select("sort")
       .order("sort", { ascending: false })
       .limit(1)
       .maybeSingle();
-    const { error } = await supabase
+    sort = (last?.sort ?? -1) + 1;
+  }
+
+  const write = async (row: typeof base & Partial<typeof extra>) => {
+    if (targetId) {
+      const { error } = await supabase
+        .from("publications")
+        .update(row)
+        .eq("id", targetId);
+      return { id: targetId, error };
+    }
+    const { data, error } = await supabase
       .from("publications")
-      .insert({ ...row, sort: (last?.sort ?? -1) + 1 });
-    if (error) return { ok: false, message: error.message };
+      .insert({ ...row, sort })
+      .select("id")
+      .single();
+    return { id: data?.id ?? null, error };
+  };
+
+  let result = await write({ ...base, ...extra });
+  let fallback = false;
+  if (result.error && isMissingColumnError(result.error)) {
+    result = await write(base);
+    fallback = !result.error;
+  }
+  if (result.error) {
+    return {
+      ok: false,
+      message: result.error.message,
+      values: formValues(formData),
+    };
   }
   bump();
+  if (fallback) {
+    return {
+      ok: true,
+      message: FALLBACK_MESSAGE,
+      values: {
+        ...formValues(formData),
+        ...(result.id ? { id: result.id } : {}),
+      },
+    };
+  }
   redirect("/admin/publications?saved=1");
 }
 

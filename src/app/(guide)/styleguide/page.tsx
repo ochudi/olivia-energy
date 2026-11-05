@@ -1,19 +1,32 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Download } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { HatchPattern } from "@/components/figures";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Chip } from "@/components/ui/chip";
 import { Container } from "@/components/ui/container";
-import { Divider } from "@/components/ui/divider";
+import { Display, Turn } from "@/components/ui/display";
 import { Eyebrow } from "@/components/ui/eyebrow";
-import { FormField, TextArea, TextInput } from "@/components/ui/form-field";
+import { Lede } from "@/components/ui/lede";
 import { Logo } from "@/components/ui/logo";
 import { Prose } from "@/components/ui/prose";
-import { Reveal } from "@/components/ui/reveal";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { Stat } from "@/components/ui/stat";
-import { Tag } from "@/components/ui/tag";
+import { RingMark } from "@/components/ui/ring";
+import { Section } from "@/components/ui/section";
+import { Source } from "@/components/ui/source";
+import {
+  MISSION,
+  PHILOSOPHY,
+  TAGLINE,
+  VALUES_LIST,
+  VISION,
+  WHY_OLIVIA,
+} from "@/content/brand";
+import { FACTS } from "@/content/data/facts";
+import { seriesValue } from "@/content/data/series";
+import { HOME_EVIDENCE } from "@/content/home";
+import { MARK_COLORS } from "@/lib/brand/mark";
 import {
   findToken,
   loadTokens,
@@ -29,28 +42,38 @@ import {
   MinimumSizes,
   Misuse,
 } from "./_components/brand";
+import { BlocksSheet } from "./_components/blocks-sheet";
+import { ComponentsSheet } from "./_components/components-sheet";
 import { Demo, DemoCell } from "./_components/demo";
+import { FiguresSheet } from "./_components/figures-sheet";
+import { Code, Row, SurfaceFrame } from "./_components/frame";
 import { GuideSection, GuideSub, Note } from "./_components/guide-section";
 import {
-  ButtonStates,
-  CounterDemo,
   DurationDemo,
   EasingDemo,
   MotionStatus,
-  RevealDemo,
 } from "./_components/motion-demos";
-import { StyleguideNav, type NavItem } from "./_components/styleguide-nav";
 import {
-  ColorRamp,
-  ContrastPair,
-  Swatch,
-  TokenTable,
-} from "./_components/swatch";
+  GlyphSheet,
+  MotionStages,
+  MotionTable,
+  ShapeSheet,
+} from "./_components/sheets";
+import { StyleguideNav, type NavItem } from "./_components/styleguide-nav";
+import { ColorRamp, TokenTable } from "./_components/swatch";
+import { SurfaceKit } from "./_components/surface-kit";
+import {
+  BrandPalette,
+  ContrastTable,
+  SURFACE_ORDER,
+  SurfaceCards,
+} from "./_components/surfaces";
 import { TypeSpecimen } from "./_components/type-specimen";
 
 export const metadata: Metadata = {
   title: "Design system",
-  description: "Tokens, typography and components for the Olivia Energy site.",
+  description:
+    "Tokens, surfaces, type, shape, glyphs, figures and components for the Olivia Energy site.",
   robots: { index: false, follow: false },
 };
 
@@ -58,42 +81,103 @@ const SECTIONS: NavItem[] = [
   { id: "principles", number: "01", label: "Principles" },
   { id: "brand", number: "02", label: "Brand" },
   { id: "colour", number: "03", label: "Colour" },
-  { id: "typography", number: "04", label: "Typography" },
-  { id: "layout", number: "05", label: "Spacing & layout" },
-  { id: "surface", number: "06", label: "Radii & elevation" },
-  { id: "motion", number: "07", label: "Motion" },
-  { id: "components", number: "08", label: "Components" },
-  { id: "prose", number: "09", label: "Prose" },
+  { id: "surfaces", number: "04", label: "Surfaces" },
+  { id: "typography", number: "05", label: "Typography" },
+  { id: "layout", number: "06", label: "Spacing & layout" },
+  { id: "shape", number: "07", label: "Shape" },
+  { id: "motion", number: "08", label: "Motion" },
+  { id: "glyphs", number: "09", label: "Glyphs" },
+  { id: "figures", number: "10", label: "Figures" },
+  { id: "components", number: "11", label: "Components" },
+  { id: "blocks", number: "12", label: "Blocks" },
+  { id: "prose", number: "13", label: "Prose" },
 ];
+
+/**
+ * The tokens the guide has always required: a missing one throws, so a
+ * rename in tokens.css fails loudly here. The list is deliberately the same
+ * as before the rebuild; everything newer is looked up softly.
+ */
+const REQUIRED_TOKENS = [
+  "--color-accent",
+  "--color-primary",
+  "--color-primary-fg",
+  "--color-primary-soft",
+  "--color-primary-soft-fg",
+  "--color-ink",
+  "--color-ink-muted",
+  "--color-ink-subtle",
+  "--color-canvas",
+  "--color-inverse",
+  "--color-inverse-fg",
+  ...["xl", "lg", "base", "sm", "xs"].map((s) => `--text-${s}`),
+  ...["xl", "lg", "md", "sm", "xs"].map((s) => `--text-display-${s}`),
+] as const;
+
+/** Brief 2.1: the brand and surface colours, in the brief's order. */
+const BRAND_TOKENS = [
+  "--color-brand-green",
+  "--color-flood-green",
+  "--color-brand-lime",
+  "--color-brand-red",
+  "--color-red-ink",
+  "--color-night",
+  "--color-night-raised",
+  "--color-paper",
+  "--color-paper-deep",
+  "--color-card",
+  "--color-chart-tint",
+  "--color-lime-pale",
+] as const;
+
+const SPACING_STEPS = [1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 40];
 
 const PRINCIPLES = [
   {
-    title: "Evidence before emphasis",
-    body: "The content is the argument. Type hierarchy, hairlines and whitespace carry the structure; colour and motion are punctuation, not persuasion.",
+    title: "Green is the stage, lime is the evidence, red is the gap",
+    body: "Three floods, three jobs. Green carries a statement, lime carries the numbers, red names the gap and closes every page. Paper is for reading and night is used one slab at a time.",
   },
   {
-    title: "Hierarchy through type, not colour",
-    body: "A serif at 400 does the talking. If a heading needs colour or weight to be noticed, the size or the spacing is wrong.",
+    title: "One flood per section",
+    body: "Every section declares one surface and carries one strong statement. Never more than two dark screens in a row. The header reads the surface under its edge and follows it.",
   },
   {
-    title: "One accent, spent deliberately",
-    body: "The legacy red survives as a single token with a budget of one use per page. Its scarcity is what makes it mean something.",
+    title: "The turn, once per screen",
+    body: "Newsreader at 400 does the talking. The one italic word or phrase takes its colour from the surface: lime on night, pale lime on photographs, flood green on paper.",
   },
   {
-    title: "Hairlines over boxes",
-    body: "Boundaries are 1px lines in warm neutral. Shadows exist for genuine elevation (overlays, featured items) and nowhere else.",
+    title: "One shape",
+    body: "A rectangle with three tight corners and one large rounded top-right corner that echoes the ring of the mark. A single 1px line is the only edge treatment.",
   },
   {
-    title: "Numbers are content",
-    body: "Figures are set in the display serif with tabular numerals and sit on a rule. They are never decorated with icons or gradients.",
+    title: "Hatch means the gap",
+    body: "Forty-five degree lines in red, six pixels apart, mark the distance between two lines and nothing else. Solid red appears only on the gap pill.",
   },
   {
-    title: "Motion is a settle, not a show",
-    body: "Things arrive; they do not bounce. Short durations, decelerating curves, and nothing at all for people who ask for reduced motion.",
+    title: "Final state first",
+    body: "Server HTML is always the finished page. Motion sets a pre-state only below the fold, native scrolling stays native, and reduced motion shows everything final.",
   },
-];
+] as const;
 
-const SPACING_STEPS = [1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32];
+const NEVER = [
+  "Arches (two rounded top corners), notches or die-cuts",
+  "Offset or drop shadows, glow, glassmorphism",
+  "Gradients other than photo scrims",
+  "The mark in the flood green, or the flood green as the mark",
+  "Lime as text on paper, green or red; small red text on paper",
+  "Newsreader at any weight but 400; italic for anything but the turn",
+  "Two dark screens in a row; a second turn on one screen",
+] as const;
+
+const ALWAYS = [
+  "Semantic tokens in components: bg-canvas, text-ink, border-line",
+  "A twelve column grid, 24px gaps at 1024 and up",
+  "Ledes at 42 characters, body at 68",
+  "A source line under every figure, with its retrieval date",
+  "Lining tabular numerals wherever figures align",
+  "Reduced-motion parity: every motion has a final-state equivalent",
+  "Alt text on every photograph and its credit beside it",
+] as const;
 
 export default function StyleguidePage() {
   const tokens = loadTokens();
@@ -102,16 +186,31 @@ export default function StyleguidePage() {
     if (!t) throw new Error(`Missing token ${name}`);
     return t;
   };
+  REQUIRED_TOKENS.forEach(tok);
 
-  const green = tokensWithPrefix(tokens, "--color-green-");
-  const neutral = tokensWithPrefix(tokens, "--color-neutral-");
-  const accent = tok("--color-accent");
-  const semantic = tokens.filter(
+  /** Newer tokens: absent ones are left out of their group rather than throwing. */
+  const soft = (names: readonly string[]): Token[] =>
+    names
+      .map((n) => findToken(tokens, n))
+      .filter((t): t is Token => t !== undefined);
+
+  const brand = soft(BRAND_TOKENS);
+  const ink = tokens.filter(
     (t) =>
-      t.name.startsWith("--color-") &&
-      !t.name.startsWith("--color-green-") &&
-      !t.name.startsWith("--color-neutral-") &&
-      t.name !== "--color-accent",
+      /^--color-ink-(paper|night|green|lime|photo)/.test(t.name) ||
+      t.name === "--color-light-unlit" ||
+      t.name === "--color-white",
+  );
+  const legacyGreen = tokensWithPrefix(tokens, "--color-green-");
+  const legacyNeutral = tokensWithPrefix(tokens, "--color-neutral-");
+  const taken = new Set([
+    ...BRAND_TOKENS,
+    ...ink.map((t) => t.name),
+    ...legacyGreen.map((t) => t.name),
+    ...legacyNeutral.map((t) => t.name),
+  ]);
+  const semantic = tokens.filter(
+    (t) => t.name.startsWith("--color-") && !taken.has(t.name),
   );
   const fonts = [
     ...tokensWithPrefix(tokens, "--font-"),
@@ -121,11 +220,19 @@ export default function StyleguidePage() {
     size: tok(`--text-${s}`),
     lh: findToken(tokens, `--text-${s}--line-height`),
   }));
-  const displaySizes = ["xl", "lg", "md", "sm", "xs"].map((s) => ({
-    size: tok(`--text-display-${s}`),
-    lh: findToken(tokens, `--text-display-${s}--line-height`),
-    ls: findToken(tokens, `--text-display-${s}--letter-spacing`),
-  }));
+  const displaySizes = ["2xl", "xl", "lg", "md", "sm", "xs"].flatMap((s) => {
+    const size = findToken(tokens, `--text-display-${s}`);
+    return size
+      ? [
+          {
+            size,
+            lh: findToken(tokens, `--text-display-${s}--line-height`),
+            ls: findToken(tokens, `--text-display-${s}--letter-spacing`),
+          },
+        ]
+      : [];
+  });
+  const numeral = findToken(tokens, "--text-numeral");
   const spacingNamed = tokensWithPrefix(tokens, "--spacing");
   const containers = tokensWithPrefix(tokens, "--container-");
   const radii = tokensWithPrefix(tokens, "--radius-");
@@ -135,23 +242,29 @@ export default function StyleguidePage() {
   const motionMisc = tokensWithPrefix(tokens, "--motion-");
 
   const displaySamples: Record<string, string> = {
-    "--text-display-xl": "Measured, independent, accountable.",
-    "--text-display-lg": "The transition is a capital allocation problem.",
-    "--text-display-md": "Where the grid meets the balance sheet",
-    "--text-display-sm": "Reading the 2030 pipeline honestly",
-    "--text-display-xs": "Regional gas outlook, third quarter",
+    "--text-display-2xl": TAGLINE.line1.split(" ")[0] ?? "",
+    "--text-display-xl": WHY_OLIVIA.closing,
+    "--text-display-lg": HOME_EVIDENCE.title,
+    "--text-display-md": WHY_OLIVIA.lines[0] ?? "",
+    "--text-display-sm": VALUES_LIST[0]?.name ?? "",
+    "--text-display-xs": MISSION.eyebrow,
   };
   const textSamples: Record<string, string> = {
-    "--text-xl":
-      "Advisory for producers, distributors and the institutions that finance them.",
-    "--text-lg":
-      "We work where engineering, regulation and capital meet, and we publish what we find. Our clients pay for judgement, not for reassurance.",
-    "--text-base":
-      "Demand for firm, dispatchable power has not fallen with the arrival of cheap renewables; it has changed shape. Utilities that model the hour-by-hour profile of that demand, rather than the annual total, are the ones whose procurement decisions survive contact with the market.",
-    "--text-sm":
-      "Figure 3. Contracted capacity by delivery year, West Africa, 2024–2032. Source: company filings, Olivia Energy analysis.",
-    "--text-xs": "Insight · 12 min read · Updated 3 September 2026",
+    "--text-xl": PHILOSOPHY.lines[0] ?? "",
+    "--text-lg": VISION.text,
+    "--text-base": MISSION.text,
+    "--text-sm": `${HOME_EVIDENCE.tiles[0].numeral} ${HOME_EVIDENCE.tiles[0].unit ?? ""} ${HOME_EVIDENCE.tiles[0].caption}`,
+    "--text-xs": HOME_EVIDENCE.eyebrow,
   };
+
+  const tile = HOME_EVIDENCE.tiles[0];
+  const access = [2000, 2008, 2016, 2024].map((year) => ({
+    year,
+    nigeria: seriesValue("electricity_access_pct", "Nigeria", year),
+    world: seriesValue("electricity_access_pct", "World", year),
+  }));
+  const pct = (v: number | undefined) =>
+    v === undefined ? "" : `${v.toFixed(1)}%`;
 
   return (
     <div id="top" className="min-h-dvh">
@@ -171,52 +284,72 @@ export default function StyleguidePage() {
             </span>
           </Link>
           <div className="flex items-center gap-3">
-            <span className="text-ink-subtle hidden font-mono text-xs md:inline">
-              September 2026
+            <span className="source-line text-ink-muted hidden md:inline">
+              October 2026
             </span>
-            <Tag variant="outline">v0.1</Tag>
+            <Chip>v2</Chip>
           </div>
         </Container>
       </header>
 
       <main>
-        <Container size="wide">
-          {/* Masthead */}
-          <div className="border-line-strong border-b pt-14 pb-12 md:pt-24 md:pb-20">
+        {/* Masthead: the night surface, the ring, the mark's three colours */}
+        <Section
+          surface="night"
+          spacing="default"
+          aria-labelledby="guide-title"
+          className="overflow-hidden"
+        >
+          <div
+            aria-hidden="true"
+            className="text-brand-lime pointer-events-none absolute top-1/2 -right-24 hidden -translate-y-1/2 opacity-[0.14] lg:block"
+          >
+            <RingMark size={520} stroke={3} animate="none" />
+          </div>
+          <Container size="wide" className="relative">
             <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-              <div className="lg:col-span-8">
-                <Eyebrow>Design system · v0.1</Eyebrow>
-                <h1 className="font-display text-display-xl text-ink mt-6 tracking-tight">
-                  The contract for everything that follows.
-                </h1>
-                <p className="max-w-text text-ink-muted mt-8 text-lg leading-relaxed md:text-xl">
-                  Every token, typeface and component the Olivia Energy site is
-                  permitted to use. If it is not on this page, it is not in the
-                  build.
-                </p>
+              <div className="flex flex-col gap-6 lg:col-span-8">
+                <Eyebrow flame>Design system</Eyebrow>
+                <Display as="h1" size="xl" id="guide-title">
+                  Bridging <Turn>Light</Turn>
+                </Display>
+                <Lede className="max-w-[48ch]">
+                  Every token, typeface, surface and component the Olivia Energy
+                  site is permitted to use. If it is not on this page, it is not
+                  in the build.
+                </Lede>
               </div>
               <dl className="border-line grid grid-cols-2 gap-x-6 gap-y-6 self-end lg:col-span-4 lg:grid-cols-1 lg:border-l lg:pl-8">
                 {[
-                  ["Register", "Editorial · institutional · calm"],
-                  ["Typefaces", "Newsreader · Instrument Sans"],
-                  [
-                    "Primary",
-                    `green-700 · ${tok("--color-primary").resolved.toUpperCase()}`,
-                  ],
-                  ["Accent budget", "One red per page"],
+                  ["Surfaces", SURFACE_ORDER.join(", ")],
+                  ["Typefaces", "Newsreader 400 · Instrument Sans"],
+                  ["Shape", "The shoulder, one large corner"],
                 ].map(([k, v]) => (
                   <div key={k}>
-                    <dt className="tracking-caps text-ink-subtle font-sans text-xs font-medium uppercase">
-                      {k}
-                    </dt>
+                    <dt className="label text-ink-muted">{k}</dt>
                     <dd className="text-ink mt-1 text-sm">{v}</dd>
                   </div>
                 ))}
+                <div>
+                  <dt className="label text-ink-muted">The mark</dt>
+                  <dd className="mt-2 flex gap-2">
+                    {Object.values(MARK_COLORS).map((c) => (
+                      <span
+                        key={c}
+                        title={c}
+                        className="border-line size-8 rounded-full border"
+                        style={{ background: c }}
+                      />
+                    ))}
+                  </dd>
+                </div>
               </dl>
             </div>
-          </div>
+          </Container>
+        </Section>
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-14">
+        <Container size="wide">
+          <div className="grid grid-cols-1 gap-8 pt-10 lg:grid-cols-12 lg:gap-14">
             <div className="min-w-0 lg:col-span-2">
               <StyleguideNav items={SECTIONS} />
             </div>
@@ -231,74 +364,41 @@ export default function StyleguidePage() {
               >
                 <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
                   {PRINCIPLES.map((p, i) => (
-                    <Reveal key={p.title} delay={i * 60}>
-                      <div className="border-line border-t pt-5">
-                        <p className="text-ink-subtle font-mono text-xs tabular-nums">
-                          0{i + 1}
-                        </p>
-                        <h3 className="font-display text-display-xs text-ink mt-3 tracking-tight">
-                          {p.title}
-                        </h3>
-                        <p className="text-ink-muted mt-3 text-sm leading-relaxed">
-                          {p.body}
-                        </p>
-                      </div>
-                    </Reveal>
+                    <div key={p.title} className="border-line border-t pt-5">
+                      <p className="label text-ink-muted numerals">0{i + 1}</p>
+                      <h3 className="font-display text-display-xs text-ink mt-3">
+                        {p.title}
+                      </h3>
+                      <p className="text-ink-muted mt-3 text-sm">{p.body}</p>
+                    </div>
                   ))}
                 </div>
                 <GuideSub
-                  title="Out of bounds"
-                  description="Things the reference points never do, and neither do we."
+                  title="Never and always"
+                  description="The lines the system does not cross, and the habits that keep it one system."
                 >
                   <div className="grid gap-6 lg:grid-cols-2">
-                    <Card variant="muted" padding="md">
-                      <p className="tracking-caps text-ink-subtle font-sans text-xs font-medium uppercase">
-                        Never
-                      </p>
-                      <ul className="text-ink mt-3 space-y-2 text-sm leading-relaxed">
-                        {[
-                          "Gradients of any kind, including on buttons and text",
-                          "Glassmorphism, frosted panels, backdrop blur",
-                          "Bold weights of the serif; bold anything above 24px",
-                          "More than one primary button in a section",
-                          "Purple, teal, or any hue not in this file",
-                          "Icons as decoration beside headings",
-                          "Bouncy, springy or looping UI motion; ambient motion only as Currents, in the home hero",
-                        ].map((s) => (
-                          <li key={s} className="flex gap-3">
-                            <span
-                              aria-hidden
-                              className="bg-accent mt-[0.75em] h-px w-3 shrink-0"
-                            />
-                            {s}
-                          </li>
-                        ))}
-                      </ul>
-                    </Card>
-                    <Card variant="muted" padding="md">
-                      <p className="tracking-caps text-ink-subtle font-sans text-xs font-medium uppercase">
-                        Always
-                      </p>
-                      <ul className="text-ink mt-3 space-y-2 text-sm leading-relaxed">
-                        {[
-                          "Serif for headings at 400–500, sans for everything else",
-                          "A measure of 60–70 characters for running text",
-                          "Tabular numerals wherever figures align",
-                          "Hairline borders in the line token; shadows only for elevation",
-                          "Semantic colour tokens in components, never raw steps",
-                          "Reduced-motion parity: every animation has a static equivalent",
-                          "Left alignment; centre only for a standalone statement",
-                        ].map((s) => (
-                          <li key={s} className="flex gap-3">
-                            <span
-                              aria-hidden
-                              className="bg-primary mt-[0.75em] h-px w-3 shrink-0"
-                            />
-                            {s}
-                          </li>
-                        ))}
-                      </ul>
-                    </Card>
+                    {(
+                      [
+                        ["Never", NEVER, "bg-accent"],
+                        ["Always", ALWAYS, "bg-primary"],
+                      ] as const
+                    ).map(([label, list, mark]) => (
+                      <Card key={label} variant="muted" padding="sm">
+                        <p className="label text-ink-muted">{label}</p>
+                        <ul className="text-ink mt-3 space-y-2 text-sm">
+                          {list.map((s) => (
+                            <li key={s} className="flex gap-3">
+                              <span
+                                aria-hidden
+                                className={`${mark} mt-[0.7em] h-px w-3 shrink-0`}
+                              />
+                              {s}
+                            </li>
+                          ))}
+                        </ul>
+                      </Card>
+                    ))}
                   </div>
                 </GuideSub>
               </GuideSection>
@@ -337,9 +437,9 @@ export default function StyleguidePage() {
                     description="Inline SVG mark with the wordmark as live text. No request, crisp at any density, no layout shift: every dimension is in ems."
                     usage={[
                       "Size it with a text-* class on the logo or its parent (1em is the wordmark), or with size, the mark's height in px.",
-                      'tone="color" is the default and goes one colour by itself inside data-tone="inverse", the header over a dark hero, and the open menu.',
+                      'tone="color" is the default. It shows true colours on paper, paper-deep and night, and goes one colour (white, or ink on lime) on green, lime, red and photographs.',
                       'tone="mono" takes currentColor everywhere: print, forms, anywhere colour would fight the page.',
-                      "The mark is aria-hidden; a wrapping link supplies the name. The header link reads \u201cOlivia Energy, home\u201d.",
+                      "The mark is aria-hidden; a wrapping link supplies the name. The header link reads “Olivia Energy, home”.",
                     ]}
                     props={[
                       {
@@ -375,7 +475,7 @@ export default function StyleguidePage() {
 
                 <GuideSub
                   title="Colourways"
-                  description="Full colour on light grounds. On dark or busy grounds, one colour: off-white on the inverse green, ink where colour is unavailable or would compete."
+                  description="True colours on paper, paper-deep and night. One colour on the floods and photographs: white on green, red and photo, ink on lime. The mark is always #04923F, #D5281B and #88C029, never the flood green."
                 >
                   <Colourways />
                 </GuideSub>
@@ -414,101 +514,83 @@ export default function StyleguidePage() {
                 id="colour"
                 number="03"
                 title="Colour"
-                lede="A deep green family derived from the mark, warm neutrals from off-white to ink, and a single red. Components only ever reference the semantic layer."
+                lede="The mark's three colours, the floods and grounds built from them, and a semantic layer every component reads. Surfaces remap the semantic layer; components never name a raw colour."
               >
                 <GuideSub
-                  title="Brand green"
-                  description="Sampled from the legacy logo. Step 500 is the mark; 700 is the working primary because the mark itself does not pass AA as text on the canvas."
+                  title="Brand and surface"
+                  description="Each colour with the one job it has and the one thing it never does. The mark's own colours are exact; the flood green is deeper so white text passes."
                 >
-                  <ColorRamp
-                    tokens={green}
-                    annotations={{
-                      "500": "the mark",
-                      "700": "primary",
-                      "800": "hover",
-                      "950": "inverse",
-                    }}
-                  />
-                  <div className="mt-6 flex flex-wrap items-center gap-6">
-                    <div className="border-line bg-surface flex items-center gap-3 rounded-xs border p-3">
-                      <Logo variant="mark" size={44} />
-                      <div className="text-ink-muted text-xs leading-relaxed">
-                        <p className="text-ink font-medium">Source: the mark</p>
-                        <p>Ring #04923F is step 500 exactly</p>
-                        <p>Accent #C5372B tones the mark&rsquo;s red for UI</p>
-                      </div>
-                    </div>
-                    <Note>
-                      Steps are evenly spaced in OKLCH lightness. Hue drifts
-                      about eight degrees cooler from 500 to 950 so the deep
-                      greens read as forest rather than olive.
-                    </Note>
-                  </div>
+                  <BrandPalette tokens={brand} />
                 </GuideSub>
 
                 <GuideSub
-                  title="Neutrals"
-                  description="Warm, not grey. Canvas and surface differ by a hair so cards sit on the page without borders doing all the work."
+                  title="Rules"
+                  description="What keeps three floods from becoming a rainbow."
                 >
-                  <ColorRamp
-                    tokens={neutral}
-                    annotations={{
-                      "0": "surface",
-                      "50": "canvas",
-                      "200": "line",
-                      "600": "muted",
-                      "950": "ink",
-                    }}
-                  />
+                  <ul className="text-ink-muted max-w-text space-y-2 text-sm">
+                    {[
+                      "One flood per section, carrying one strong statement. Never more than two dark screens in a row.",
+                      "The italic turn appears at most once per screen: lime on night, pale lime on photographs, flood green on paper, ink on lime, white on green and red.",
+                      "Lime is never text on paper, green or red. Red is never small text on paper: use red ink.",
+                      "The mark is true colour on paper, paper-deep and night, and one colour everywhere else.",
+                      "Chart colours come from the surface: --chart-1, --chart-2, --chart-3, --chart-gap, --chart-axis, --chart-grid.",
+                    ].map((s) => (
+                      <li key={s} className="flex gap-3">
+                        <span
+                          aria-hidden
+                          className="bg-line-strong mt-[0.7em] h-px w-3 shrink-0"
+                        />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
                 </GuideSub>
 
                 <GuideSub
-                  title="Accent"
-                  description="The legacy red. One token, one use per page."
+                  title="The gap hatch"
+                  description="Forty-five degree lines, 6px pitch, 1.5px stroke, in --hatch-color: red at 85% on night and paper. On lime the shape also carries a 1px ink outline (--hatch-outline), and a solid red pill names the gap."
                 >
-                  <div className="grid gap-6 md:grid-cols-12">
-                    <Swatch
-                      token={accent}
-                      label="Accent"
-                      className="md:col-span-3"
-                    />
-                    <div className="md:col-span-9">
-                      <Card variant="default" padding="md">
-                        <p className="font-display text-display-xs text-ink tracking-tight">
-                          The budget
-                        </p>
-                        <p className="max-w-text text-ink-muted mt-3 text-sm leading-relaxed">
-                          At most one instance of the accent per page: a live
-                          indicator, the active item in a navigation, the mark
-                          on a single eyebrow. It is never a button, a fill
-                          larger than 24px, or a run of text. Its value is
-                          scarcity.
-                        </p>
-                        <div className="mt-6 flex flex-wrap items-center gap-6">
-                          <DemoCell label="Tag · accent">
-                            <Tag variant="accent">Live</Tag>
-                          </DemoCell>
-                          <DemoCell label="Eyebrow · accent mark">
-                            <Eyebrow accent>Now hiring</Eyebrow>
-                          </DemoCell>
-                          <DemoCell label="Active state">
-                            <span className="text-ink inline-flex items-center gap-2 text-sm">
-                              <span
-                                aria-hidden
-                                className="bg-accent size-1.5 rounded-full"
-                              />
-                              Markets open
-                            </span>
-                          </DemoCell>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    {(["paper", "night", "lime"] as const).map((surface) => (
+                      <SurfaceFrame key={surface} surface={surface}>
+                        <div className="flex flex-col items-start gap-4 p-5">
+                          <Chip tone="solid">{surface}</Chip>
+                          <svg
+                            viewBox="0 0 240 96"
+                            className="h-auto w-full"
+                            aria-hidden="true"
+                            focusable="false"
+                          >
+                            <defs>
+                              <HatchPattern id={`guide-hatch-${surface}`} />
+                            </defs>
+                            <rect
+                              x="0.5"
+                              y="0.5"
+                              width="239"
+                              height="95"
+                              fill={`url(#guide-hatch-${surface})`}
+                              stroke="var(--hatch-outline)"
+                              strokeWidth="1"
+                            />
+                          </svg>
+                          <Chip tone="gap">{tile.tag}</Chip>
                         </div>
-                      </Card>
-                    </div>
+                      </SurfaceFrame>
+                    ))}
                   </div>
+                </GuideSub>
+
+                <GuideSub
+                  title="Ink steps"
+                  description="The text colours per surface, with the ratio the brief states for each. Surfaces map ink, ink-muted and ink-subtle onto these."
+                >
+                  <TokenTable tokens={ink} showSwatch valueLabel="Value" />
                 </GuideSub>
 
                 <GuideSub
                   title="Semantic tokens"
-                  description="What components actually consume. Each resolves to a step above; change the step, and every use follows."
+                  description="What components actually consume. The values shown are the paper surface; every other surface remaps them."
                 >
                   <TokenTable
                     tokens={semantic}
@@ -516,128 +598,124 @@ export default function StyleguidePage() {
                     valueLabel="Resolves to"
                   />
                   <Note>
-                    Dark surfaces: add data-tone=&quot;inverse&quot; to the
-                    element (the footer, a dark hero, the inverse card, the
-                    mobile menu). Every semantic token remaps inside it: ink
-                    becomes inverse-fg, primary becomes an off-white
-                    (neutral-50, hover neutral-200) so buttons on dark stay
-                    quiet rather than mint, hairlines become translucent
-                    off-white. Components keep their light-surface classes and
-                    need no dark variants.
+                    A section declares data-surface and the surface rules in
+                    globals.css remap canvas, ink, ink-muted, ink-subtle,
+                    primary, primary-fg, accent, line, glyph, error, the six
+                    chart variables, the hatch, the turn and the logo variables.
+                    Components keep the same classes and need no per-surface
+                    variants. data-tone=&quot;inverse&quot; still shares the
+                    night values (the inverse logo specimens).
                   </Note>
                 </GuideSub>
 
                 <GuideSub
-                  title="Contrast"
-                  description="Computed from the token file at render time. AA is the floor for text; subtle ink is restricted to meta and large text."
+                  title="Legacy ramps"
+                  description="Kept so nothing built on them breaks, and used by the admin. New work uses the tokens above."
                 >
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <ContrastPair
-                      fg={tok("--color-ink")}
-                      bg={tok("--color-canvas")}
-                      caption="Body text"
-                    />
-                    <ContrastPair
-                      fg={tok("--color-ink-muted")}
-                      bg={tok("--color-canvas")}
-                      caption="Muted text"
-                    />
-                    <ContrastPair
-                      fg={tok("--color-primary")}
-                      bg={tok("--color-canvas")}
-                      caption="Links"
-                    />
-                    <ContrastPair
-                      fg={tok("--color-primary-fg")}
-                      bg={tok("--color-primary")}
-                      caption="Primary button"
-                    />
-                    <ContrastPair
-                      fg={tok("--color-primary-soft-fg")}
-                      bg={tok("--color-primary-soft")}
-                      caption="Soft tag"
-                    />
-                    <ContrastPair
-                      fg={tok("--color-inverse-fg")}
-                      bg={tok("--color-inverse")}
-                      caption="Inverse section"
-                    />
-                    <ContrastPair
-                      fg={tok("--color-accent")}
-                      bg={tok("--color-canvas")}
-                      caption="Accent mark"
-                    />
-                    <ContrastPair
-                      fg={tok("--color-ink-subtle")}
-                      bg={tok("--color-canvas")}
-                      caption="Meta only"
-                    />
+                  <div className="flex flex-col gap-8">
+                    <ColorRamp tokens={legacyGreen} />
+                    <ColorRamp tokens={legacyNeutral} />
                   </div>
                 </GuideSub>
               </GuideSection>
 
-              {/* 04 Typography */}
+              {/* 04 Surfaces */}
+              <GuideSection
+                id="surfaces"
+                number="04"
+                title="Surfaces"
+                lede="Seven surfaces, each shown live with the tokens it remaps and every pair it is held to, with the ratio computed from the same table the tests read."
+              >
+                <div id="surfaces-cards">
+                  <SurfaceCards />
+                </div>
+
+                <GuideSub
+                  title="Contrast"
+                  description="Every text and graphic pair of the surface table, computed at render time. Text needs 4.5:1; large text (24px and up) and graphics need 3:1. Photo rows are tested against the lightest pixel the scrim allows."
+                >
+                  <ContrastTable />
+                </GuideSub>
+
+                <GuideSub
+                  title="Every primitive on every surface"
+                  description="Eyebrow, display and turn, lede, body, buttons, chips, glyphs, cards, stats, sources, form and lines, once per surface."
+                >
+                  <div className="flex flex-col gap-8">
+                    {SURFACE_ORDER.map((s) => (
+                      <div
+                        key={s}
+                        className="border-line shoulder overflow-hidden border"
+                      >
+                        <SurfaceKit surface={s} />
+                      </div>
+                    ))}
+                  </div>
+                </GuideSub>
+              </GuideSection>
+
+              {/* 05 Typography */}
               <GuideSection
                 id="typography"
-                number="04"
+                number="05"
                 title="Typography"
-                lede="An editorial serif with a true optical-size axis for display, and a precise grotesk for everything a reader has to operate. Weights are deliberately narrow."
+                lede="An editorial serif at one weight for everything that is said, and a precise grotesk for everything a reader has to operate. Display sizes are fluid between 390 and 1440 pixels."
               >
                 <GuideSub
                   title="The pair"
-                  description="Evaluated Fraunces, Newsreader and Source Serif 4 against Instrument Sans, Schibsted Grotesk and Inter. The full decision record is in src/app/fonts.ts."
+                  description="No new family and no new weight. The full decision record is in src/app/fonts.ts."
                 >
                   <div className="grid gap-6 lg:grid-cols-2">
-                    <Card padding="lg">
-                      <p className="tracking-caps text-ink-subtle font-sans text-xs font-medium uppercase">
+                    <Card padding="md">
+                      <p className="label text-ink-muted">
                         Display · Newsreader
                       </p>
-                      <p className="font-display text-ink mt-6 text-[6rem] leading-none tracking-tight md:text-[7.5rem]">
+                      <p className="font-display text-ink mt-6 text-[6rem] leading-none md:text-[7.5rem]">
                         Aa
                       </p>
-                      <p className="font-display text-display-xs text-ink mt-6 leading-snug">
-                        Quiet authority, drawn for the screen.
+                      <p className="font-display text-display-xs text-ink mt-6">
+                        {TAGLINE.line1} <Turn>{TAGLINE.line2}</Turn>
                       </p>
-                      <p className="font-display text-ink-muted mt-4 text-lg leading-relaxed break-words">
+                      <p className="font-display text-ink-muted mt-4 text-lg break-words">
                         ABCDEFGHIJKLM abcdefghijklm 0123456789 &amp;?!
                       </p>
-                      <ul className="text-ink-muted mt-6 space-y-2 text-sm leading-relaxed">
+                      <ul className="text-ink-muted mt-6 space-y-2 text-sm">
                         <li>
-                          Optical size axis 6–72: genuine display and text cuts
-                          from one family.
+                          Weight 400 only, optical sizing on. Every headline,
+                          the Why Olivia lines, numerals, quotations and cover
+                          titles.
                         </li>
                         <li>
-                          Narrow set width and modest x-height echo the printed
-                          report.
+                          Italic is the turn and nothing else: a static Latin
+                          subset, preloaded.
                         </li>
                         <li>
-                          Weights 400 and 500 only. Italic for emphasis and
-                          citations.
+                          Numerals are lining and tabular (<Code>numerals</Code>
+                          ).
                         </li>
                       </ul>
                     </Card>
-                    <Card padding="lg">
-                      <p className="tracking-caps text-ink-subtle font-sans text-xs font-medium uppercase">
-                        UI &amp; body · Instrument Sans
+                    <Card padding="md">
+                      <p className="label text-ink-muted">
+                        Body and UI · Instrument Sans
                       </p>
-                      <p className="text-ink mt-6 font-sans text-[6rem] leading-none font-medium tracking-tight md:text-[7.5rem]">
+                      <p className="text-ink mt-6 font-sans text-[6rem] leading-none font-medium md:text-[7.5rem]">
                         Aa
                       </p>
-                      <p className="text-ink mt-6 font-sans text-xl leading-snug">
-                        Precise, compact, and quiet enough to let the serif
-                        speak.
+                      <p className="text-ink mt-6 font-sans text-xl">
+                        {PHILOSOPHY.lines[0]}
                       </p>
-                      <p className="text-ink-muted mt-4 font-sans text-lg leading-relaxed break-words">
+                      <p className="text-ink-muted mt-4 font-sans text-lg break-words">
                         ABCDEFGHIJKLM abcdefghijklm 0123456789 &amp;?!
                       </p>
-                      <ul className="text-ink-muted mt-6 space-y-2 text-sm leading-relaxed">
+                      <ul className="text-ink-muted mt-6 space-y-2 text-sm">
                         <li>
-                          Even colour at small sizes; tabular figures for data.
+                          Body, ledes, labels, buttons, chips, sources and
+                          navigation. Weights 400 to 600.
                         </li>
-                        <li>Not Inter: avoids the visual signature of SaaS.</li>
                         <li>
-                          Weights 400, 500, 600. Emphasis in UI belongs to the
-                          sans.
+                          Labels are 12px uppercase 600 with the label tracking;
+                          source lines are 12px regular, sentence case.
                         </li>
                       </ul>
                     </Card>
@@ -646,7 +724,7 @@ export default function StyleguidePage() {
 
                 <GuideSub
                   title="Display scale"
-                  description="Fluid between 390px and 1440px. Line height and letter spacing are part of the token, so text-display-lg is a complete setting."
+                  description="Fluid between 390px and 1440px. Leading and tracking are part of the token, so text-display-lg is a complete setting. 2xl is the home H1 only."
                 >
                   <div className="border-line border-t">
                     {displaySizes.map(({ size, lh, ls }) => (
@@ -658,12 +736,55 @@ export default function StyleguidePage() {
                         sample={displaySamples[size.name] ?? size.name}
                       />
                     ))}
+                    {numeral ? (
+                      <div className="border-line grid gap-2 border-b py-5 lg:grid-cols-12 lg:gap-6">
+                        <div className="text-ink-subtle font-mono text-[0.6875rem] leading-relaxed lg:col-span-3">
+                          <p className="text-ink">text-numeral</p>
+                          <p className="break-all">{numeral.value}</p>
+                          <p>lh 0.9 · ls -0.03em</p>
+                        </div>
+                        <p className="font-display text-numeral numerals text-ink min-w-0 lg:col-span-9">
+                          {tile.numeral}
+                          <span className="text-display-md text-ink-muted ml-3 align-baseline">
+                            {tile.unit}
+                          </span>
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                </GuideSub>
+
+                <GuideSub
+                  title="The turn"
+                  description="One italic word or phrase, in the colour of its surface. At most once per screen."
+                >
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {(
+                      [
+                        "paper",
+                        "night",
+                        "lime",
+                        "green",
+                        "red",
+                        "photo",
+                      ] as const
+                    ).map((surface) => (
+                      <SurfaceFrame key={surface} surface={surface}>
+                        <div className="flex flex-col items-start gap-3 p-5">
+                          <Chip tone="solid">{surface}</Chip>
+                          <Display as="p" size="md">
+                            {PHILOSOPHY.statement.first}{" "}
+                            <Turn>{PHILOSOPHY.statement.turn}</Turn>
+                          </Display>
+                        </div>
+                      </SurfaceFrame>
+                    ))}
                   </div>
                 </GuideSub>
 
                 <GuideSub
                   title="Text scale"
-                  description="Fixed sizes in the sans. Body is 17px on a 1.65 line height; UI runs at 14px."
+                  description="Fixed sizes in the sans, except the lede, which is fluid. Body is 17px at 1.6 and never wider than 68 characters; ledes stop at 42."
                 >
                   <div className="border-line border-t">
                     {textSizes.map(({ size, lh }) => (
@@ -673,104 +794,33 @@ export default function StyleguidePage() {
                         lineHeight={lh}
                         font="sans"
                         sample={textSamples[size.name] ?? size.name}
-                        className="[&>p:last-child]:max-w-text"
+                        className="[&>p:last-child]:max-w-[68ch]"
                       />
                     ))}
                   </div>
                 </GuideSub>
 
                 <GuideSub
-                  title="Details"
-                  description="The small decisions that make it feel finished."
+                  title="Labels and source lines"
+                  description="The two 12px settings: the label is uppercase 600 with tracking, the source line is regular and sentence case."
                 >
-                  <div className="grid gap-6 lg:grid-cols-2">
-                    <Card padding="md">
-                      <p className="tracking-caps text-ink-subtle font-sans text-xs font-medium uppercase">
-                        Numerals
+                  <div className="flex flex-col gap-4">
+                    <Row label="label">
+                      <p className="label text-ink">{HOME_EVIDENCE.eyebrow}</p>
+                    </Row>
+                    <Row label="source-line">
+                      <p className="source-line text-ink-muted">
+                        {tile.source.org}, {tile.source.title}
                       </p>
-                      <p className="text-ink-muted mt-3 text-sm">
-                        Figures that align use{" "}
-                        <code className="font-mono text-xs">tabular-nums</code>.
-                        Both faces support it.
-                      </p>
-                      <div className="font-display text-display-xs text-ink mt-5 grid grid-cols-2 gap-4 leading-none">
-                        <div>
-                          <p className="text-ink-subtle mb-2 font-sans text-[0.6875rem]">
-                            serif · tabular
-                          </p>
-                          <p
-                            data-testid="tabular-display"
-                            className="tabular-nums"
-                          >
-                            1,111,111
-                          </p>
-                          <p
-                            data-testid="tabular-display"
-                            className="tabular-nums"
-                          >
-                            0,000,000
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-ink-subtle mb-2 font-sans text-[0.6875rem]">
-                            serif · proportional
-                          </p>
-                          <p className="proportional-nums">1,111,111</p>
-                          <p className="proportional-nums">0,000,000</p>
-                        </div>
-                      </div>
-                      <div className="text-display-xs text-ink mt-5 grid grid-cols-2 gap-4 font-sans leading-none font-medium">
-                        <div>
-                          <p className="text-ink-subtle mb-2 text-[0.6875rem] font-normal">
-                            sans · tabular
-                          </p>
-                          <p
-                            data-testid="tabular-sans"
-                            className="tabular-nums"
-                          >
-                            1,111,111
-                          </p>
-                          <p
-                            data-testid="tabular-sans"
-                            className="tabular-nums"
-                          >
-                            0,000,000
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-ink-subtle mb-2 text-[0.6875rem] font-normal">
-                            sans · proportional
-                          </p>
-                          <p className="proportional-nums">1,111,111</p>
-                          <p className="proportional-nums">0,000,000</p>
-                        </div>
-                      </div>
-                    </Card>
-                    <Card padding="md">
-                      <p className="tracking-caps text-ink-subtle font-sans text-xs font-medium uppercase">
-                        Italic, caps, measure
-                      </p>
-                      <p className="font-display-italic text-display-sm text-ink mt-4 leading-snug italic">
-                        “What gets financed gets built.”
-                      </p>
-                      <p className="text-ink-muted mt-2 text-sm">
-                        Serif italic for pull quotes and citations. Never for
-                        emphasis inside UI.
-                      </p>
-                      <p className="tracking-caps text-ink-muted mt-5 font-sans text-xs font-medium uppercase">
-                        Uppercase labels track at 0.14em
-                      </p>
-                      <p className="text-ink-muted mt-2 text-sm">
-                        Eyebrows, tags and table heads. Never below 11px, never
-                        on more than one line.
-                      </p>
-                      <div className="border-line text-ink-muted mt-5 max-w-[65ch] border-t pt-4 text-sm leading-relaxed">
-                        Running text is capped at 65 characters (the{" "}
-                        <code className="font-mono text-xs">max-w-text</code>{" "}
-                        container). Long lines are the fastest way to make a
-                        serious page feel careless.
-                      </div>
-                    </Card>
+                    </Row>
+                    <Row label="Source">
+                      <Source
+                        sources={tile.source}
+                        retrieved={
+                          tile.retrieved ?? FACTS[tile.fact]?.retrieved
+                        }
+                      />
+                    </Row>
                   </div>
                   <div className="mt-8">
                     <TokenTable tokens={fonts} />
@@ -778,24 +828,24 @@ export default function StyleguidePage() {
                 </GuideSub>
               </GuideSection>
 
-              {/* 05 Spacing & layout */}
+              {/* 06 Spacing & layout */}
               <GuideSection
                 id="layout"
-                number="05"
+                number="06"
                 title="Spacing & layout"
-                lede="A 4px base for components, fluid named tokens for page rhythm, and four container widths. Everything sits on a twelve-column grid."
+                lede="A 4px unit for components, fluid named tokens for page rhythm, and a 1296px container on a twelve column grid."
               >
                 <GuideSub
                   title="Scale"
-                  description="Multiples of the 4px base. Component padding lives in 4–8; gaps between blocks in 8–16; page rhythm uses the named tokens."
+                  description="Multiples of the 4px unit. Component padding lives in 4 to 8; gaps between blocks in 8 to 16; page rhythm uses the named tokens."
                 >
                   <div className="space-y-2">
                     {SPACING_STEPS.map((n) => (
                       <div key={n} className="flex items-center gap-4">
-                        <span className="text-ink w-8 shrink-0 font-mono text-xs tabular-nums">
+                        <span className="text-ink numerals w-8 shrink-0 font-mono text-xs">
                           {n}
                         </span>
-                        <span className="text-ink-subtle w-12 shrink-0 font-mono text-[0.6875rem] tabular-nums">
+                        <span className="text-ink-subtle numerals w-12 shrink-0 font-mono text-[0.6875rem]">
                           {n * 4}px
                         </span>
                         <span
@@ -808,15 +858,15 @@ export default function StyleguidePage() {
                 </GuideSub>
 
                 <GuideSub
-                  title="Named spacing & widths"
-                  description="Fluid tokens scale with the viewport so a section break feels proportionate on a phone and on a 27-inch display."
+                  title="Named spacing and widths"
+                  description="Fluid tokens scale with the viewport. Sections take --spacing-section above and below; bands inside a section take --spacing-section-sm; the side gutter is 20px at 390, 40px at 768 and 72px at 1440."
                 >
                   <TokenTable tokens={[...spacingNamed, ...containers]} />
                 </GuideSub>
 
                 <GuideSub
                   title="Containers"
-                  description="Nested widths, shown at true size where the viewport allows. Reading text lives in text; grids in page; chrome and data in wide."
+                  description="Nested widths, shown at true size where the viewport allows. Reading text lives in text; the page in page (1296px); chrome and data in wide."
                 >
                   <div className="space-y-3">
                     {containers.map((c) => (
@@ -838,55 +888,35 @@ export default function StyleguidePage() {
 
                 <GuideSub
                   title="Grid"
-                  description="Twelve columns with a 24px gap (32px from lg). The house split is 4 + 8, or 3 + 9 on wide layouts, as used on this page."
+                  description="Twelve columns with 24px gaps at 1024 and up; eight columns with 20px at 768; four columns with 16px at 390. Cols 1 to 6 means grid columns at 1440."
                 >
-                  <div className="grid grid-cols-12 gap-3 md:gap-6 lg:gap-8">
+                  <div className="grid grid-cols-4 gap-4 md:grid-cols-8 md:gap-5 lg:grid-cols-12 lg:gap-6">
                     {Array.from({ length: 12 }).map((_, i) => (
-                      <div key={i} className="bg-primary-soft h-10" />
+                      <div
+                        key={i}
+                        className={`bg-primary-soft h-10 ${i >= 8 ? "hidden lg:block" : i >= 4 ? "hidden md:block" : ""}`}
+                      />
                     ))}
-                    <div className="border-line bg-surface col-span-12 h-10 border md:col-span-4" />
-                    <div className="border-line bg-surface col-span-12 h-10 border md:col-span-8" />
                   </div>
                 </GuideSub>
               </GuideSection>
 
-              {/* 06 Radii & elevation */}
+              {/* 07 Shape */}
               <GuideSection
-                id="surface"
-                number="06"
-                title="Radii & elevation"
-                lede="Corners are barely rounded and shadows are barely there. The hairline does the work of separating surfaces."
+                id="shape"
+                number="07"
+                title="Shape"
+                lede="One shape everywhere: a rectangle with three tight corners and one large rounded top-right corner that echoes the ring. Circles appear only where the ring is meant."
               >
                 <GuideSub
-                  title="Radii"
-                  description="2px for controls, 4px for cards. Anything larger is reserved for media, and rarely."
+                  title="The shoulder"
+                  description="Three sizes, plus the pill. Photographs and flood panels take the large one; cards, covers and figure plates the middle one."
                 >
-                  <div className="grid grid-cols-2 gap-6 sm:grid-cols-5">
-                    {radii.map((r) => (
-                      <div key={r.name}>
-                        <div
-                          className="border-line-strong bg-surface aspect-square w-full border"
-                          style={{ borderRadius: r.resolved }}
-                        />
-                        <p className="text-ink mt-3 font-mono text-xs">
-                          {r.name.replace("--radius-", "rounded-")}
-                        </p>
-                        <p className="text-ink-subtle font-mono text-[0.6875rem]">
-                          {r.resolved}
-                        </p>
-                        {r.description ? (
-                          <p className="text-ink-muted mt-1 text-xs">
-                            {r.description}
-                          </p>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
+                  <ShapeSheet tokens={radii} />
                 </GuideSub>
-
                 <GuideSub
-                  title="Shadows"
-                  description="Warm ink at low alpha, two layers. Use only where something genuinely floats."
+                  title="Edges"
+                  description="No elevation on the public site: a single 1px line is the only edge treatment. The legacy shadow tokens remain for the admin."
                 >
                   <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
                     {shadows.map((s) => (
@@ -898,45 +928,52 @@ export default function StyleguidePage() {
                         <p className="text-ink mt-4 font-mono text-xs">
                           {s.name.replace("--shadow-", "shadow-")}
                         </p>
-                        {s.description ? (
-                          <p className="text-ink-muted mt-1 text-xs">
-                            {s.description}
-                          </p>
-                        ) : null}
+                        <p className="text-ink-muted mt-1 text-xs">
+                          Admin only
+                        </p>
                       </div>
                     ))}
                   </div>
                 </GuideSub>
               </GuideSection>
 
-              {/* 07 Motion */}
+              {/* 08 Motion */}
               <GuideSection
                 id="motion"
-                number="07"
+                number="08"
                 title="Motion"
-                lede="Seven durations, five curves, two reveal parameters. Everything decelerates into place. Everything has a static equivalent for reduced motion."
+                lede="Native scroll only. Server HTML is the final state; JavaScript may set a pre-state only below the fold. Eleven named motions, every duration and easing a token, every one with a static equivalent."
               >
                 <GuideSub
                   title="Your setting"
-                  description="Detected live from the operating system. The demos below respond to it."
+                  description="Detected live from the operating system. The stages below respond to it."
                 >
                   <MotionStatus />
                   <Note>
-                    With{" "}
-                    <code className="font-mono text-xs">
-                      prefers-reduced-motion: reduce
-                    </code>
-                    : Reveal renders in place with no transition; AnimatedNumber
-                    shows its final value immediately; hover transitions
-                    collapse to zero; the framer-motion context skips
-                    transforms; Currents draws one still frame. Nothing is
-                    hidden, nothing moves.
+                    With <Code>prefers-reduced-motion: reduce</Code> (or with no
+                    JavaScript): everything is final, nothing pins, all lines
+                    are lit, counters show their value, rings are closed, charts
+                    are drawn and the ignition is the static mark.
                   </Note>
                 </GuideSub>
 
                 <GuideSub
+                  title="The table"
+                  description="Each motion with what it moves, read from the token file."
+                >
+                  <MotionTable tokens={tokens} />
+                </GuideSub>
+
+                <GuideSub
+                  title="Live"
+                  description="The production reveals, rewound and replayed. Scroll them into view or press replay."
+                >
+                  <MotionStages />
+                </GuideSub>
+
+                <GuideSub
                   title="Durations"
-                  description="Short for state, longer for arrival. Nothing in UI exceeds 400ms; the count-up is the only exception."
+                  description="Short for state, longer for arrival."
                 >
                   <DurationDemo durations={durations} />
                   <div className="mt-8">
@@ -946,7 +983,7 @@ export default function StyleguidePage() {
 
                 <GuideSub
                   title="Easings"
-                  description="Standard for UI state, out for arrival, in for exits. No springs, no overshoot."
+                  description="Standard for state, out for arrival, in-out for strokes and clips, in for exits. No springs, no overshoot."
                 >
                   <EasingDemo easings={easings} />
                   <div className="mt-8">
@@ -955,32 +992,19 @@ export default function StyleguidePage() {
                 </GuideSub>
 
                 <GuideSub
-                  title="Reveal"
-                  description="8px lift, 400ms, ease-out. Siblings stagger by 90ms. Triggers at 20% visibility, once."
-                >
-                  <RevealDemo />
-                </GuideSub>
-
-                <GuideSub
-                  title="Count-up"
-                  description="1400ms, ease-out, tabular numerals. Server-rendered at the final value so nothing is lost without JavaScript."
-                >
-                  <CounterDemo />
-                </GuideSub>
-
-                <GuideSub
-                  title="Currents"
-                  description="The one ambient surface: the home hero's canvas of streamlines drifting slowly along one coherent field in green-500 and green-300 at a third alpha, parted gently by the pointer, thinned to a quarter behind the text block. Once per site, never under running text, paused off screen, still under reduced motion."
+                  title="Pinned scenes"
+                  description="At most one per page, desktop only, enabled purely in CSS."
                 >
                   <Note>
-                    Lives in{" "}
-                    <code className="font-mono text-xs">
-                      components/sections/home/hero-currents.tsx
-                    </code>
-                    . No library, one canvas, about 1 ms a frame; every trail is
-                    redrawn from a short buffer after a full clear, so nothing
-                    ghosts. The h1 stays the largest contentful paint. Do not
-                    add a second one, and do not put it under running text.
+                    <Code>
+                      @media (scripting: enabled) and (prefers-reduced-motion:
+                      no-preference) and (min-width: 1024px) and (min-height:
+                      640px)
+                    </Code>
+                    . One passive scroll listener and one rAF write a single
+                    custom property, <Code>--p</Code>, on the scene; everything
+                    else is CSS reading <Code>--p</Code> or a{" "}
+                    <Code>data-step</Code> attribute.
                   </Note>
                 </GuideSub>
 
@@ -988,468 +1012,101 @@ export default function StyleguidePage() {
                   title="Interaction states"
                   description="Every control answers the same way, regardless of component."
                 >
-                  <ul className="text-ink-muted space-y-2 text-sm leading-relaxed">
+                  <ul className="text-ink-muted space-y-2 text-sm">
                     <li>
-                      <span className="text-ink font-medium">Hover</span> —
-                      colour, border or shadow at duration-fast, ease-standard.
+                      <span className="text-ink font-medium">Hover</span>: the
+                      button arrow moves 4px, a card photograph scales to 1.04,
+                      a cover lifts 4px, at 200, 600 and 300ms.
                     </li>
                     <li>
-                      <span className="text-ink font-medium">Press</span> —
-                      active:translate-y-px on buttons and icon controls (no
-                      lift on cards), snapped to duration-instant so it reads as
-                      an immediate response, not an animation.
+                      <span className="text-ink font-medium">Press</span>:
+                      active:translate-y-px on buttons, snapped to
+                      duration-instant.
                     </li>
                     <li>
-                      <span className="text-ink font-medium">Focus</span> — one
+                      <span className="text-ink font-medium">Focus</span>: one
                       ring everywhere: ring-2 ring-focus ring-offset-2
-                      ring-offset-canvas. No bare browser outlines on custom
-                      controls.
+                      ring-offset-canvas.
                     </li>
                   </ul>
                 </GuideSub>
               </GuideSection>
 
-              {/* 08 Components */}
+              {/* 09 Glyphs */}
               <GuideSection
-                id="components"
-                number="08"
-                title="Components"
-                lede="Eleven primitives in src/components/ui. Each consumes semantic tokens only, ships with its usage notes, and is the sole way to produce its pattern."
+                id="glyphs"
+                number="09"
+                title="Glyphs"
+                lede="One family of fourteen line glyphs on a 48 unit grid. Stroke 2px at 48, round caps and joins, no fills but a dot. Drawn in flood green on paper, white on green, night and red, ink on lime; never filled, never more than one colour."
               >
-                <Demo
-                  name="Button"
-                  path="@/components/ui/button"
-                  description="Three variants, three sizes. Renders a Next.js link when given an href."
-                  usage={[
-                    "One primary per section. It is the answer to “what should I do here?”",
-                    "Secondary pairs with primary or stands alone for low-stakes actions.",
-                    "Ghost is an inline text action with a trailing arrow and a draw-in underline on hover; use it in cards and lists.",
-                    "Icons are 16px lucide glyphs, trailing by default. Never icon-only.",
-                    'On an inverse surface (data-tone="inverse") primary renders off-white, not mint — see Colour → Semantic tokens.',
-                  ]}
-                  props={[
-                    {
-                      name: "variant",
-                      type: '"primary" | "secondary" | "ghost"',
-                    },
-                    { name: "size", type: '"sm" | "md" | "lg"' },
-                    {
-                      name: "href",
-                      type: "string",
-                      note: "Switches to <Link>.",
-                    },
-                    {
-                      name: "icon / iconPosition",
-                      type: 'ReactNode / "start" | "end"',
-                    },
-                  ]}
+                <GuideSub
+                  title="The family"
+                  description="Built only from the ring, the flame tongue, straight strokes at 0, 45 or 90 degrees and the dot, at most four elements each. Path data is in src/components/ui/glyphs.ts."
                 >
-                  <div className="space-y-8">
-                    <DemoCell label="variants">
-                      <Button>Request a briefing</Button>
-                      <Button variant="secondary">Download the report</Button>
-                      <Button variant="ghost" icon={<ArrowRight />}>
-                        Read the analysis
-                      </Button>
-                    </DemoCell>
-                    <DemoCell label="sizes">
-                      <Button size="sm">Small</Button>
-                      <Button size="md">Medium</Button>
-                      <Button size="lg">Large</Button>
-                    </DemoCell>
-                    <DemoCell label="with icon · as link">
-                      <Button
-                        href="/styleguide#components"
-                        icon={<ArrowUpRight />}
-                      >
-                        Open in new context
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        icon={<Download />}
-                        iconPosition="start"
-                      >
-                        PDF, 2.4 MB
-                      </Button>
-                    </DemoCell>
-                    <DemoCell label="states">
-                      <ButtonStates />
-                    </DemoCell>
-                  </div>
-                </Demo>
-
-                <Demo
-                  name="Container"
-                  path="@/components/ui/container"
-                  description="Centres content, applies the gutter token, and caps width at one of four presets."
-                  usage={[
-                    "Default is page (1216px). Wrap reading text in text (672px).",
-                    "Use wide for site chrome and full-width data. Never nest wide inside page.",
-                    "The as prop renders section, article, header, footer, main or nav.",
-                  ]}
-                  props={[
-                    {
-                      name: "size",
-                      type: '"text" | "narrow" | "page" | "wide"',
-                    },
-                    { name: "as", type: "ElementType" },
-                  ]}
-                >
-                  <div className="space-y-3">
-                    {(["wide", "page", "narrow", "text"] as const).map((s) => (
-                      <Container
-                        key={s}
-                        size={s}
-                        className="border-line-strong text-ink-muted border border-dashed py-2 text-center font-mono text-xs"
-                      >
-                        size=&quot;{s}&quot;
-                      </Container>
-                    ))}
-                  </div>
-                </Demo>
-
-                <Demo
-                  name="SectionHeading"
-                  path="@/components/ui/section-heading"
-                  description="Eyebrow, serif title and optional lede in the house proportions."
-                  usage={[
-                    "Left-aligned by default; centre only for a standalone closing statement.",
-                    "Pass number for numbered chapters. The eyebrow mark disappears in favour of the numeral.",
-                    'Use as="h1" exactly once per page.',
-                  ]}
-                  props={[
-                    { name: "title / eyebrow / lede", type: "ReactNode" },
-                    { name: "number", type: "string" },
-                    { name: "align", type: '"left" | "center"' },
-                    { name: "size", type: '"sm" | "md" | "lg"' },
-                    { name: "as", type: '"h1" | "h2" | "h3"' },
-                  ]}
-                >
-                  <div className="space-y-14">
-                    <SectionHeading
-                      eyebrow="Our practice"
-                      number="02"
-                      title="Independent advice for the capital that builds the grid"
-                      lede="We advise producers, distributors and their financiers on strategy, procurement and regulatory positioning across sub-Saharan Africa."
-                    />
-                    <Divider />
-                    <SectionHeading
-                      eyebrow="Get in touch"
-                      title="Start with a conversation."
-                      align="center"
-                      size="sm"
-                      as="h3"
-                    />
-                  </div>
-                </Demo>
-
-                <Demo
-                  name="Eyebrow"
-                  path="@/components/ui/eyebrow"
-                  description="Small-caps label with a hairline mark, a numeral, or nothing."
-                  usage={[
-                    "One eyebrow per heading. It names the section, it does not summarise it.",
-                    "The accent mark is the page's single red. Use it once or not at all.",
-                  ]}
-                  props={[
-                    { name: "number", type: "string" },
-                    { name: "accent / plain", type: "boolean" },
-                    { name: "as", type: "ElementType" },
-                  ]}
-                >
-                  <div className="flex flex-wrap gap-x-12 gap-y-6">
-                    <DemoCell label="default">
-                      <Eyebrow>Insights</Eyebrow>
-                    </DemoCell>
-                    <DemoCell label="number">
-                      <Eyebrow number="04">Methodology</Eyebrow>
-                    </DemoCell>
-                    <DemoCell label="accent">
-                      <Eyebrow accent>Live data</Eyebrow>
-                    </DemoCell>
-                    <DemoCell label="plain">
-                      <Eyebrow plain>Appendix</Eyebrow>
-                    </DemoCell>
-                  </div>
-                </Demo>
-
-                <Demo
-                  name="Card"
-                  path="@/components/ui/card"
-                  description="A bounded surface. Five variants; padding presets; optional link behaviour."
-                  usage={[
-                    "default is the workhorse. elevated only for featured or floating items.",
-                    "outline sits on coloured or photographic backgrounds. muted groups quiet content.",
-                    "inverse is for dark editorial moments; keep text to inverse-fg and inverse-muted.",
-                    "Pass href to make the whole card a link; the hover state is implied.",
-                  ]}
-                  props={[
-                    {
-                      name: "variant",
-                      type: '"default" | "elevated" | "outline" | "muted" | "inverse"',
-                    },
-                    { name: "padding", type: '"none" | "sm" | "md" | "lg"' },
-                    { name: "href", type: "string" },
-                    { name: "interactive", type: "boolean" },
-                  ]}
-                >
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {(
-                      [
-                        "default",
-                        "elevated",
-                        "outline",
-                        "muted",
-                        "inverse",
-                      ] as const
-                    ).map((v) => (
-                      <Card key={v} variant={v} padding="md">
-                        <p
-                          className={`font-mono text-[0.6875rem] ${v === "inverse" ? "text-inverse-muted" : "text-ink-subtle"}`}
-                        >
-                          variant=&quot;{v}&quot;
-                        </p>
-                        <p className="font-display text-display-xs mt-3 tracking-tight">
-                          Gas-to-power in the Niger Delta
-                        </p>
-                        <p
-                          className={`mt-2 text-sm leading-relaxed ${v === "inverse" ? "text-inverse-muted" : "text-ink-muted"}`}
-                        >
-                          Where contracted capacity is going, and what it will
-                          cost to deliver.
-                        </p>
-                      </Card>
-                    ))}
-                    <Card href="/styleguide#components" padding="md">
-                      <p className="text-ink-subtle font-mono text-[0.6875rem]">
-                        href=&quot;…&quot;
-                      </p>
-                      <p className="font-display text-display-xs text-ink mt-3 tracking-tight">
-                        Linked card
-                      </p>
-                      <p className="text-ink-muted mt-2 text-sm leading-relaxed">
-                        The whole surface is the target. Hover to see the border
-                        darken.
-                      </p>
-                      <span className="text-primary mt-5 inline-flex items-center gap-2 text-sm font-medium">
-                        Read more <ArrowRight aria-hidden className="size-4" />
-                      </span>
-                    </Card>
-                  </div>
-                </Demo>
-
-                <Demo
-                  name="Stat"
-                  path="@/components/ui/stat"
-                  description="A headline figure on a rule, with label, description and trend. Counts up in view."
-                  usage={[
-                    "Three or four in a row, aligned on the shared hairline. Never in boxes.",
-                    "Keep labels to a few words; put the caveat in description.",
-                    "Set animate={false} for figures that are not the point of the section.",
-                  ]}
-                  props={[
-                    { name: "value", type: "number" },
-                    {
-                      name: "prefix / suffix / decimals",
-                      type: "string / string / number",
-                    },
-                    { name: "label / description", type: "ReactNode" },
-                    {
-                      name: "trend",
-                      type: '{ direction: "up" | "down" | "flat"; label: string }',
-                    },
-                    { name: "size", type: '"md" | "lg"' },
-                  ]}
-                >
-                  <div className="grid gap-8 sm:grid-cols-3">
-                    <Stat
-                      value={68}
-                      suffix=" GW"
-                      label="Capacity advised"
-                      description="Across generation and transmission mandates since 2018."
-                      trend={{ direction: "up", label: "+9 GW this year" }}
-                    />
-                    <Stat
-                      value={3.2}
-                      decimals={1}
-                      prefix="$"
-                      suffix="bn"
-                      label="Capital structured"
-                      description="Project and corporate finance closed with our advice."
-                    />
-                    <Stat
-                      value={27}
-                      label="Markets"
-                      description="Countries with active or completed engagements."
-                      trend={{ direction: "flat", label: "Unchanged" }}
-                    />
-                  </div>
-                </Demo>
-
-                <Demo
-                  name="Tag"
-                  path="@/components/ui/tag"
-                  description="Compact categorical label. Square, uppercase, tracked."
-                  usage={[
-                    "default for categories, outline for meta.",
-                    "primary is a quiet, text-only treatment (no fill) for a positive or published status — mint pills are gone from the pages.",
-                    "accent is the page's single red: one live or active state, nothing else.",
-                  ]}
-                  props={[
-                    {
-                      name: "variant",
-                      type: '"default" | "outline" | "primary" | "accent"',
-                    },
-                    { name: "size", type: '"sm" | "md" | "lg"' },
-                  ]}
-                >
-                  <div className="flex flex-wrap gap-x-12 gap-y-6">
-                    <DemoCell label="md">
-                      <Tag>Insight</Tag>
-                      <Tag variant="outline">PDF</Tag>
-                      <Tag variant="primary">Published</Tag>
-                      <Tag variant="accent">Live</Tag>
-                    </DemoCell>
-                    <DemoCell label="sm">
-                      <Tag size="sm">Insight</Tag>
-                      <Tag size="sm" variant="outline">
-                        PDF
-                      </Tag>
-                      <Tag size="sm" variant="primary">
-                        Published
-                      </Tag>
-                      <Tag size="sm" variant="accent">
-                        Live
-                      </Tag>
-                    </DemoCell>
-                  </div>
-                </Demo>
-
-                <Demo
-                  name="Divider"
-                  path="@/components/ui/divider"
-                  description="A hairline, optionally interrupted by a label."
-                  usage={[
-                    "Use between unrelated blocks inside a section. Sections themselves use the strong line.",
-                    "Labelled dividers introduce a run of items (“Related”, “Appendix”).",
-                  ]}
-                  props={[
-                    { name: "label", type: "string" },
-                    { name: "strong", type: "boolean" },
-                  ]}
-                >
-                  <div className="space-y-8">
-                    <Divider />
-                    <Divider strong />
-                    <Divider label="Related reading" />
-                  </div>
-                </Demo>
-
-                <Demo
-                  name="AnimatedNumber"
-                  path="@/components/ui/animated-number"
-                  description="Counts from zero to a value when it enters the viewport. Used inside Stat, available on its own."
-                  usage={[
-                    "Server-renders the final value; animates only on the client with motion allowed.",
-                    "Reads --duration-counter and --ease-out from the token file at run time.",
-                    "Wrap in the display face with leading-none for headline figures.",
-                  ]}
-                  props={[
-                    { name: "value", type: "number" },
-                    {
-                      name: "decimals / prefix / suffix",
-                      type: "number / string / string",
-                    },
-                    { name: "format", type: "Intl.NumberFormatOptions" },
-                    { name: "once", type: "boolean" },
-                  ]}
-                >
-                  <CounterDemo />
-                </Demo>
-
-                <Demo
-                  name="Reveal"
-                  path="@/components/ui/reveal"
-                  description="Fades and lifts children into place on scroll. Static under reduced motion; visible without JavaScript."
-                  usage={[
-                    "Wrap blocks, not words. One Reveal per card, paragraph group or figure.",
-                    "Stagger siblings with delay in multiples of the stagger token (90ms).",
-                    "Do not nest Reveals. Do not reveal above-the-fold content.",
-                  ]}
-                  props={[
-                    { name: "delay", type: "number (ms)" },
-                    { name: "once", type: "boolean" },
-                    { name: "amount", type: "number (0–1)" },
-                    {
-                      name: "as",
-                      type: '"div" | "section" | "article" | "li" | "figure"',
-                    },
-                  ]}
-                >
-                  <RevealDemo />
-                </Demo>
-
-                <Demo
-                  name="FormField, TextInput, TextArea"
-                  path="@/components/ui/form-field"
-                  description="Public-site form controls: a label row with an optional marker, 48px inputs, and the error announced in place of the hint. Used by the contact form."
-                  usage={[
-                    "Validate with zod on submit and pass the first message per field as error; the control takes aria-invalid and aria-describedby.",
-                    "Accent is reserved for the invalid state. Success is a panel that replaces the form, never a green field.",
-                    "Keep hints to one line; the error replaces the hint, so the layout does not jump.",
-                  ]}
-                  props={[
-                    { name: "label / htmlFor", type: "ReactNode / string" },
-                    { name: "hint / error", type: "ReactNode / string" },
-                    {
-                      name: "optional / optionalLabel",
-                      type: "boolean / string",
-                    },
-                  ]}
-                >
-                  <div className="grid max-w-xl gap-6">
-                    <FormField label="Name" htmlFor="demo-name">
-                      <TextInput
-                        id="demo-name"
-                        defaultValue="Ada Okafor"
-                        autoComplete="off"
-                      />
-                    </FormField>
-                    <FormField
-                      label="Email"
-                      htmlFor="demo-email"
-                      error="Enter a valid email address."
-                    >
-                      <TextInput
-                        id="demo-email"
-                        type="email"
-                        defaultValue="ada@"
-                        aria-invalid
-                        aria-describedby="demo-email-error"
-                        autoComplete="off"
-                      />
-                    </FormField>
-                    <FormField
-                      label="Message"
-                      htmlFor="demo-message"
-                      hint="What is the decision, and when does it need to be made?"
-                    >
-                      <TextArea
-                        id="demo-message"
-                        rows={3}
-                        placeholder="A sentence or two is enough."
-                      />
-                    </FormField>
-                  </div>
-                </Demo>
+                  <GlyphSheet />
+                </GuideSub>
               </GuideSection>
 
-              {/* 09 Prose */}
+              {/* 10 Figures */}
+              <GuideSection
+                id="figures"
+                number="10"
+                title="Figures"
+                lede="Every chart is a figure on a plate: server-rendered SVG with HTML labels, a source line, a table alternative and the data as CSV. Real series, never typed numbers."
+              >
+                <GuideSub
+                  title="Anatomy"
+                  description="What every figure carries."
+                >
+                  <ul className="text-ink-muted max-w-text space-y-2 text-sm">
+                    {[
+                      "The Fig. tag and the title in display-xs, then an optional subtitle in text-sm.",
+                      "A wide viewBox at 768 and up and a tall one below, switched in CSS; the aspect ratio is set, so nothing shifts.",
+                      "Series labels at the line ends as HTML, the value in Newsreader and the name in Instrument Sans 12px.",
+                      "Ring end markers; a hatched gap between the two lines that define it, with one solid red pill.",
+                      "One or two sentences of interpretation, then the source line with the retrieval date.",
+                      "View as table in a details element, and Get the data (CSV) linking /data/{series}.csv.",
+                      "Numbering restarts on each page. Numeral cards carry a tag (Gap, Opening, Target, Context) instead of a Fig. number.",
+                    ].map((s) => (
+                      <li key={s} className="flex gap-3">
+                        <span
+                          aria-hidden
+                          className="bg-line-strong mt-[0.7em] h-px w-3 shrink-0"
+                        />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </GuideSub>
+                <FiguresSheet />
+              </GuideSection>
+
+              {/* 11 Components */}
+              <GuideSection
+                id="components"
+                number="11"
+                title="Components"
+                lede="The primitives in src/components/ui. Each consumes semantic tokens only, ships with its usage notes, and is the sole way to produce its pattern."
+              >
+                <ComponentsSheet />
+              </GuideSection>
+
+              {/* 12 Blocks */}
+              <GuideSection
+                id="blocks"
+                number="12"
+                title="Blocks"
+                lede="The shared page blocks in src/components/blocks, shown on their surfaces with the real op-eds: the cover wall, the quote panel, the audience tiles and the closing band."
+              >
+                <BlocksSheet />
+              </GuideSection>
+
+              {/* 13 Prose */}
               <GuideSection
                 id="prose"
-                number="09"
+                number="13"
                 title="Prose"
-                lede="Article typography for insights, reports and anything authored in the editor. One wrapper, every element styled from tokens."
+                lede="Article typography for insights and anything authored in the editor. One wrapper, every element styled from tokens."
               >
                 <Demo
                   name="Prose"
@@ -1467,96 +1124,43 @@ export default function StyleguidePage() {
                   ]}
                 >
                   <Prose>
-                    <p className="lede">
-                      Sub-Saharan Africa will add more contracted generation
-                      this decade than in the previous three combined. Most of
-                      it will be financed by institutions that have never
-                      underwritten an African power asset.
-                    </p>
-                    <h2>The shape of demand</h2>
-                    <p>
-                      Demand for firm, dispatchable power has not fallen with
-                      the arrival of cheap renewables; it has changed shape.
-                      Utilities that model the <em>hour-by-hour</em> profile of
-                      that demand, rather than the annual total, are the ones
-                      whose procurement decisions survive contact with the
-                      market. The rest discover the difference at the first dry
-                      season.
-                    </p>
-                    <p>
-                      Three things follow from this. Each is unremarkable on its
-                      own; together they explain most of the variance in project
-                      outcomes we have reviewed since 2018.
-                    </p>
+                    <p className="lede">{MISSION.text}</p>
+                    <h2>{WHY_OLIVIA.heading}</h2>
+                    <p>{PHILOSOPHY.lines.join(" ")}</p>
                     <ul>
-                      <li>
-                        Capacity payments must reflect availability during the
-                        evening ramp, not annual load factor.
-                      </li>
-                      <li>
-                        Gas supply agreements need take-or-pay terms that track
-                        the same ramp, or the generator carries the risk twice.
-                      </li>
-                      <li>
-                        Currency convertibility, not tariff level, is the
-                        binding constraint on{" "}
-                        <a href="#prose">foreign participation</a>.
-                      </li>
+                      {VALUES_LIST.slice(0, 3).map((v) => (
+                        <li key={v.name}>
+                          <strong>{v.name}.</strong> {v.text}
+                        </li>
+                      ))}
                     </ul>
                     <blockquote>
-                      <p>
-                        What gets financed gets built. The question is never
-                        whether a project is bankable in principle, but which
-                        balance sheet is willing to hold the risk between
-                        financial close and first power.
-                      </p>
-                      <cite>Olivia Energy, West Africa Power Review 2026</cite>
+                      <p>{VISION.text}</p>
+                      <cite>{VISION.eyebrow}</cite>
                     </blockquote>
-                    <h3>Contracted capacity by delivery year</h3>
+                    <h3>Access to electricity, share of population</h3>
                     <table>
                       <thead>
                         <tr>
-                          <th>Delivery year</th>
-                          <th className="num">Capacity (MW)</th>
-                          <th className="num">Share financed</th>
+                          <th>Year</th>
+                          <th className="num">Nigeria</th>
+                          <th className="num">World</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>2026</td>
-                          <td className="num">1,240</td>
-                          <td className="num">78%</td>
-                        </tr>
-                        <tr>
-                          <td>2027</td>
-                          <td className="num">2,105</td>
-                          <td className="num">61%</td>
-                        </tr>
-                        <tr>
-                          <td>2028</td>
-                          <td className="num">3,380</td>
-                          <td className="num">42%</td>
-                        </tr>
-                        <tr>
-                          <td>2029</td>
-                          <td className="num">2,960</td>
-                          <td className="num">19%</td>
-                        </tr>
+                        {access.map((r) => (
+                          <tr key={r.year}>
+                            <td>{r.year}</td>
+                            <td className="num">{pct(r.nigeria)}</td>
+                            <td className="num">{pct(r.world)}</td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
-                    <p>
-                      Figures are indicative and drawn from public filings; see
-                      the methodology note in <code>appendix-b.md</code>. Where
-                      a project has reached financial close but not notice to
-                      proceed, we count it as financed.
-                    </p>
                     <hr />
-                    <h4>About this note</h4>
+                    <h4>{TAGLINE.line1}</h4>
                     <p>
-                      <small>
-                        Published 3 September 2026. Contact the authors for the
-                        underlying dataset.
-                      </small>
+                      <small>{TAGLINE.line2}</small>
                     </p>
                   </Prose>
                 </Demo>
@@ -1566,25 +1170,30 @@ export default function StyleguidePage() {
         </Container>
       </main>
 
-      <footer className="mt-section-sm border-line-strong border-t">
+      <Section
+        surface="night"
+        as="footer"
+        spacing="sm"
+        className="mt-section-sm"
+      >
         <Container
           size="wide"
-          className="flex flex-col gap-4 py-10 md:flex-row md:items-center md:justify-between"
+          className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
         >
-          <div className="text-ink-muted text-sm">
+          <div className="text-sm">
             <p className="text-ink font-medium">
-              Olivia Energy design system · v0.1
+              Olivia Energy design system · v2
             </p>
-            <p className="text-ink-subtle mt-1 font-mono text-xs">
+            <p className="source-line text-ink-muted mt-1 font-mono">
               tokens: src/styles/tokens.css · components: src/components/ui ·
               fonts: src/app/fonts.ts · mark: src/lib/brand/mark.ts
             </p>
           </div>
-          <Button variant="ghost" href="#top" icon={<ArrowUpRight />}>
+          <Button variant="text" href="#top" icon={<ArrowUpRight />}>
             Back to top
           </Button>
         </Container>
-      </footer>
+      </Section>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { RotateCcw } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Button } from "@/components/ui/button";
-import { Reveal } from "@/components/ui/reveal";
 import { Tag } from "@/components/ui/tag";
 import { cn } from "@/lib/utils/cn";
 import type { Token } from "@/lib/utils/tokens";
@@ -110,42 +109,6 @@ export function DurationDemo({ durations }: { durations: Token[] }) {
         onClick={() => setRun((r) => !r)}
       >
         {run ? "Reset" : "Play"}
-      </Button>
-    </div>
-  );
-}
-
-/** Remounts three staggered Reveal blocks. */
-export function RevealDemo() {
-  const [key, setKey] = useState(0);
-  return (
-    <div>
-      <div key={key} className="grid gap-4 sm:grid-cols-3">
-        {[0, 1, 2].map((i) => (
-          <Reveal key={i} delay={i * 90} amount={0.1}>
-            <div
-              data-testid="reveal-item"
-              className="border-line bg-surface rounded-xs border p-5"
-            >
-              <p className="text-ink-subtle font-mono text-xs">
-                delay {i * 90}ms
-              </p>
-              <p className="font-display text-display-xs text-ink mt-2">
-                Item {i + 1}
-              </p>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-      <Button
-        variant="secondary"
-        size="sm"
-        className="mt-6"
-        icon={<RotateCcw />}
-        iconPosition="start"
-        onClick={() => setKey((k) => k + 1)}
-      >
-        Replay
       </Button>
     </div>
   );

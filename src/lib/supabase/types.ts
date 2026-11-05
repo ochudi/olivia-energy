@@ -1,7 +1,8 @@
 import type { JSONContent } from "@tiptap/react";
 import { z } from "zod";
 import { STATS } from "@/content/home";
-import { CONTACT, SITE, SOCIALS } from "@/content/site";
+import { CONTACT, NIPEX_WORDING, SITE, SOCIALS } from "@/content/site";
+import type { InsightFormat, PublicationKind } from "@/types/contracts";
 import type { Database } from "./database.types";
 import type { DB_SCHEMA } from "./schema";
 
@@ -21,10 +22,33 @@ export type TablesUpdate<T extends keyof PublicSchema["Tables"]> =
 export type Enums<T extends keyof PublicSchema["Enums"]> =
   PublicSchema["Enums"][T];
 
-export type Post = Tables<"posts">;
+/**
+ * The columns added by supabase/migrations/20261003120000_commentary_and_formats
+ * are optional on the read types: a database that has not run the migration
+ * returns rows without them, and the read layer treats a missing `kind` as
+ * "journal" and a missing `format` as none. Plain strings, as the database
+ * stores them, so a raw row is assignable; the read layer only passes on a
+ * `format` it knows (isPostFormat), and PublicationKind / PostFormat name
+ * the allowed values.
+ */
+type PostRow = Tables<"posts">;
+export type Post = Omit<PostRow, "format"> & {
+  /** One of POST_FORMATS, or none. */
+  format?: string | null;
+};
 export type PostInsert = TablesInsert<"posts">;
 export type PostUpdate = TablesUpdate<"posts">;
-export type Publication = Tables<"publications">;
+type PublicationRow = Tables<"publications">;
+export type Publication = Omit<
+  PublicationRow,
+  "kind" | "published_on" | "topics" | "pull_quote" | "syndication"
+> &
+  Partial<
+    Pick<
+      PublicationRow,
+      "kind" | "published_on" | "topics" | "pull_quote" | "syndication"
+    >
+  >;
 export type PublicationInsert = TablesInsert<"publications">;
 export type Setting = Tables<"settings">;
 export type ContactMessage = Tables<"contact_messages">;
@@ -115,8 +139,8 @@ export const settingsSchema = z.object({
     .array(addressSchema)
     .default(CONTACT.offices.map((country) => ({ country, lines: [] }))),
   phones: z.array(phoneSchema).default([]),
-  /** Footer legal line for NIPEX; the footer hides it while empty. */
-  nipex_wording: z.string().default(""),
+  /** Footer legal line for NIPEX; the footer hides it when an admin clears it. */
+  nipex_wording: z.string().default(NIPEX_WORDING),
   stats: z.array(statSchema).default(STATS.map((s) => ({ ...s }))),
   /** The homepage stats band renders only when an admin switches it on. */
   stats_visible: z.boolean().default(false),
@@ -135,6 +159,58 @@ export function parseSettings(
   const raw: Record<string, unknown> = {};
   for (const row of rows) raw[row.key] = row.value;
   return settingsSchema.parse(raw);
+}
+
+/**
+ * The Insights formats, in the order the Insights page lists them. The
+ * values are the check constraint on posts.format in the migration; this
+ * record must name every one of them (the type makes a missing label a
+ * compile error). Singular, for a chip on one article.
+ */
+export const POST_FORMAT_LABELS: Record<InsightFormat, string> = {
+  "energy-transition-briefing": "Energy transition briefing",
+  "downstream-market-outlook": "Downstream market outlook",
+  "african-energy-outlook": "African Energy Outlook",
+  "esg-insight": "ESG insight",
+  "policy-brief": "Policy brief",
+  "executive-commentary": "Executive commentary",
+  "research-paper": "Research paper",
+  "webinar-podcast": "Webinar or podcast",
+};
+
+export type PostFormat = InsightFormat;
+export const POST_FORMATS = Object.keys(POST_FORMAT_LABELS) as PostFormat[];
+
+export function isPostFormat(value: unknown): value is PostFormat {
+  return (
+    typeof value === "string" &&
+    (POST_FORMATS as readonly string[]).includes(value)
+  );
+}
+
+/** A post's format when it has a known one, else null. */
+export function postFormatOf(post: Pick<Post, "format">): PostFormat | null {
+  return isPostFormat(post.format) ? post.format : null;
+}
+
+/** Labels for publications.kind, for the admin's select. */
+export const PUBLICATION_KIND_LABELS: Record<PublicationKind, string> = {
+  journal: "Journal article",
+  "op-ed": "Op-ed",
+  mention: "Mention",
+  report: "Report",
+  talk: "Talk",
+};
+
+export const PUBLICATION_KINDS = Object.keys(
+  PUBLICATION_KIND_LABELS,
+) as PublicationKind[];
+
+export function isPublicationKind(value: unknown): value is PublicationKind {
+  return (
+    typeof value === "string" &&
+    (PUBLICATION_KINDS as readonly string[]).includes(value)
+  );
 }
 
 export function isPostCategory(value: unknown): value is PostCategory {
