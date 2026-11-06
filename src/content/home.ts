@@ -48,7 +48,7 @@ export const HOME_HERO: {
   secondaryCta: { label: "Read the commentary", href: "/insights#businessday" },
   latestLabel: "Latest in BusinessDay",
   photo: "lagos-third-mainland",
-  credit: "Third Mainland Bridge, Lagos · Photo: Solasly, CC BY-SA 4.0",
+  credit: "",
   cardMeta: (oped) => ["Op-ed", ...oped.topics.slice(0, 2)].join(" · "),
   cardLinkLabel: COVER_COPY.linkLabel,
 };
