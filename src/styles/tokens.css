@@ -44,9 +44,9 @@
   --color-red-ink: #b8231a; /* Red text under 24px on paper; form errors. Never a flood */
   --color-night: #06170e; /* Night slab: figure plates, founder band, About hero, footer. Never two dark screens in a row */
   --color-night-raised: #0e2418; /* Panels and grid lines on night. Never text */
-  --color-paper: #f5f0e4; /* Default page surface */
-  --color-paper-deep: #eae2ce; /* Alternate band; cover-wall ground */
-  --color-card: #fbf8f0; /* Cards on paper */
+  --color-paper: #f1f3ea; /* The field: the default page surface, white with the mark's green at about 5% (DESIGN.md, Colors). Never a warm cream */
+  --color-paper-deep: #e6ebdc; /* The deep field: alternate band; cover-wall ground. Secondary text here uses ink-muted, never ink-subtle */
+  --color-card: #fafbf7; /* Cards and inputs on the field: near white with the field's cast */
   --color-chart-tint: #3fcb79; /* Third chart series, night only. Never on paper */
   --color-lime-pale: #d3eda6; /* The italic turn on photographs only. Nowhere else */
   --color-white: #ffffff; /* Text on night, green, red and photo */
@@ -187,7 +187,9 @@
   --spacing-section-sm: clamp(3.5rem, 2.5rem + 4vw, 6rem); /* Bands inside a section: 56px to 96px */
   --spacing-section: clamp(5rem, 3.5rem + 6vw, 10rem); /* Top and bottom of every section: 80px to 160px */
   --spacing-section-lg: clamp(6rem, 12vw, 11rem); /* Legacy: hero and chapter breaks */
-  --spacing-header: clamp(4rem, 3.5rem + 1.5vw, 4.5rem); /* Fixed site header: 64px to 72px. <main> is offset by it (pt-header); a hero pulls under it with -mt-header */
+  --spacing-header: calc(
+    clamp(4rem, 3.5rem + 1.5vw, 4.5rem) + env(safe-area-inset-top, 0px)
+  ); /* Fixed site header: 64px to 72px, plus the status-bar inset under viewport-fit=cover. <main> is offset by it (pt-header); a hero pulls under it with -mt-header */
 
   /* Layout widths → max-w-text, max-w-narrow, max-w-page, max-w-wide */
   --container-text: 42rem; /* 672px: reading measure (68ch at 17px) */
@@ -196,18 +198,20 @@
   --container-wide: 88rem; /* 1408px: full-bleed data, galleries, chrome */
 
   /* ---------------------------------------------------------------- */
-  /* Shape: the shoulder (brief 2.4). One shape everywhere: three tight */
+  /* Shape: the shoulder (brief 2.4; DESIGN.md, Shapes). Three tight    */
   /* corners (radius-xs) and one large top-right corner that echoes the */
-  /* ring of the mark. Utilities shoulder-sm, shoulder, shoulder-lg.    */
-  /* Circles only where the ring is meant (radius-pill).                */
+  /* ring of the mark, on the firm's own objects only: photographs,     */
+  /* flood panels, covers, flood tiles. Instruments are square (xs).    */
+  /* Utilities shoulder-sm, shoulder, shoulder-lg. Circles only where   */
+  /* the ring is meant (radius-pill).                                   */
   /* ---------------------------------------------------------------- */
   --radius-none: 0px; /* Images in prose, full-bleed media */
-  --radius-xs: 4px; /* The three tight corners of every shoulder; inputs */
+  --radius-xs: 4px; /* The three tight corners of every shoulder; every instrument (figure plates, numeral cards, forms and inputs, journal cards, format tiles, the author card, the quotation panel): DESIGN.md, Shapes */
   --radius-sm: 4px; /* Legacy alias of radius-xs */
   --radius-md: 8px; /* Legacy: admin panels */
   --radius-lg: 12px; /* Legacy: admin media */
-  --radius-shoulder-sm: 24px; /* Small cards, format tiles, form fields' container */
-  --radius-shoulder: 40px; /* Cards, covers, figure plates, audience and pillar tiles */
+  --radius-shoulder-sm: 24px; /* Small objects of the firm's own (the style guide's small frames) */
+  --radius-shoulder: 40px; /* Op-ed covers, the four flood tiles, the latest-op-ed card, post covers */
   --radius-shoulder-lg: clamp(4rem, 2rem + 9vw, 15rem); /* Photographs, flood panels (64px to 240px) */
   --radius-pill: 999px; /* Buttons, chips, the Fig. tag, the gap pill */
 
@@ -221,34 +225,39 @@
   --shadow-lg: 0 4px 8px rgb(11 31 20 / 0.05), 0 20px 40px -8px rgb(11 31 20 / 0.12); /* Legacy (admin): modals, drawers */
 
   /* ---------------------------------------------------------------- */
-  /* Motion (brief 2.8). Native scroll only; server HTML is final;      */
-  /* every value collapses under prefers-reduced-motion (globals.css).  */
-  /* Each duration has a matching @utility in globals.css.              */
+  /* Motion (DESIGN.md, Motion). Native scroll only; server HTML is the */
+  /* final state; every value collapses under prefers-reduced-motion     */
+  /* (globals.css). The scroll-driven reveals have no duration: they     */
+  /* run over a distance of the reader's own scroll (the --range-*       */
+  /* tokens, in svh). Each duration has a matching @utility in           */
+  /* globals.css.                                                        */
   /* ---------------------------------------------------------------- */
   --duration-instant: 80ms; /* Colour changes on hover */
-  --duration-fast: 160ms; /* Buttons, links, small state changes */
-  --duration-page: 200ms; /* Route transitions on client-side navigation only */
-  --duration-base: 240ms; /* Cards, panels, most UI; the `pop` of gap pills and end labels */
-  --duration-slow: 400ms; /* Overlays, drawers, accordions */
+  --duration-fast: 160ms; /* Buttons, links, small state changes; the old page leaving on a route change */
+  --duration-page: 200ms; /* The new page arriving on a client-side route change */
+  --duration-base: 240ms; /* Cards, panels, most UI */
+  --duration-slow: 400ms; /* Overlays, drawers, accordions; the headline morph between routes */
   --duration-slower: 640ms; /* Large surfaces, demonstrations */
-  --duration-reveal: 600ms; /* `fade`: body blocks, opacity and a 16px lift; stagger 90ms */
-  --duration-mask: 800ms; /* `mask`: display headings clip up from their baseline */
-  --duration-wipe: 1000ms; /* `wipe`: photographs clip up; the image settles from 1.08 over duration-wipe-inner */
-  --duration-wipe-inner: 1400ms; /* `wipe`: the inner image scale 1.08 to 1 */
-  --duration-draw: 1200ms; /* `draw` of rings and chart lines, `sweep`, `close` */
-  --duration-draw-glyph: 900ms; /* `draw` of a glyph */
-  --duration-hatch: 600ms; /* `hatch`: the gap hatch fades and clips in after `sweep` */
-  --duration-pop: 240ms; /* `pop`: gap pill and end labels scale 0.92 to 1 after `hatch` */
+  --duration-rise: 600ms; /* `rise`: the home hero's load fades (the turn, lede, actions and card), 90 ms apart */
+  --duration-draw: 1200ms; /* The lead figures on load (`figure-lead`): the sweep of the Research timeline, the Contact ring and map */
+  --duration-draw-glyph: 900ms; /* The About mark drawing itself on load */
+  --duration-hatch: 600ms; /* `figure-lead`: the gap hatch after the sweep */
+  --duration-pop: 240ms; /* `figure-lead`: marks and pills scale 0.92 to 1 after the sweep */
   --duration-light: 300ms; /* `light`: a Why Olivia line turns white and its flame bullet grows */
-  --duration-settle: 4500ms; /* `settle`: the hero photograph scales 1.06 to 1 once on load */
-  --duration-counter: 1400ms; /* `count`: AnimatedNumber count-up */
+  --duration-settle: 4500ms; /* `settle`: the hero photograph scales 1.06 to 1 once on load; the Contact map settles on its region */
+  --range-wipe: 45svh; /* `wipe`: a photograph's frame clips up over this much of its travel */
+  --range-wipe-inner: 60svh; /* `wipe`: the image inside settles from 1.08 */
+  --range-draw: 35svh; /* `draw`: rings and chart lines; `ring-close` */
+  --range-draw-glyph: 24svh; /* `draw`: a glyph's strokes */
+  --range-sweep: 40svh; /* A figure: the sweep; the hatch follows at 60%, the pops at 100% */
+  --range-assemble: 40svh; /* `assemble`: a cover slides into the wall */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1); /* Default for UI state changes */
-  --ease-emphasized: cubic-bezier(0.32, 0.72, 0, 1); /* Larger movements: overlays, drawers */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* `fade`, `hatch`, `light`, `settle`, counters: decelerate into place */
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* `mask`, `pop` */
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* `wipe`, `draw`, `sweep`, `close` */
+  --ease-emphasized: cubic-bezier(0.32, 0.72, 0, 1); /* Larger movements: overlays, drawers, the headline morph */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* `hatch`, `light`, `settle`, `assemble`: decelerate into place */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* `pop` */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* `wipe`, `draw`, `sweep`, `ring-close` */
   --ease-in: cubic-bezier(0.55, 0, 1, 0.45); /* Exits only */
-  --ease-linear: linear; /* Progress indicators */
-  --motion-reveal-distance: 16px; /* `fade` lift distance */
-  --motion-stagger: 90ms; /* Delay between sibling reveals */
+  --ease-linear: linear; /* Progress indicators; `parallax` */
+  --motion-reveal-distance: 16px; /* Lift distance of the hero's load fades and the phone menu items */
+  --motion-stagger: 90ms; /* Delay between the hero's load fades and the phone menu items */
 }

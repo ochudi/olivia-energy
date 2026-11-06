@@ -24,17 +24,8 @@
 @utility duration-slower {
   transition-duration: var(--duration-slower);
 }
-@utility duration-reveal {
-  transition-duration: var(--duration-reveal);
-}
-@utility duration-mask {
-  transition-duration: var(--duration-mask);
-}
-@utility duration-wipe {
-  transition-duration: var(--duration-wipe);
-}
-@utility duration-wipe-inner {
-  transition-duration: var(--duration-wipe-inner);
+@utility duration-rise {
+  transition-duration: var(--duration-rise);
 }
 @utility duration-draw {
   transition-duration: var(--duration-draw);
@@ -54,8 +45,18 @@
 @utility duration-settle {
   transition-duration: var(--duration-settle);
 }
-@utility duration-counter {
-  transition-duration: var(--duration-counter);
+
+/* ------------------------------------------------------------------ */
+/* Hover (DESIGN.md, Motion): every hover: utility, and so group-hover:, */
+/* applies only on a device with a fine pointer that can hover. Touch   */
+/* screens never show a hover state, so nothing sticks after a tap.     */
+/* ------------------------------------------------------------------ */
+@custom-variant hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -80,7 +81,8 @@
 /* Type utilities (brief 2.2).                                          */
 /* ------------------------------------------------------------------ */
 @utility label {
-  /* 12px uppercase 600, tracked: eyebrows, chips, the Fig. tag, table heads. */
+  /* 12px uppercase 600, tracked. Two places only (DESIGN.md, Typography):
+     table heads and the axis labels of charts. Never above a heading. */
   font-family: var(--font-sans);
   font-size: var(--text-xs);
   line-height: var(--text-xs--line-height);
@@ -110,23 +112,6 @@
   font-variant-numeric: lining-nums tabular-nums;
 }
 
-/* Route transition. The (site) template re-mounts on every navigation, so
-   a mount animation is a page transition. Opacity and transform only, so
-   it can never cause layout shift; reduced motion collapses it (below). */
-@keyframes page-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@utility animate-page-enter {
-  animation: page-enter var(--duration-page) var(--ease-out) both;
-}
-
 /* Form field error. A short fade-and-rise so the message announces
    itself without a layout jump; reduced motion collapses it like every
    other animation (see the global rule below). */
@@ -144,6 +129,78 @@
   /* Extends a text link's tap target to at least 24px without moving it. */
   padding-block: 0.25rem;
   margin-block: -0.25rem;
+}
+@utility tap {
+  /* Tap targets on touch screens: a control keeps its drawn size, and a
+     transparent pseudo-element centred on it makes what the finger can
+     press at least 44 x 44 px (WCAG 2.5.5). Words in running text are
+     exempt and never carry this. A control that lays its own overlay
+     over a card (after:absolute after:inset-0) adds
+     pointer-coarse:static! so the overlay keeps its reach. */
+  @media (pointer: coarse) {
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, 44px);
+      height: max(100%, 44px);
+      translate: -50% -50%;
+    }
+  }
+}
+@utility px-page {
+  /* The page's side padding: the gutter token plus the safe-area insets,
+     so a phone held sideways keeps the content clear of its notch
+     (viewport-fit=cover in layout.tsx). Rails inside a container undo the
+     gutter alone (-mx-gutter) and so stay inside the safe area. */
+  padding-left: calc(var(--spacing-gutter) + env(safe-area-inset-left, 0px));
+  padding-right: calc(var(--spacing-gutter) + env(safe-area-inset-right, 0px));
+}
+
+/* Foldables (progressive enhancement): when a half-folded inner screen
+   reports two side-by-side viewport segments, --hinge-gap is the width of
+   the hinge plus a margin either side, measured from the segments. Only
+   the two layouts that would otherwise sit across the fold (the pinned
+   grid figure, the op-ed wall) read it; nothing depends on it. */
+@media (horizontal-viewport-segments: 2) {
+  :root {
+    --hinge-gap: calc(
+      env(viewport-segment-left 1 0) - env(viewport-segment-right 0 0) + 3rem
+    );
+  }
+  /* A grid marked data-fold-split lays one cell either side of the hinge:
+     two equal columns with the hinge inside the gap, every item one cell
+     (spans reset), a phone rail inside it unrolled into a stack. Unlayered
+     so it wins over the utilities; harmless where the query never
+     matches. */
+  [data-fold-split] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--hinge-gap);
+  }
+  [data-fold-split] > * {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  /* The Fig. 2 plate holds its segment under the chapter bar while the
+     steps scroll past in the other, as it does on a desktop. */
+  [data-fold-split] > [data-fold-sticky] {
+    position: sticky;
+    top: calc(var(--spacing-header) + 3.375rem + 1rem);
+    align-self: start;
+  }
+  [data-fold-split] [data-scroll-rail] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    margin-inline: 0;
+    padding-inline: 0;
+    overflow: visible;
+  }
+  [data-fold-split] [data-scroll-rail] > * {
+    width: auto;
+  }
 }
 
 @utility animate-field-error {
@@ -204,6 +261,17 @@
   :focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
+  }
+
+  /* No 300 ms tap delay and no double-tap zoom on controls. */
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role="button"] {
+    touch-action: manipulation;
   }
 
   /* ---------------------------------------------------------------- */
@@ -562,150 +630,262 @@
 
 @layer components {
   /* ---------------------------------------------------------------- */
-  /* Scroll reveals (brief 2.8). <Reveal> writes data-reveal on itself: */
-  /* "static" in server HTML (final state, always visible), "hidden"    */
-  /* only when the block is still below the fold after hydration, then  */
-  /* "visible" when it enters. Each variant class sets the pre-state    */
-  /* under [data-reveal="hidden"] and the transition on the element;    */
-  /* the descendant classes (draw, sweep, hatch, pop, ring-close, wipe- */
-  /* inner, light) respond to the nearest Reveal's state. Delays come   */
-  /* from --reveal-delay (Reveal's `delay` prop) and the duration       */
-  /* tokens, so a stagger needs no JavaScript.                          */
+  /* Motion (DESIGN.md, Motion). Three reveals, tied to content type and */
+  /* nothing else: `wipe` for photographs, `draw` for data (strokes, the */
+  /* hatch, the ring, the chart sweep) and none for text. `parallax` is   */
+  /* depth on photography only; `assemble` is the Insights cover wall.   */
+  /*                                                                     */
+  /* All of them are native scroll-driven animations. A scope names a    */
+  /* view timeline on the box the reader sees (the photograph's frame,   */
+  /* the glyph, the chart), and the strokes, marks and image inside it   */
+  /* play on that timeline over a few svh of the reader's own scroll     */
+  /* (the --range-* tokens): nothing is hidden behind a threshold, and   */
+  /* nothing runs that the reader did not move. Server HTML is the final */
+  /* state. The animations exist only behind @supports, with scripting   */
+  /* on and no reduced-motion preference, so every other reader (no      */
+  /* JavaScript, reduced motion, an older browser) gets the final state  */
+  /* at once. No JavaScript is involved anywhere here.                   */
+  /*                                                                     */
+  /* The two lead figures that open a page above the fold (the Research  */
+  /* timeline, the Contact map) cannot be scroll-driven on a desktop,    */
+  /* where they are in view on arrival: `figure-lead` plays them once on */
+  /* load from 64rem and leaves them scroll-driven below it.             */
   /* ---------------------------------------------------------------- */
 
-  /* fade: opacity 0 to 1 and a 16px lift. */
-  .reveal-fade {
-    transition:
-      opacity var(--duration-reveal) var(--ease-out) var(--reveal-delay, 0ms),
-      transform var(--duration-reveal) var(--ease-out) var(--reveal-delay, 0ms);
+  /* Scopes: the view timeline each family of classes animates on. */
+  .photo-scope {
+    view-timeline: --photo block;
   }
-  .reveal-fade[data-reveal="hidden"] {
-    opacity: 0;
-    transform: translateY(var(--motion-reveal-distance));
+  .draw-scope {
+    view-timeline: --draw block;
   }
-
-  /* mask: a display heading clips up from its baseline. The clip and the
-     lift sit on the inner wrapper Reveal renders (`mask-clip`), never on
-     the observed element: Chromium measures intersection on the clipped
-     box, and a box clipped to nothing never crosses its threshold. A hair
-     of bleed keeps ascenders and descenders out of the clip at line-height
-     0.9. */
-  .reveal-mask .mask-clip {
-    clip-path: inset(-0.15em -0.25em -0.2em -0.25em);
-    transition:
-      clip-path var(--duration-mask) var(--ease-out-expo)
-        var(--reveal-delay, 0ms),
-      transform var(--duration-mask) var(--ease-out-expo)
-        var(--reveal-delay, 0ms);
+  .figure-scope {
+    view-timeline: --figure block;
   }
-  .reveal-mask[data-reveal="hidden"] .mask-clip {
-    clip-path: inset(-0.15em -0.25em 100% -0.25em);
-    transform: translateY(0.3em);
+  .assemble {
+    view-timeline: --assemble block;
   }
 
-  /* wipe: a photograph clips up (on the inner `wipe-clip`, as above); the
-     image inside settles from 1.08. */
-  .reveal-wipe .wipe-clip {
-    clip-path: inset(0);
-    transition: clip-path var(--duration-wipe) var(--ease-in-out)
-      var(--reveal-delay, 0ms);
+  @keyframes wipe-up {
+    from {
+      clip-path: inset(100% 0 0 0);
+    }
+    to {
+      clip-path: inset(0);
+    }
   }
-  .reveal-wipe[data-reveal="hidden"] .wipe-clip {
-    clip-path: inset(100% 0 0 0);
+  @keyframes wipe-settle {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: scale(1);
+    }
   }
-  .wipe-inner {
-    transform: scale(1);
-    transition: transform var(--duration-wipe-inner) var(--ease-in-out)
-      var(--reveal-delay, 0ms);
+  /* 10% of the image's own height in all: 5% up, 5% down. */
+  @keyframes parallax {
+    from {
+      translate: 0 -5%;
+    }
+    to {
+      translate: 0 5%;
+    }
   }
-  [data-reveal="hidden"] .wipe-inner {
-    transform: scale(1.08);
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes appear {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  /* Chart lines revealed left to right by a clip; the bleed keeps end
+     markers whole. */
+  @keyframes sweep {
+    from {
+      clip-path: inset(-12% 106% -12% -6%);
+    }
+    to {
+      clip-path: inset(-12% -6% -12% -6%);
+    }
+  }
+  @keyframes hatch-in {
+    from {
+      opacity: 0;
+      clip-path: inset(-6% 106% -6% -6%);
+    }
+    to {
+      opacity: 1;
+      clip-path: inset(-6% -6% -6% -6%);
+    }
+  }
+  /* `scale`, not `transform`: markers and labels place themselves with
+     an inline transform that the animation must not override. */
+  @keyframes pop {
+    from {
+      opacity: 0;
+      scale: 0.92;
+    }
+    to {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+  /* The ring's gap (--ring-gap, a fraction of the circumference, on a
+     path with pathLength="1") closes to a full circle. */
+  @keyframes ring-close {
+    from {
+      stroke-dashoffset: var(--ring-gap, 0.25);
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  /* A cover arrives from the side the wall assigns it (--from-x/--from-y). */
+  @keyframes assemble {
+    from {
+      opacity: 0;
+      translate: var(--from-x, 0px) var(--from-y, 2.5rem);
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
   }
 
-  /* draw: strokes with pathLength="1" draw in (glyphs 900ms, rings and
-     chart lines 1200ms). Dots cannot draw, so they fade. */
-  .draw {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset var(--duration-draw) var(--ease-in-out)
-      var(--reveal-delay, 0ms);
-  }
-  .draw-glyph {
-    transition-duration: var(--duration-draw-glyph);
-  }
-  [data-reveal="hidden"] .draw {
-    stroke-dashoffset: 1;
-  }
-  .draw-dot {
-    opacity: 1;
-    transition: opacity var(--duration-base) var(--ease-out)
-      calc(var(--reveal-delay, 0ms) + var(--duration-draw-glyph) * 0.6);
-  }
-  [data-reveal="hidden"] .draw-dot {
-    opacity: 0;
+  @supports (animation-timeline: view()) {
+    @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+      /* wipe: the photograph's frame clips up over the first 45svh of its
+         travel; the image inside settles from 1.08. */
+      .wipe {
+        animation: wipe-up var(--ease-in-out) both;
+        animation-timeline: --photo;
+        animation-range: cover 0 cover var(--range-wipe);
+      }
+      .wipe-inner {
+        animation: wipe-settle var(--ease-in-out) both;
+        animation-timeline: --photo;
+        animation-range: cover 0 cover var(--range-wipe-inner);
+      }
+      /* parallax: the image, overscanned by 10%, drifts through its frame
+         for the whole of the frame's travel across the viewport. */
+      .parallax {
+        scale: 1.1;
+        animation: parallax linear both;
+        animation-timeline: --photo;
+        animation-range: cover 0% cover 100%;
+      }
+
+      /* draw: strokes with pathLength="1" draw in (glyphs over a shorter
+         range than rings and chart lines). Dots cannot draw, so they
+         appear once the strokes are mostly there. */
+      .draw {
+        stroke-dasharray: 1;
+        animation: draw var(--ease-in-out) both;
+        animation-timeline: --draw;
+        animation-range: cover 0 cover var(--range-draw);
+      }
+      .draw-glyph {
+        animation-range: cover 0 cover var(--range-draw-glyph);
+      }
+      .draw-late {
+        animation-range: cover 8svh cover calc(var(--range-draw) + 8svh);
+      }
+      .draw-dot {
+        animation: appear var(--ease-out) both;
+        animation-timeline: --draw;
+        animation-range: cover calc(var(--range-draw-glyph) * 0.6) cover
+          var(--range-draw-glyph);
+      }
+      .ring-close {
+        stroke-dasharray: 1 1;
+        animation: ring-close var(--ease-in-out) both;
+        animation-timeline: --draw;
+        animation-range: cover 10svh cover calc(var(--range-draw) + 15svh);
+      }
+
+      /* A figure: the lines sweep, the hatch follows, the pills and end
+         labels pop, in that order on one timeline. */
+      .sweep {
+        animation: sweep var(--ease-in-out) both;
+        animation-timeline: --figure;
+        animation-range: cover 0 cover var(--range-sweep);
+      }
+      .hatch {
+        animation: hatch-in var(--ease-out) both;
+        animation-timeline: --figure;
+        animation-range: cover calc(var(--range-sweep) * 0.6) cover
+          calc(var(--range-sweep) * 1.1);
+      }
+      .pop {
+        animation: pop var(--ease-out-expo) both;
+        animation-timeline: --figure;
+        animation-range: cover var(--range-sweep) cover
+          calc(var(--range-sweep) * 1.25);
+      }
+
+      /* assemble: the Insights cover wall. Each cover slides into place
+         from its own side; --assemble-offset staggers the columns. */
+      .assemble {
+        animation: assemble var(--ease-out) both;
+        animation-timeline: --assemble;
+        animation-range: cover var(--assemble-offset, 0svh) cover
+          calc(var(--range-assemble) + var(--assemble-offset, 0svh));
+      }
+
+      /* A phone rail (overflow-x: auto) is itself a scroll container, so a
+         view timeline inside it would measure the rail, not the page, and
+         freeze every item half-revealed. Items in a rail are final. */
+      @media (max-width: 47.9375rem) {
+        [data-scroll-rail]
+          :is(
+            .wipe,
+            .wipe-inner,
+            .parallax,
+            .draw,
+            .draw-dot,
+            .sweep,
+            .hatch,
+            .pop,
+            .ring-close,
+            .assemble
+          ) {
+          animation: none;
+          scale: none;
+        }
+      }
+    }
   }
 
-  /* sweep: chart lines revealed left to right by a clip; the bleed keeps
-     end markers whole. hatch follows sweep; pop follows hatch. */
-  .sweep {
-    clip-path: inset(-12% -6% -12% -6%);
-    transition: clip-path var(--duration-draw) var(--ease-in-out)
-      var(--reveal-delay, 0ms);
-  }
-  [data-reveal="hidden"] .sweep {
-    clip-path: inset(-12% 106% -12% -6%);
-  }
-  .hatch {
-    opacity: 1;
-    clip-path: inset(-6% -6% -6% -6%);
-    transition:
-      opacity var(--duration-hatch) var(--ease-out)
-        calc(var(--reveal-delay, 0ms) + var(--duration-draw)),
-      clip-path var(--duration-hatch) var(--ease-out)
-        calc(var(--reveal-delay, 0ms) + var(--duration-draw));
-  }
-  [data-reveal="hidden"] .hatch {
-    opacity: 0;
-    clip-path: inset(-6% 106% -6% -6%);
-  }
-  .pop {
-    opacity: 1;
-    transform: scale(1);
-    transition:
-      opacity var(--duration-pop) var(--ease-out-expo)
-        calc(
-          var(--reveal-delay, 0ms) + var(--duration-draw) +
-            var(--duration-hatch)
-        ),
-      transform var(--duration-pop) var(--ease-out-expo)
-        calc(
-          var(--reveal-delay, 0ms) + var(--duration-draw) +
-            var(--duration-hatch)
-        );
-  }
-  [data-reveal="hidden"] .pop {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-
-  /* close: the ring's gap (--ring-gap, a fraction of the circumference,
-     on a path with pathLength="1") closes to a full circle. A dash as long
-     as the path with an offset of the gap draws an open ring; the offset
-     transitions to 0 (dashoffset, like `draw`: dasharray transitions do
-     not repaint reliably in Chromium). */
-  .ring-close {
-    stroke-dasharray: 1 1;
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset var(--duration-draw) var(--ease-in-out)
-      var(--reveal-delay, 0ms);
-  }
-  [data-reveal="hidden"] .ring-close {
-    stroke-dashoffset: var(--ring-gap, 0.25);
+  /* The lead figures above the fold on a desktop: once, on load. */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 64rem) {
+    .figure-lead .sweep {
+      animation: sweep var(--duration-draw) var(--ease-in-out)
+        var(--load-delay, 300ms) both;
+    }
+    .figure-lead .hatch {
+      animation: hatch-in var(--duration-hatch) var(--ease-out)
+        calc(var(--load-delay, 300ms) + var(--duration-draw)) both;
+    }
+    /* --pop-at: where along the sweep this mark sits (0 to 1). */
+    .figure-lead .pop {
+      animation: pop var(--duration-pop) var(--ease-out-expo)
+        calc(var(--load-delay, 300ms) + var(--duration-draw) * var(--pop-at, 1))
+        both;
+    }
   }
 
   /* light: a Why Olivia line turns from the unlit green to white and its
-     flame bullet grows. Driven by data-lit="false" (P1's observer) or
-     by a hidden Reveal; without JavaScript every line is lit. */
+     flame bullet grows. Driven by data-lit="false" from the home opening's
+     scroll controller; without JavaScript every line is lit. */
   .light {
     color: var(--color-white);
     transition: color var(--duration-light) var(--ease-out)
@@ -717,12 +897,10 @@
     transition: transform var(--duration-light) var(--ease-out)
       var(--reveal-delay, 0ms);
   }
-  .light[data-lit="false"],
-  [data-reveal="hidden"] .light {
+  .light[data-lit="false"] {
     color: var(--color-light-unlit);
   }
-  .light[data-lit="false"] .flame-bullet,
-  [data-reveal="hidden"] .light .flame-bullet {
+  .light[data-lit="false"] .flame-bullet {
     transform: scale(0);
   }
 
@@ -732,14 +910,18 @@
     color: var(--color-glyph);
   }
 
-  /* Hover motion (brief 2.8): the button arrow, card photographs and
-     covers. The classes are applied by the primitives. */
+  /* Hover motion: the external-link ring on covers and cards slides 4px.
+     Fine pointers only (DESIGN.md, Motion). */
   .hover-arrow {
     transition: transform var(--duration-page) var(--ease-out);
   }
-  a:hover .hover-arrow,
+  @media (hover: hover) and (pointer: fine) {
+    a:hover .hover-arrow,
+    button:hover .hover-arrow {
+      transform: translateX(4px);
+    }
+  }
   a:focus-visible .hover-arrow,
-  button:hover .hover-arrow,
   button:focus-visible .hover-arrow {
     transform: translateX(4px);
   }
@@ -793,7 +975,11 @@
     background-size: 0% 1px;
     transition: background-size var(--duration-base) var(--ease-out);
   }
-  .link-underline:hover,
+  @media (hover: hover) and (pointer: fine) {
+    .link-underline:hover {
+      background-size: 100% 1px;
+    }
+  }
   .link-underline:focus-visible {
     background-size: 100% 1px;
   }
@@ -863,5 +1049,72 @@
   }
   .site-menu[data-state="exiting"] .site-menu-item {
     animation: none;
+  }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- */
+  /* Page to page (DESIGN.md, Motion): React's ViewTransition, per the   */
+  /* Next 16 guide. The (site) template wraps each page with the         */
+  /* page-exit and page-enter classes; each page's H1 is the named       */
+  /* "page-headline" with the morph class, so one headline hands over to  */
+  /* the next; the fixed header is named and pinned so nothing above the */
+  /* content moves. Where the View Transitions API is missing the swap   */
+  /* is instant, which is the fallback the brief asks for.               */
+  /* ---------------------------------------------------------------- */
+  ::view-transition {
+    pointer-events: none;
+  }
+  ::view-transition-group(root) {
+    animation-duration: var(--duration-page);
+  }
+  ::view-transition-group(site-header) {
+    animation: none;
+    z-index: 100;
+  }
+  ::view-transition-old(site-header) {
+    display: none;
+  }
+  ::view-transition-new(site-header) {
+    animation: none;
+  }
+  @keyframes vt-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes vt-lift {
+    from {
+      transform: translateY(8px);
+    }
+    to {
+      transform: none;
+    }
+  }
+  /* The old page leaves fast; the new one arrives after it, with the
+     8px lift of the old route transition. */
+  ::view-transition-old(.page-exit) {
+    animation: vt-fade var(--duration-fast) var(--ease-in) both reverse;
+  }
+  ::view-transition-new(.page-enter) {
+    animation:
+      vt-fade var(--duration-page) var(--ease-out) var(--duration-fast) both,
+      vt-lift var(--duration-slow) var(--ease-out) both;
+  }
+  /* The headline morph: old to new over the slow duration, emphasised. */
+  ::view-transition-group(.morph) {
+    animation-duration: var(--duration-slow);
+    animation-timing-function: var(--ease-emphasized);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(*),
+    ::view-transition-new(*),
+    ::view-transition-group(*) {
+      animation-duration: 0s !important;
+      animation-delay: 0s !important;
+    }
   }
 }

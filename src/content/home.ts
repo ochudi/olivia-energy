@@ -26,7 +26,6 @@ import { COVER_COPY, FORMATS, POSITIONING, TAGLINE, WHY_OLIVIA } from "./brand";
 export const RETRIEVED = "2026-10-02";
 
 export const HOME_HERO: {
-  eyebrow: string;
   title: string;
   turn: string;
   lede: string;
@@ -36,11 +35,10 @@ export const HOME_HERO: {
   photo: PhotoKey;
   /** Vertical credit on the right edge (desktop) or under the card (phone). */
   credit: string;
-  /** Meta line on the latest op-ed card: "Op-ed · {first two topics}". */
-  cardMeta: (oped: Pick<OpEd, "topics">) => string;
+  /** The latest op-ed card's chips: its first two topics. */
+  cardTopics: (oped: Pick<OpEd, "topics">) => readonly string[];
   cardLinkLabel: (title: string) => string;
 } = {
-  eyebrow: "Energy advisory · Research · Sustainability",
   title: TAGLINE.line1,
   turn: TAGLINE.line2,
   lede: POSITIONING,
@@ -49,7 +47,7 @@ export const HOME_HERO: {
   latestLabel: "Latest in BusinessDay",
   photo: "lagos-third-mainland",
   credit: "",
-  cardMeta: (oped) => ["Op-ed", ...oped.topics.slice(0, 2)].join(" · "),
+  cardTopics: (oped) => oped.topics.slice(0, 2),
   cardLinkLabel: COVER_COPY.linkLabel,
 };
 
@@ -86,7 +84,6 @@ export type FigureCopy = {
 };
 
 export const HOME_EVIDENCE: {
-  eyebrow: string;
   title: string;
   lede: string;
   tiles: readonly EvidenceTile[];
@@ -96,7 +93,6 @@ export const HOME_EVIDENCE: {
     gap: { upper: string; lower: string };
   };
 } = {
-  eyebrow: "The gaps, measured",
   title: "Driven by evidence.",
   lede: "Our work is driven by evidence and shaped by experience. Four numbers frame it: three gaps to close, and one sign of what closing them looks like.",
   tiles: [
@@ -208,7 +204,6 @@ export const HOME_EVIDENCE: {
 };
 
 export const HOME_SERVICES: {
-  eyebrow: string;
   title: string;
   lede: string;
   linkLabel: string;
@@ -216,7 +211,6 @@ export const HOME_SERVICES: {
   linkAriaLabel: (title: string) => string;
   allCta: Cta;
 } = {
-  eyebrow: "What we do",
   title: "Six services, one energy future.",
   lede: "From policy advisory and ESG strategy to market intelligence and capacity building, we help governments, businesses, investors and development partners make informed decisions that shape a cleaner, more resilient energy future.",
   linkLabel: "Explore",
@@ -233,10 +227,10 @@ export type FounderCounter = {
 };
 
 export const HOME_FOUNDER: {
-  eyebrow: string;
   name: string;
-  role: string;
-  /** Set large, with the middle dots in lime. */
+  /** Two lines under the name: the title, then the discipline. */
+  roles: readonly [string, string];
+  /** Set large, as a list. */
   credentials: string;
   /** Visually hidden expansion of `credentials`. */
   credentialsLong: string;
@@ -244,10 +238,9 @@ export const HOME_FOUNDER: {
   counters: readonly FounderCounter[];
   cta: Cta;
 } = {
-  eyebrow: "Our founder",
   name: "Dr Olugbenga Olaoye",
-  role: "Founder/CEO, Olivia Energy · Energy economist",
-  credentials: "PhD · MPS · MBA · PMP · CSM",
+  roles: ["Founder/CEO, Olivia Energy", "Energy economist"],
+  credentials: "PhD, MPS, MBA, PMP, CSM",
   credentialsLong:
     "PhD in Economics, Master of Public Service, Executive MBA, Project Management Professional and Certified ScrumMaster.",
   lede: "An energy economist who bridges industry, academia and public policy. He holds a PhD in Economics from Covenant University, a Master of Public Service from the Clinton School of Public Service and an executive MBA from Lagos Business School, and he writes on energy security, the Dangote refinery and the energy transition for BusinessDay.",
@@ -275,7 +268,6 @@ export const HOME_FOUNDER: {
 };
 
 export const HOME_COMMENTARY: {
-  eyebrow: string;
   title: string;
   lede: (c: Counts) => string;
   countLine: (c: Counts) => string;
@@ -293,7 +285,6 @@ export const HOME_COMMENTARY: {
   formatChips: readonly string[];
   insightsCta: Cta;
 } = {
-  eyebrow: "Commentary",
   title: "On the record, in BusinessDay.",
   lede: (c) =>
     `Dr Olaoye writes on energy security, the Dangote refinery and the energy transition: ${countWords(c.opeds)} op-eds since ${monthYear(c.firstOpEd)}, and quoted as an energy economist in ${countWords(c.mentions)} BusinessDay reports.`,

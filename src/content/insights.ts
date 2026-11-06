@@ -10,22 +10,18 @@ import { RETRIEVED, type FigureCopy } from "./home";
  */
 export const INSIGHTS_PAGE: {
   hero: {
-    eyebrow: string;
     title: string;
     lede: string;
     figure: FigureCopy & { hatchArea: string };
   };
   articles: {
-    eyebrow: string;
     title: string;
     /** Visually hidden. */
     filterLabel: string;
     allTopics: string;
     empty: string;
-    /** Eyebrow above the H1 on /insights/category/[slug]; the H1 is the category label. */
-    categoryEyebrow: string;
   };
-  businessday: { eyebrow: string; title: string; lede: string };
+  businessday: { title: string; lede: string };
   quoted: {
     title: string;
     lede: (c: Counts) => string;
@@ -49,12 +45,11 @@ export const INSIGHTS_PAGE: {
   };
 } = {
   hero: {
-    eyebrow: "Olivia Energy Insights",
     title: "Knowledge drives transformation.",
     lede: "Analysis, commentary and data on energy security, downstream markets and the energy transition in Africa.",
     figure: {
       n: 1,
-      dateChip: "Figure · October 2026",
+      dateChip: "Figure, October 2026",
       title: "People without electricity, 2000 to 2024",
       interpretation:
         "Since 2000 the number of people without electricity has more than halved worldwide, from 1.34 billion to 657 million. In sub-Saharan Africa it rose, from 506 million to 579 million, so the region is now home to most of the people still without power.",
@@ -77,15 +72,12 @@ export const INSIGHTS_PAGE: {
     },
   },
   articles: {
-    eyebrow: "Latest analysis",
     title: "Articles",
     filterLabel: "Filter by topic",
     allTopics: "All topics",
     empty: "The first articles are in preparation.",
-    categoryEyebrow: "Insights",
   },
   businessday: {
-    eyebrow: "In BusinessDay",
     title: "On the record.",
     lede: "Op-eds by Dr Olugbenga Olaoye, newest first. BusinessDay publishes them on its opinion pages under its house byline; each closes with his author note.",
   },
@@ -100,7 +92,7 @@ export const INSIGHTS_PAGE: {
   article: {
     breadcrumb: "Insights",
     meta: ({ author, publishedAt, minutes }) =>
-      `By ${author} · ${formatDateLong(publishedAt)} · ${minutes} min read`,
+      `By ${author}, ${formatDateLong(publishedAt)}, ${minutes} min read`,
     authorCard:
       "Dr Olugbenga Olaoye is the founder of Olivia Energy and an energy economist. He writes for BusinessDay.",
     authorLink: { label: "About our founder", href: "/about#founder" },

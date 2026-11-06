@@ -129,9 +129,9 @@ const ART_TINTS: Record<CoverTone, CSSProperties> = {
   },
 } as Record<CoverTone, CSSProperties>;
 
-/* The label (outlet and date) sits over the art's corner. A halo of the
-   cover's own ground (a crisp 7 px edge) keeps every
-   drawn line out of the date, however the art falls at a given width. */
+/* The line (outlet and date, a sentence in the body face) sits over the
+   art's corner. A halo of the cover's own ground (a crisp 7 px edge) keeps
+   every drawn line out of the date, however the art falls at a given width. */
 const LABEL_HALO =
   "justify-self-start bg-(--cover-bg) shadow-[0_0_2px_7px_var(--cover-bg)]";
 
@@ -140,7 +140,7 @@ const LABEL_HALO =
  * cover: a flat block of a logo colour (by topic), the mark's shapes cut
  * large into its top-right corner, the outlet and date as a label, the
  * title in Newsreader, at most three topic chips. The whole cover links to
- * the article on BusinessDay (new tab).
+ * the article on BusinessDay (new tab); its accessible name is its own text.
  *
  * The surface (data-surface) sits on the inner block, so the cover remaps
  * its own colours while the link's focus ring keeps the page's.
@@ -167,7 +167,6 @@ export function OpEdCover({
       href={oped.url}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={COVER_COPY.linkLabel(oped.title)}
       className={cn(
         "shoulder group/cover block h-full transition-transform duration-[300ms] ease-out hover:-translate-y-1 focus-visible:-translate-y-1 motion-reduce:transform-none",
         "focus-visible:outline-focus focus-visible:outline-2 focus-visible:outline-offset-4",
@@ -188,7 +187,7 @@ export function OpEdCover({
         </div>
         <p
           className={cn(
-            "label text-ink-muted numerals relative z-10",
+            "text-ink-muted numerals relative z-10 font-sans text-xs font-medium",
             LABEL_HALO,
             LABEL[layout],
           )}
@@ -202,6 +201,10 @@ export function OpEdCover({
           )}
         >
           {oped.title}
+          {/* The link's name is its visible text (the outlet, date, title and
+              topics), plus where it goes: no aria-label, so the name and the
+              text never disagree. */}
+          <span className="sr-only">{COVER_COPY.onOutlet}</span>
         </Heading>
         {oped.topics.length > 0 ? (
           <ul

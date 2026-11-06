@@ -11,9 +11,9 @@ import { cn } from "@/lib/utils/cn";
 /** Unified focus ring for every link in the footer. */
 const RING =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas";
-const HEADING = "label text-ink-muted";
+const HEADING = "text-ink-muted font-sans text-sm font-medium";
 const LINK = cn(
-  "link-underline text-ink hover:text-ink duration-fast ease-standard inline-block rounded-xs py-1 text-sm transition-colors",
+  "link-underline tap text-ink hover:text-ink duration-fast ease-standard inline-block rounded-xs py-1 text-sm transition-colors",
   RING,
 );
 
@@ -52,10 +52,11 @@ function Column({
 /**
  * SiteFooter — night (creative brief 3.2). Row 1: the tagline from
  * settings, the first sentence in display-xl, the second as the lime
- * italic turn in display-lg. Row 2: the company, What we do, Company, Get in
- * touch. Row 3: the legal line and the photograph credits with "Full
- * credits". The ring of the mark, drawn as a faint line, bleeds off the top
- * right; the footer clips it (it is not an ancestor of <main>).
+ * italic turn in display-lg (with the home hero, the one italic line on the
+ * site; DESIGN.md Typography). Row 2: the company, What we do, Company,
+ * Get in touch. Row 3: the legal line and the photograph credits with
+ * "Full credits". The ring of the mark, drawn as a faint line, bleeds off
+ * the top right; the footer clips it (it is not an ancestor of <main>).
  */
 export async function SiteFooter() {
   const year = new Date().getFullYear();
@@ -85,7 +86,7 @@ export async function SiteFooter() {
         />
       </svg>
 
-      <Container className="pt-section pb-10">
+      <Container className="pt-section pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]">
         <p className="font-display font-normal text-balance">
           <span className="text-display-xl text-ink block max-w-[14ch]">
             {first}
@@ -102,7 +103,7 @@ export async function SiteFooter() {
             <Link
               href="/"
               className={cn(
-                "inline-flex rounded-xs text-[1.5rem] leading-none",
+                "tap inline-flex rounded-xs text-[1.5rem] leading-none",
                 RING,
               )}
             >
@@ -112,7 +113,8 @@ export async function SiteFooter() {
             <div className="text-ink-muted mt-6 space-y-1 text-sm">
               <p className="text-ink">{FOOTER.legalName}</p>
               <p className="numerals">{FOOTER.registration}</p>
-              <p>{FOOTER.places}</p>
+              <p>{FOOTER.places[0]}</p>
+              <p>{FOOTER.places[1]}</p>
             </div>
           </div>
 
@@ -174,25 +176,13 @@ export async function SiteFooter() {
               <Link
                 href={FOOTER.conversation.href}
                 className={cn(
-                  "group text-primary inline-flex items-center gap-2.5 rounded-xs py-1 text-sm font-medium",
+                  "group tap text-primary inline-flex items-center gap-2.5 rounded-xs py-1 text-sm font-medium",
                   RING,
                 )}
               >
                 <span className="link-underline">
                   {FOOTER.conversation.label}
                 </span>
-                <svg
-                  viewBox="0 0 16 16"
-                  aria-hidden="true"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={1.75}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="hover-arrow size-3.5"
-                >
-                  <path d="M3 8h10M9 4l4 4-4 4" />
-                </svg>
               </Link>
             </li>
           </Column>
@@ -208,7 +198,7 @@ export async function SiteFooter() {
             <Link
               href={FOOTER.photoCredits.link.href}
               className={cn(
-                "text-ink underline decoration-current/40 underline-offset-4 hover:decoration-current",
+                "text-ink tap inline-block underline decoration-current/40 underline-offset-4 hover:decoration-current",
                 RING,
               )}
             >

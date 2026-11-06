@@ -38,7 +38,7 @@ from (
       'https://businessday.ng/opinion/article/turning-nigerians-from-consumers-into-owners/'::text,
       array['Dangote Refinery', 'Energy security', 'Economy']::text[],
       'Argues the Dangote Refinery IPO could turn Nigerians from fuel consumers into owners, deepen the capital market, and test whether African savings can finance African industrialisation and energy security.'::text,
-      'It asks whether the next chapter of Africa''s development can be defined by what Africans build, what Africans finance and what Africans own.'::text,
+      'It asks whether the next chapter of Africa’s development can be defined by what Africans build, what Africans finance and what Africans own.'::text,
       false::boolean
     ),
     (
@@ -128,7 +128,7 @@ from (
       date '2025-07-14',
       'https://businessday.ng/opinion/article/sanitation-without-accountability-why-nigerias-open-defecation-crisis-persists-part-2/'::text,
       array['Policy']::text[],
-      'Argues that Nigeria''s open defecation persists because of weak accountability. It calls for empowered community committees, culturally aware messaging, integrated health and sanitation data, and state partnerships with proven local sanitation champions.'::text,
+      'Argues that Nigeria’s open defecation persists because of weak accountability. It calls for empowered community committees, culturally aware messaging, integrated health and sanitation data, and state partnerships with proven local sanitation champions.'::text,
       'Toilets are not just about waste; they are about dignity, equality, and state legitimacy.'::text,
       false::boolean
     ),
@@ -173,20 +173,20 @@ from (
     ),
     (
       'mention'::text,
-      'How Nigeria''s debt bill is squeezing the budget'::text,
+      'How Nigeria’s debt bill is squeezing the budget'::text,
       array['Oluwatobi Ojabello']::text[],
       'BusinessDay'::text,
       2026::integer,
       date '2026-06-08',
       'https://businessday.ng/business-economy/article/how-nigerias-debt-bill-is-squeezing-the-budget/'::text,
       array['Economy', 'Policy']::text[],
-      'BusinessDay Pro analysis showing debt service consumed about 67 per cent of federal revenue in early-to-late 2025, arguing a shallow revenue base, not the debt stock alone, is squeezing Nigeria''s budget.'::text,
+      'BusinessDay Pro analysis showing debt service consumed about 67 per cent of federal revenue in early-to-late 2025, arguing a shallow revenue base, not the debt stock alone, is squeezing Nigeria’s budget.'::text,
       '“Nigeria is not being squeezed only by how much it owes. It is being squeezed by the cost of servicing what it owes against a revenue base that remains dangerously shallow,” said Olugbenga Olaoye, a member of the United States Association for Energy Economics (USAEE).'::text,
       false::boolean
     ),
     (
       'mention'::text,
-      'Nigeria''s economy seen growing at fastest rate in 5 years'::text,
+      'Nigeria’s economy seen growing at fastest rate in 5 years'::text,
       array['Oluwatobi Ojabello']::text[],
       'BusinessDay'::text,
       2026::integer,
@@ -206,7 +206,7 @@ from (
       date '2026-05-08',
       'https://businessday.ng/pro/article/uae-exit-deepens-opecs-fading-pricing-influence/'::text,
       array['Oil and gas', 'Policy', 'Economy']::text[],
-      'Analyses how the UAE''s departure from OPEC weakens the cartel''s supply discipline and argues that Nigeria, hampered by volatile output, remains a price-dependent producer with little volume flexibility.'::text,
+      'Analyses how the UAE’s departure from OPEC weakens the cartel’s supply discipline and argues that Nigeria, hampered by volatile output, remains a price-dependent producer with little volume flexibility.'::text,
       'According to Olugbenga Olaoye, Nigeria’s gains reflect short-term efficiency improvements rather than a durable expansion in capacity.'::text,
       false::boolean
     ),
@@ -219,7 +219,7 @@ from (
       date '2026-05-05',
       'https://businessday.ng/pro/article/uae-exit-from-opec-exposes-nigerias-structural-output-limits/'::text,
       array['Oil and gas', 'Economy', 'Policy']::text[],
-      'Argues that the UAE leaving OPEC weakens the cartel''s pricing power and exposes Nigeria as a price-dependent producer unable to raise output, straining revenue projections and budgets.'::text,
+      'Argues that the UAE leaving OPEC weakens the cartel’s pricing power and exposes Nigeria as a price-dependent producer unable to raise output, straining revenue projections and budgets.'::text,
       'According to Olugbenga Olaoye, Nigeria’s gains reflect short-term efficiency improvements rather than a durable expansion in capacity.'::text,
       false::boolean
     ),
@@ -245,7 +245,7 @@ from (
       date '2026-04-01',
       'https://businessday.ng/pro/article/rising-oil-prices-tighten-cbns-options-deepen-growth-inflation-trade-off/'::text,
       array['Economy', 'Oil and gas', 'Policy']::text[],
-      'Argues that rising oil prices leave Nigeria''s central bank facing a costly trade-off between containing inflation and supporting growth, with holding, tightening and easing each carrying risks.'::text,
+      'Argues that rising oil prices leave Nigeria’s central bank facing a costly trade-off between containing inflation and supporting growth, with holding, tightening and easing each carrying risks.'::text,
       'Olugbenga Olaoye, energy economist, observes that delayed responses to global shocks allow cost pressures to cascade across sectors.'::text,
       false::boolean
     ),
@@ -258,7 +258,7 @@ from (
       date '2026-03-30',
       'https://businessday.ng/pro/article/oil-at-100-again-but-nigeria-is-poorer-for-it-this-time/'::text,
       array['Oil and gas', 'Energy security', 'Dangote Refinery']::text[],
-      'Compares today''s $100 oil with the 1970s shocks, arguing Nigeria now absorbs price volatility faster through inflation and fuel costs, and recommending local refining, reliable power and renewables as buffers.'::text,
+      'Compares today’s $100 oil with the 1970s shocks, arguing Nigeria now absorbs price volatility faster through inflation and fuel costs, and recommending local refining, reliable power and renewables as buffers.'::text,
       'As Olugbenga Olaoye, energy economist and member of the United States Association for Energy Economics (USAEE), notes, “Nigeria’s inflation response to external oil shocks is no longer gradual.'::text,
       false::boolean
     ),
@@ -297,7 +297,7 @@ from (
       date '2026-03-24',
       'https://businessday.ng/pro/article/africa-exports-raw-wealth-imports-global-shocks/'::text,
       array['Downstream', 'Dangote Refinery', 'Economy']::text[],
-      'Reports that Sub-Saharan Africa''s reliance on unprocessed commodity exports leaves it exposed to global shocks, citing Nigeria''s Dangote Refinery as evidence that local value addition cushions economies.'::text,
+      'Reports that Sub-Saharan Africa’s reliance on unprocessed commodity exports leaves it exposed to global shocks, citing Nigeria’s Dangote Refinery as evidence that local value addition cushions economies.'::text,
       'Olugbenga Olaoye, energy economist and member of the USAEE, says, “For decades, Nigeria operated a structurally flawed downstream model: exporting crude oil while importing refined products.'::text,
       false::boolean
     ),
@@ -310,7 +310,7 @@ from (
       date '2026-03-18',
       'https://businessday.ng/pro/article/nigerias-oil-windfall-comes-at-a-cost-of-living-crisis-for-households/'::text,
       array['Oil and gas', 'Economy', 'Energy security']::text[],
-      'Argues that Brent above $100 amid Middle East tensions boosts Nigeria''s oil revenues while raising fuel, transport and living costs for households and businesses.'::text,
+      'Argues that Brent above $100 amid Middle East tensions boosts Nigeria’s oil revenues while raising fuel, transport and living costs for households and businesses.'::text,
       '“Higher oil prices improve government earnings, but they also increase costs across the economy.'::text,
       false::boolean
     ),
@@ -323,7 +323,7 @@ from (
       date '2026-02-25',
       'https://businessday.ng/business-economy/article/what-the-mpcs-rate-cut-really-signals/'::text,
       array['Economy', 'Policy']::text[],
-      'Explains the Central Bank of Nigeria''s 50-basis-point cut to 26.5 per cent alongside an unchanged 45 per cent cash reserve ratio, reading it as cautious easing without releasing liquidity.'::text,
+      'Explains the Central Bank of Nigeria’s 50-basis-point cut to 26.5 per cent alongside an unchanged 45 per cent cash reserve ratio, reading it as cautious easing without releasing liquidity.'::text,
       'Olugbenga Olaoye, an energy economist, says, “This rate cut is not dramatic. It is small and cautious.”'::text,
       false::boolean
     ),
@@ -336,7 +336,7 @@ from (
       date '2025-09-29',
       'https://businessday.ng/pro/article/dangote-pengassan-tensions-may-spark-new-economic-threat/'::text,
       array['Dangote Refinery', 'Downstream', 'Economy']::text[],
-      'Argues that the standoff between the Dangote refinery and the PENGASSAN oil union could disrupt fuel supply, push up prices and inflation, and jeopardise gains from Nigeria''s recent reforms.'::text,
+      'Argues that the standoff between the Dangote refinery and the PENGASSAN oil union could disrupt fuel supply, push up prices and inflation, and jeopardise gains from Nigeria’s recent reforms.'::text,
       'Over the years, unions such as PENGASSAN have appeared inevitable and untouchable, but at this level, unionism undermines national stability.'::text,
       false::boolean
     )

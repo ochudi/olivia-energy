@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { Lede } from "@/components/ui/lede";
 import { Section } from "@/components/ui/section";
 import { RESEARCH_PAGE } from "@/content/publications";
@@ -36,18 +35,11 @@ export function CommentaryList({
       <Container>
         <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-12 lg:gap-x-6">
           <div className="lg:sticky lg:top-[calc(var(--spacing-header)+2rem)] lg:col-span-4 lg:self-start">
-            <Eyebrow>{copy.eyebrow}</Eyebrow>
-            <Display
-              as="h2"
-              size="lg"
-              id="commentary-title"
-              reveal="mask"
-              className="mt-5"
-            >
+            <Display as="h2" size="lg" id="commentary-title">
               {copy.title}
             </Display>
             <Lede className="mt-6">{copy.lede(counts)}</Lede>
-            <Button href={copy.link.href} variant="text" arrow className="mt-8">
+            <Button href={copy.link.href} variant="text" className="mt-8">
               {copy.link.label}
             </Button>
           </div>
@@ -58,7 +50,7 @@ export function CommentaryList({
                 key={o.slug}
                 className="border-line grid grid-cols-1 gap-x-6 gap-y-3 border-b py-6 sm:grid-cols-[7.5rem_1fr] md:py-7"
               >
-                <p className="label text-ink-muted numerals pt-1.5">
+                <p className="text-ink-muted numerals pt-1.5 text-sm">
                   <time dateTime={o.publishedOn}>
                     {formatDateShort(o.publishedOn)}
                   </time>

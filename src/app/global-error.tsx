@@ -38,12 +38,11 @@ export default function GlobalError({
       className={`${displayFont.variable} ${displayItalicFont.variable} ${sansFont.variable} ${sansItalicFont.variable}`}
     >
       <body className="bg-canvas text-ink flex min-h-dvh flex-col font-sans antialiased">
-        <main className="px-gutter py-section-lg flex flex-1 items-center justify-center">
+        <main className="px-page py-section-lg flex flex-1 items-center justify-center">
           <Container size="narrow">
             <SectionHeading
               as="h1"
               align="center"
-              eyebrow={GLOBAL_ERROR.eyebrow}
               title={GLOBAL_ERROR.title}
               lede={GLOBAL_ERROR.lede}
             />

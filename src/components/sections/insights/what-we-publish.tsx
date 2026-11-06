@@ -2,16 +2,12 @@ import Link from "next/link";
 import type { InsightFormat } from "@/types/contracts";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { FlameBullet } from "@/components/ui/flame-bullet";
 import { Lede } from "@/components/ui/lede";
-import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { FORMATS } from "@/content/brand";
 import { cn } from "@/lib/utils/cn";
 import { getCommentaryCounts, getFormatCounts } from "@/lib/supabase/queries";
-
-const STAGGER = 90;
 
 type Status = { label: string; href: string };
 
@@ -47,9 +43,10 @@ function statusesFor(
 
 /**
  * "What we publish" (creative brief 4.4 section 2): the eight formats of
- * Olivia Energy Insights as a 4 x 2 grid of tiles. A format in print has a
- * flood-green edge, the flame and a link to its work; the others carry
- * their honest empty label.
+ * Olivia Energy Insights as a 4 x 2 grid of square-cornered tiles
+ * (instruments, DESIGN.md Shapes; not a sequence, so not numbered). A
+ * format in print has a flood-green edge, the flame and a link to its
+ * work; the others carry their honest empty label. Static.
  */
 export async function WhatWePublish() {
   const [formatCounts, counts] = await Promise.all([
@@ -61,81 +58,68 @@ export async function WhatWePublish() {
       <Container>
         <div className="grid grid-cols-1 gap-y-6 lg:grid-cols-12 lg:items-end lg:gap-x-6">
           <div className="lg:col-span-7">
-            <Eyebrow>{FORMATS.eyebrow}</Eyebrow>
-            <Display
-              as="h2"
-              size="lg"
-              reveal="mask"
-              id="formats-title"
-              className="mt-6"
-            >
+            <Display as="h2" size="lg" id="formats-title">
               {FORMATS.title}
             </Display>
           </div>
           <Lede className="lg:col-span-5 lg:pb-2">{FORMATS.lede}</Lede>
         </div>
 
-        <ul className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2 lg:mt-16 lg:grid-cols-4 lg:gap-6">
-          {FORMATS.items.map((item, i) => {
-            const statuses = statusesFor(
-              item.id,
-              formatCounts[item.id] ?? 0,
-              counts,
-            );
-            const live = statuses.length > 0;
-            return (
-              <Reveal
-                key={item.id}
-                as="li"
-                delay={(i % 4) * STAGGER}
-                className={cn(
-                  "shoulder-sm bg-surface flex flex-col border p-5 md:min-h-[13.75rem] md:p-6",
-                  live ? "border-primary" : "border-line",
-                )}
-              >
-                <p
-                  aria-hidden
+        {/* Columns follow the list's own width (container queries), so a
+            near-square screen such as a foldable's inner display gets two
+            columns rather than a stretched phone stack. */}
+        <div className="@container">
+          <ul className="mt-12 grid grid-cols-1 gap-4 lg:mt-16 @xl:grid-cols-2 @4xl:grid-cols-4 @4xl:gap-6">
+            {FORMATS.items.map((item) => {
+              const statuses = statusesFor(
+                item.id,
+                formatCounts[item.id] ?? 0,
+                counts,
+              );
+              const live = statuses.length > 0;
+              return (
+                <li
+                  key={item.id}
                   className={cn(
-                    "label numerals",
-                    live ? "text-primary" : "text-ink-muted",
+                    "bg-surface flex flex-col rounded-xs border p-5 md:min-h-[13.75rem] md:p-6",
+                    live ? "border-primary" : "border-line",
                   )}
                 >
-                  {String(i + 1).padStart(2, "0")}
-                </p>
-                <h3 className="font-display text-display-xs text-ink mt-4 font-normal text-balance">
-                  {item.name}
-                </h3>
-                <p className="text-ink-muted mt-3 text-sm text-pretty">
-                  {item.description}
-                </p>
-                <div className="mt-auto flex flex-col gap-2 pt-5 md:pt-6">
-                  {live ? (
-                    statuses.map((status) => (
-                      <Link
-                        key={status.href}
-                        href={status.href}
-                        className="label text-primary hit-area duration-fast ease-standard group/status hover:text-ink inline-flex items-center gap-2 self-start transition-colors"
-                      >
-                        <FlameBullet className="h-[1.3em]" />
-                        <span className="link-underline numerals">
-                          {status.label}
-                        </span>
-                      </Link>
-                    ))
-                  ) : (
-                    <p className="label text-ink-muted inline-flex items-center gap-2">
-                      <span
-                        aria-hidden
-                        className="bg-line-strong h-px w-4 shrink-0"
-                      />
-                      {item.emptyLabel}
-                    </p>
-                  )}
-                </div>
-              </Reveal>
-            );
-          })}
-        </ul>
+                  <h3 className="font-display text-display-xs text-ink font-normal text-balance">
+                    {item.name}
+                  </h3>
+                  <p className="text-ink-muted mt-3 text-sm text-pretty">
+                    {item.description}
+                  </p>
+                  <div className="mt-auto flex flex-col gap-2 pt-5 md:pt-6">
+                    {live ? (
+                      statuses.map((status) => (
+                        <Link
+                          key={status.href}
+                          href={status.href}
+                          className="text-primary hit-area tap duration-fast ease-standard group/status hover:text-ink inline-flex items-center gap-2 self-start text-sm font-medium transition-colors"
+                        >
+                          <FlameBullet className="h-[1.1em]" />
+                          <span className="link-underline numerals">
+                            {status.label}
+                          </span>
+                        </Link>
+                      ))
+                    ) : (
+                      <p className="text-ink-muted inline-flex items-center gap-2 text-sm">
+                        <span
+                          aria-hidden
+                          className="bg-line-strong h-px w-4 shrink-0"
+                        />
+                        {item.emptyLabel}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </Container>
     </Section>
   );

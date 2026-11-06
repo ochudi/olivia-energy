@@ -69,7 +69,7 @@ export function CategoryFilter({
               href={item.href}
               aria-current={item.on ? "page" : undefined}
               className={cn(
-                "label rounded-pill duration-fast ease-standard focus-visible:ring-focus focus-visible:ring-offset-canvas inline-flex h-10 items-center gap-2 border px-4 whitespace-nowrap transition-[border-color,background-color,color] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+                "rounded-pill tap duration-fast ease-standard focus-visible:ring-focus focus-visible:ring-offset-canvas inline-flex h-10 items-center gap-2 border px-4 font-sans text-xs font-medium whitespace-nowrap transition-[border-color,background-color,color] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
                 item.on
                   ? "bg-ink text-canvas border-transparent"
                   : "border-line-strong text-ink hover:border-ink hover:bg-ink/[0.06]",

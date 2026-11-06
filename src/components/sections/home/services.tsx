@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Glyph } from "@/components/ui/glyph";
 import { Lede } from "@/components/ui/lede";
-import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { ShoulderImage, photoCaption } from "@/components/ui/shoulder-image";
 import { HOME_SERVICES } from "@/content/home";
@@ -11,7 +10,6 @@ import { SERVICES, type Service } from "@/content/site";
 import { cn } from "@/lib/utils/cn";
 import { HomeSectionHeader } from "./section-header";
 
-const STAGGER = 90;
 /* Cards are 4 columns of 12 at 1024+ (about 416 px), half the container on
    tablets, and 300 px in the phone rail. */
 const SIZES = "(min-width: 1024px) 416px, (min-width: 768px) 45vw, 300px";
@@ -31,8 +29,7 @@ function ServiceCard({ service }: { service: Service }) {
       />
       {/* Two lines reserved so the rows below line up across the grid. */}
       <p className="source-line text-ink-muted mt-3 min-h-[2lh]">{credit}</p>
-      <div className="border-line mt-6 flex items-center justify-between border-t pt-4">
-        <span className="label text-ink-muted numerals">{service.number}</span>
+      <div className="border-line mt-6 flex items-center border-t pt-4">
         <Glyph name={service.glyph} size={40} draw />
       </div>
       <h3 className="font-display text-display-sm text-ink mt-4 font-normal text-balance">
@@ -46,9 +43,8 @@ function ServiceCard({ service }: { service: Service }) {
         <Button
           href={`/what-we-do#${service.slug}`}
           variant="text"
-          arrow
           aria-label={HOME_SERVICES.linkAriaLabel(service.title)}
-          className="after:absolute after:inset-0 after:content-['']"
+          className="after:absolute after:inset-0 after:content-[''] pointer-coarse:static!"
         >
           {HOME_SERVICES.linkLabel}
         </Button>
@@ -59,24 +55,26 @@ function ServiceCard({ service }: { service: Service }) {
 
 /**
  * Our services (creative brief 4.1 section 4): six cards, each a 4:5
- * photograph in the shoulder shape, the number and glyph, the title, the
+ * photograph in the shoulder shape, the service's glyph, the title, the
  * summary and "Explore". A 3 x 2 grid at 1024+, two columns on tablets, and
  * a native snap rail on phones that bleeds to the screen edges with the
- * next card cut. Photographs load lazily and wipe up as they enter.
+ * next card cut. Photographs load lazily, wipe up as they enter and carry
+ * the parallax; the glyphs draw. The services are not a sequence, so they
+ * are not numbered (DESIGN.md, Typography).
  */
 export function HomeServices() {
-  const { eyebrow, title, lede, allCta } = HOME_SERVICES;
+  const { title, lede, allCta } = HOME_SERVICES;
   return (
     <Section surface="paper" id="services" aria-labelledby="services-title">
       <Container>
         <HomeSectionHeader
-          eyebrow={eyebrow}
           title={title}
           titleId="services-title"
           aside={<Lede>{lede}</Lede>}
         />
 
         <ul
+          data-scroll-rail=""
           className={cn(
             // Phones: a native rail, 300 px cards, the next one cut.
             "-mx-gutter px-gutter scroll-px-gutter mt-12 flex snap-x snap-proximity [scrollbar-width:none] gap-4 overflow-x-auto pb-2",
@@ -84,20 +82,18 @@ export function HomeServices() {
             "md:mx-0 md:mt-16 md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-16 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-3",
           )}
         >
-          {SERVICES.map((service, i) => (
-            <Reveal
+          {SERVICES.map((service) => (
+            <li
               key={service.slug}
-              as="li"
-              delay={(i % 3) * STAGGER}
               className="w-[300px] shrink-0 snap-start md:w-auto"
             >
               <ServiceCard service={service} />
-            </Reveal>
+            </li>
           ))}
         </ul>
 
         <div className="mt-10 flex md:mt-14 md:justify-end">
-          <Button href={allCta.href} variant="secondary" arrow>
+          <Button href={allCta.href} variant="secondary">
             {allCta.label}
           </Button>
         </div>

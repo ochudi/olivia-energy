@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { Display, Turn } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { Reveal } from "@/components/ui/reveal";
+import { Display } from "@/components/ui/display";
 import { RingMark } from "@/components/ui/ring";
 import { Section } from "@/components/ui/section";
 import { CLOSES } from "@/content/brand";
@@ -10,8 +8,6 @@ import { MARK_MONO_PATH, MARK_VIEWBOX } from "@/lib/brand/mark";
 
 export type CloseBandVariant =
   "home" | "whatWeDo" | "about" | "insights" | "research";
-
-const STAGGER = 90;
 
 /** Anchor per page: the home band is "We believe" (#believe). */
 const IDS: Record<CloseBandVariant, string> = {
@@ -23,11 +19,11 @@ const IDS: Record<CloseBandVariant, string> = {
 };
 
 /**
- * CloseBand — the red flood that ends every page (creative brief 3.3,
- * signature moment 6): a ghosted mark bleeding off the right edge, the ring
- * whose gap closes as the band comes half into view, optional eyebrow and
- * lines, the statement in display-xl (its second sentence as the italic
- * turn where the copy has one), and "Start a conversation".
+ * CloseBand — the red flood that ends every page (creative brief 3.3): a
+ * ghosted mark bleeding off the right edge, the ring whose gap closes as
+ * the band scrolls into view (the one thing that moves here), an optional
+ * small heading and lines, the statement in display-xl, roman in full, and
+ * "Start a conversation".
  *
  * The section clips its own overflow (the ghost is 130% of the band's
  * height); it holds nothing sticky, so the clip breaks nothing.
@@ -68,50 +64,36 @@ export function CloseBand({ variant }: { variant: CloseBandVariant }) {
           </div>
 
           <div className="lg:order-1 lg:col-span-7">
-            {copy.eyebrow ? (
-              <Eyebrow flame className="text-ink">
-                {copy.eyebrow}
-              </Eyebrow>
+            {copy.heading ? (
+              <p className="font-display text-display-xs text-ink">
+                {copy.heading}
+              </p>
             ) : null}
             {lines.length > 0 ? (
               <ul className="mt-8 space-y-1 md:mt-10">
-                {lines.map((line, i) => (
-                  <Reveal
+                {lines.map((line) => (
+                  <li
                     key={line}
-                    as="li"
-                    delay={i * STAGGER}
                     className="font-display text-display-md text-ink font-normal text-balance"
                   >
                     {line}
-                  </Reveal>
+                  </li>
                 ))}
               </ul>
             ) : null}
             <Display
               as="h2"
               size="xl"
-              reveal="mask"
               id={headingId}
               className={
-                lines.length > 0 || copy.eyebrow
+                lines.length > 0 || copy.heading
                   ? "mt-10 max-w-[18ch] md:mt-14"
                   : "max-w-[18ch]"
               }
             >
               {copy.statement}
-              {copy.turn ? (
-                <>
-                  {" "}
-                  <Turn>{copy.turn}</Turn>
-                </>
-              ) : null}
             </Display>
-            <Button
-              href={copy.cta.href}
-              size="lg"
-              arrow
-              className="mt-10 md:mt-12"
-            >
+            <Button href={copy.cta.href} size="lg" className="mt-10 md:mt-12">
               {copy.cta.label}
             </Button>
           </div>

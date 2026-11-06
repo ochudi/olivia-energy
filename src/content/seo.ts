@@ -1,4 +1,3 @@
-import { HOME_HERO } from "./home";
 import { SITE } from "./site";
 
 type PageSeo = { title: string; description: string };
@@ -53,7 +52,7 @@ export const SEO = {
   tagline: SITE.tagline,
   /** The social card (creative brief 3.4). */
   socialCard: {
-    footer: HOME_HERO.eyebrow,
+    footer: "Energy advisory, research and sustainability",
     founder: "Founded by Dr Olugbenga Olaoye",
   },
   /** The firm's X account, credited on social cards. */

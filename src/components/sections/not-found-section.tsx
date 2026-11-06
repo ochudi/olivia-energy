@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { RingMark } from "@/components/ui/ring";
 import { Section } from "@/components/ui/section";
 import { NOT_FOUND } from "@/content/errors";
@@ -9,7 +8,7 @@ import { NOT_FOUND } from "@/content/errors";
 /**
  * NotFoundSection — the 404 body (creative brief 4.8): a green flood at
  * least 80svh tall, the ring of the mark left open (a quarter gap, white,
- * 160 px), then the eyebrow, H1, lede and the links as pills. Shared by the
+ * 160 px), then the status line, H1, lede and the links as pills. Shared by the
  * root not-found.tsx (unknown top-level URLs) and the (site) not-found.tsx,
  * so both render identically.
  */
@@ -29,9 +28,9 @@ export function NotFoundSection() {
             <RingMark size={160} gap={0.25} />
           </div>
           <div className="lg:col-span-8 lg:col-start-5">
-            <Eyebrow flame className="text-ink">
-              {NOT_FOUND.eyebrow}
-            </Eyebrow>
+            <p className="text-ink numerals text-sm font-medium">
+              {NOT_FOUND.code}
+            </p>
             <Display as="h1" size="xl" id="not-found-title" className="mt-6">
               {NOT_FOUND.title}
             </Display>
@@ -44,7 +43,6 @@ export function NotFoundSection() {
                   <Button
                     href={link.href}
                     variant={i === 0 ? "primary" : "secondary"}
-                    arrow={i === 0}
                   >
                     {link.label}
                   </Button>

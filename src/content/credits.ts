@@ -13,7 +13,6 @@ import { PHOTOS } from "./images";
 
 /** Page copy (creative brief 4.9). */
 export const CREDITS_PAGE = {
-  eyebrow: "Credits",
   title: "Credits",
   lede: "The photographs, data and typefaces on this site, with their authors and licences.",
   photographs: {

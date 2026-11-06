@@ -18,32 +18,24 @@ const COVER_SIZES =
   "(min-width: 81rem) 1152px, calc(100vw - 2 * var(--spacing-gutter))";
 
 const CRUMB =
-  "hit-area hover:text-ink duration-fast ease-standard underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current";
+  "hit-area tap hover:text-ink duration-fast ease-standard underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current";
 
 /**
- * The meta line ("By … · 29 September 2026 · 7 min read"). Its parts wrap
- * as whole items, never "7 / min read", and no line starts or ends with a
- * dot: each part after the first draws its dot as ::before, and the row is
- * pulled left by one separator inside a clipping box, so the dot of a part
- * that starts a line falls in the clipped margin. Screen readers get the
- * string once.
+ * The meta line ("By …, 29 September 2026, 7 min read"): one sentence in
+ * the body face, its parts joined with commas (DESIGN.md, Typography); "7
+ * min read" never breaks.
  */
 function ArticleMeta({ text }: { text: string }) {
+  const [head, minutes] = text.split(/, (?=\d+ min read$)/);
   return (
     <p className="border-line text-ink-muted numerals mt-8 max-w-[48rem] border-t pt-5 text-sm">
-      <span className="sr-only">{text}</span>
-      <span aria-hidden="true" className="block overflow-hidden">
-        <span className="-ml-[1.2em] flex flex-wrap">
-          {text.split(" · ").map((part, i) => (
-            <span
-              key={i}
-              className="whitespace-nowrap before:inline-block before:w-[1.2em] before:text-center before:content-['·']"
-            >
-              {part}
-            </span>
-          ))}
-        </span>
-      </span>
+      {minutes ? (
+        <>
+          {head}, <span className="whitespace-nowrap">{minutes}</span>
+        </>
+      ) : (
+        text
+      )}
     </p>
   );
 }
@@ -64,44 +56,54 @@ export function ArticleHeader({ post }: { post: Article }) {
   const caption = coverCaption(cover);
   return (
     <header>
-      <nav aria-label="Breadcrumb">
-        <ol className="label text-ink-muted flex flex-wrap items-center gap-x-2">
-          <li>
-            <Link href="/insights" className={CRUMB}>
-              {copy.breadcrumb}
-            </Link>
-          </li>
-          <li aria-hidden className="text-ink-subtle">
-            /
-          </li>
-          <li>
-            <Link href={categoryHref} className={CRUMB}>
-              {label}
-            </Link>
-          </li>
-        </ol>
-      </nav>
+      {/* The text block shares the body's columns (8 of 12, from the
+          fourth) so the page keeps one axis from breadcrumb to footer; the
+          cover alone runs the container's width. */}
+      <div className="lg:grid lg:grid-cols-12 lg:gap-x-6">
+        <div className="lg:col-span-8 lg:col-start-4">
+          <nav aria-label="Breadcrumb">
+            <ol className="text-ink-muted flex flex-wrap items-center gap-x-2 text-sm font-medium">
+              <li>
+                <Link href="/insights" className={CRUMB}>
+                  {copy.breadcrumb}
+                </Link>
+              </li>
+              <li aria-hidden className="text-ink-subtle">
+                /
+              </li>
+              <li>
+                <Link href={categoryHref} className={CRUMB}>
+                  {label}
+                </Link>
+              </li>
+            </ol>
+          </nav>
 
-      <p className="mt-8 flex flex-wrap gap-2">
-        {format ? <Chip tone="solid">{POST_FORMAT_LABELS[format]}</Chip> : null}
-        <Chip href={categoryHref}>{label}</Chip>
-      </p>
+          {/* The breadcrumb already names the category, so only the format is
+          chipped here (DESIGN.md: nothing above a heading restates it). */}
+          {format ? (
+            <p className="mt-8 flex flex-wrap gap-2">
+              <Chip tone="solid">{POST_FORMAT_LABELS[format]}</Chip>
+            </p>
+          ) : null}
 
-      <Display as="h1" size="lg" className="mt-6 max-w-[22ch]">
-        {post.title}
-      </Display>
-      {post.excerpt ? (
-        <Lede className="mt-6 max-w-[48ch]">{post.excerpt}</Lede>
-      ) : null}
-      {post.published_at ? (
-        <ArticleMeta
-          text={copy.meta({
-            author: articleByline(post),
-            publishedAt: post.published_at,
-            minutes: readingMinutes(post.word_count),
-          })}
-        />
-      ) : null}
+          <Display as="h1" size="lg" headline className="mt-6 max-w-[22ch]">
+            {post.title}
+          </Display>
+          {post.excerpt ? (
+            <Lede className="mt-6 max-w-[48ch]">{post.excerpt}</Lede>
+          ) : null}
+          {post.published_at ? (
+            <ArticleMeta
+              text={copy.meta({
+                author: articleByline(post),
+                publishedAt: post.published_at,
+                minutes: readingMinutes(post.word_count),
+              })}
+            />
+          ) : null}
+        </div>
+      </div>
 
       {cover ? (
         <figure className="mt-10 md:mt-14">

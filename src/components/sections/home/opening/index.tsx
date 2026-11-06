@@ -1,9 +1,9 @@
-import type { CSSProperties } from "react";
+import { ViewTransition, type CSSProperties } from "react";
 import { Button } from "@/components/ui/button";
+import { Chip } from "@/components/ui/chip";
 import { Container } from "@/components/ui/container";
-import { Eyebrow } from "@/components/ui/eyebrow";
+import { HEADLINE_TRANSITION, Turn } from "@/components/ui/display";
 import { FlameBullet } from "@/components/ui/flame-bullet";
-import { Turn } from "@/components/ui/display";
 import { HOME_HERO, HOME_WHY } from "@/content/home";
 import { MARK_HEIGHT, MARK_MONO_PATH, MARK_WIDTH } from "@/lib/brand/mark";
 import { formatDateShort } from "@/lib/content/format";
@@ -20,30 +20,9 @@ const CLIP_ID = "olivia-mark-clip";
 const rise = (ms: number) => ({ "--rise-delay": `${ms}ms` }) as CSSProperties;
 
 /**
- * A " · "-separated line that wraps only between whole items, never with a
- * dot ending or starting a line (opening.module.css, .separated). Screen
- * readers get the string once, as written.
- */
-function Separated({ text }: { text: string }) {
-  return (
-    <>
-      <span className="sr-only">{text}</span>
-      <span className={s.separatedClip} aria-hidden="true">
-        <span className={s.separated}>
-          {text.split(" · ").map((part, i) => (
-            <span key={`${i}-${part}`} className={s.separatedItem}>
-              {part}
-            </span>
-          ))}
-        </span>
-      </span>
-    </>
-  );
-}
-
-/**
  * HomeOpening (P1) — the home page's first two sections, `#hero` and
- * `#why-olivia`, in one DOM with two layouts (creative brief 2.10):
+ * `#why-olivia`, in one DOM with two layouts (creative brief 2.10): the
+ * page's signature moment (DESIGN.md, Layout).
  *
  *  • Static (phones, tablets, reduced motion, no JavaScript): the graded
  *    Lagos photograph under the hero copy, then Why Olivia as its own green
@@ -54,6 +33,8 @@ function Separated({ text }: { text: string }) {
  *
  * Server HTML is the final state: the H1 and photograph are never hidden,
  * every line is lit, and OpeningMotion only adds pre-states it can undo.
+ * The H1 is the client's tagline: its first line roman, its second the one
+ * italic line on the site (DESIGN.md, Typography).
  */
 export async function HomeOpening() {
   const oped = await getLatestOpEd();
@@ -95,18 +76,17 @@ export async function HomeOpening() {
           <Container className={s.heroInner}>
             <div className={s.copy}>
               <div className={s.copyHead}>
-                <Eyebrow>
-                  <Separated text={HOME_HERO.eyebrow} />
-                </Eyebrow>
-                <h1
-                  id="hero-title"
-                  className={cn(
-                    s.title,
-                    "font-display text-ink font-normal text-balance",
-                  )}
-                >
-                  {HOME_HERO.title}
-                </h1>
+                <ViewTransition {...HEADLINE_TRANSITION}>
+                  <h1
+                    id="hero-title"
+                    className={cn(
+                      s.title,
+                      "font-display text-ink font-normal text-balance",
+                    )}
+                  >
+                    {HOME_HERO.title}
+                  </h1>
+                </ViewTransition>
                 <p
                   className={cn(s.turn, s.rise, "font-display")}
                   style={rise(150)}
@@ -129,7 +109,6 @@ export async function HomeOpening() {
                   <Button
                     href={HOME_HERO.primaryCta.href}
                     size="lg"
-                    arrow
                     className={s.primary}
                   >
                     {HOME_HERO.primaryCta.label}
@@ -151,12 +130,11 @@ export async function HomeOpening() {
               style={rise(400)}
               aria-labelledby="latest-oped-title"
             >
-              <p className={s.cardTop}>
-                <span className="label text-ink">{HOME_HERO.latestLabel}</span>
-                <time
-                  dateTime={oped.publishedOn}
-                  className="source-line text-ink-muted numerals"
-                >
+              {/* One line of information the title does not carry: where
+                  and when, in the body face (DESIGN.md, Typography). */}
+              <p className="text-ink-muted numerals text-sm">
+                {HOME_HERO.latestLabel},{" "}
+                <time dateTime={oped.publishedOn}>
                   {formatDateShort(oped.publishedOn)}
                 </time>
               </p>
@@ -170,9 +148,13 @@ export async function HomeOpening() {
                 {oped.title}
               </p>
               <div className={s.cardFoot}>
-                <p className="text-ink-muted text-sm">
-                  <Separated text={HOME_HERO.cardMeta(oped)} />
-                </p>
+                <ul className="flex flex-wrap gap-2">
+                  {HOME_HERO.cardTopics(oped).map((topic) => (
+                    <Chip key={topic} as="li">
+                      {topic}
+                    </Chip>
+                  ))}
+                </ul>
                 <a
                   href={oped.url}
                   target="_blank"
@@ -180,6 +162,7 @@ export async function HomeOpening() {
                   aria-label={HOME_HERO.cardLinkLabel(oped.title)}
                   className={s.cardLink}
                 >
+                  {/* The external-link marker: the ring with a diagonal arrow. */}
                   <svg
                     viewBox="0 0 16 16"
                     fill="none"
@@ -190,7 +173,7 @@ export async function HomeOpening() {
                     aria-hidden="true"
                     className="hover-arrow size-4"
                   >
-                    <path d="M3 8h10M9 4l4 4-4 4" />
+                    <path d="M5 11 11 5M6 5h5v5" />
                   </svg>
                 </a>
               </div>
@@ -209,9 +192,12 @@ export async function HomeOpening() {
           <Container className={s.whyGrid}>
             <h2
               id="why-olivia-title"
-              className={cn(s.whyHeading, "label text-ink")}
+              className={cn(
+                s.whyHeading,
+                "font-display text-display-xs text-ink",
+              )}
             >
-              <FlameBullet className="text-brand-lime h-[1.1em]" />
+              <FlameBullet className="text-brand-lime h-[0.9em]" />
               {HOME_WHY.heading}
             </h2>
 
@@ -243,7 +229,7 @@ export async function HomeOpening() {
                 </li>
               ))}
             </ul>
-            <p data-line="" className={cn(s.closing, "light")}>
+            <p data-line="" className={cn(s.closing, "light font-display")}>
               <span className={s.underline}>{HOME_WHY.closing}</span>
             </p>
           </Container>

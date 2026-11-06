@@ -42,11 +42,16 @@ export const metadata: Metadata = {
 /**
  * The site has one, light palette. Declaring it stops browsers in dark mode
  * from restyling form controls and scrollbars, and colours the browser chrome
- * on phones to match the canvas.
+ * on phones to match the field; a page that opens on a flood exports its
+ * own `viewport` with that flood's colour.
  */
 export const viewport: Viewport = {
   colorScheme: "light",
-  themeColor: "#f5f0e4",
+  themeColor: "#f1f3ea",
+  // The page runs under the notch and the home indicator; the header,
+  // the page gutter (px-page), the menu and the footer keep clear of them
+  // with the safe-area insets.
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

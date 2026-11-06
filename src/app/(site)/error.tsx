@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { RingMark } from "@/components/ui/ring";
 import { Section } from "@/components/ui/section";
 import { ROUTE_ERROR } from "@/content/errors";
@@ -41,15 +40,14 @@ export default function Error({
             <RingMark size={160} gap={0.25} />
           </div>
           <div className="lg:col-span-8 lg:col-start-5">
-            <Eyebrow flame>{ROUTE_ERROR.eyebrow}</Eyebrow>
-            <Display as="h1" size="lg" id="error-title" className="mt-6">
+            <Display as="h1" size="lg" id="error-title">
               {ROUTE_ERROR.title}
             </Display>
             <p className="text-ink-muted mt-8 max-w-[42ch] text-xl text-pretty">
               {ROUTE_ERROR.lede}
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
-              <Button onClick={() => (retry ?? reset)?.()} arrow>
+              <Button onClick={() => (retry ?? reset)?.()}>
                 {ROUTE_ERROR.actions.retry}
               </Button>
               <Button href="/" variant="secondary">

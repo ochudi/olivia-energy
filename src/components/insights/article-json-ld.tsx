@@ -38,7 +38,7 @@ export function ArticleJsonLd({ post, url }: { post: Article; url: string }) {
     inLanguage: "en-GB",
   };
   const trail = breadcrumbList([
-    { name: INSIGHTS_PAGE.hero.eyebrow, path: "/insights" },
+    { name: INSIGHTS_PAGE.article.breadcrumb, path: "/insights" },
     {
       name: postCategoryLabel(post.category),
       path: `/insights/category/${post.category}`,

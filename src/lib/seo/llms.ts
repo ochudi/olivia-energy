@@ -35,9 +35,9 @@ export function llmsText(input: {
     .map((a) => [...a.lines, a.country].map(one).filter(Boolean).join(", "))
     .join("; ");
   const [registration, ...otherRegistrations] = REGISTRATIONS;
-  // The founder's place, read from the role line on About
-  // ("Founder/CEO, Olivia Energy · Energy economist · Fort Worth, Texas").
-  const founderPlace = FOUNDER_PAGE.role.split("·").at(-1)?.trim();
+  // The founder's place, read from the second role line on About
+  // ("Energy economist, Fort Worth, Texas").
+  const founderPlace = FOUNDER_PAGE.roles[1].split(", ").slice(1).join(", ");
   const nipex = one(settings.nipex_wording);
 
   const lines: string[] = [

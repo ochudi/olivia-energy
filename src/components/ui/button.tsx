@@ -8,11 +8,13 @@ export type ButtonSize = "sm" | "md" | "lg";
 type CommonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  /** Trailing arrow inside a small ring (the only circle a button carries). */
-  arrow?: boolean;
-  /** Opens in a new tab and says so to screen readers. */
+  /**
+   * Opens in a new tab and says so to screen readers. The one button that
+   * carries a mark: the ring with a diagonal arrow, the site's external-
+   * link marker (DESIGN.md, Shapes). Every other button is its label.
+   */
   external?: boolean;
-  /** Optional icon (typically a 16px lucide icon); `arrow` replaces it. */
+  /** Optional icon (typically a 16px lucide icon). */
   icon?: ReactNode;
   iconPosition?: "start" | "end";
   className?: string;
@@ -34,7 +36,6 @@ export type ButtonProps = AsButton | AsLink;
 const COMMON_KEYS = [
   "variant",
   "size",
-  "arrow",
   "external",
   "icon",
   "iconPosition",
@@ -43,7 +44,7 @@ const COMMON_KEYS = [
 ] as const;
 
 const base =
-  "group/button inline-flex select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-pill font-sans font-medium transition-[background-color,color,border-color,transform] duration-fast ease-standard motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:pointer-events-none disabled:opacity-45 aria-disabled:pointer-events-none aria-disabled:opacity-45";
+  "group/button tap inline-flex select-none items-center justify-center gap-2.5 whitespace-nowrap rounded-pill font-sans font-medium transition-[background-color,color,border-color,transform] duration-fast ease-standard motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-canvas disabled:pointer-events-none disabled:opacity-45 aria-disabled:pointer-events-none aria-disabled:opacity-45";
 
 const variants: Record<ButtonVariant, string> = {
   primary:
@@ -55,8 +56,15 @@ const variants: Record<ButtonVariant, string> = {
 
 const sizes: Record<ButtonSize, string> = {
   sm: "h-10 px-4 text-sm",
-  md: "h-12 pl-6 pr-5 text-sm",
-  lg: "h-14 pl-7 pr-6 text-base",
+  md: "h-12 px-6 text-sm",
+  lg: "h-14 px-7 text-base",
+};
+
+/* With the external ring at the end the right padding tightens a step. */
+const ringSizes: Record<ButtonSize, string> = {
+  sm: "pr-3",
+  md: "pr-5",
+  lg: "pr-6",
 };
 
 // Text buttons have no box, so they take only the type size.
@@ -66,8 +74,8 @@ const textSizes: Record<ButtonSize, string> = {
   lg: "hit-area text-base",
 };
 
-/** The arrow in its ring: a 24px circle in the button's own colour. */
-function ArrowRing({ boxed }: { boxed: boolean }) {
+/** The external-link marker: a 24px ring with a diagonal arrow, in the button's own colour. */
+function ExternalRing({ boxed }: { boxed: boolean }) {
   return (
     <span
       aria-hidden
@@ -85,26 +93,26 @@ function ArrowRing({ boxed }: { boxed: boolean }) {
         strokeLinejoin="round"
         className="size-3.5"
       >
-        <path d="M3 8h10M9 4l4 4-4 4" />
+        <path d="M5 11 11 5M6 5h5v5" />
       </svg>
     </span>
   );
 }
 
 /**
- * Button — three variants, three sizes (creative brief 2.4: a pill).
- *  primary   → the surface's primary fill (flood green on paper, lime on
- *              night, paper on green and red, ink on lime).
+ * Button — three variants, three sizes (DESIGN.md, Shapes: a pill that
+ * carries its label and nothing else).
+ *  primary   → the surface's primary fill (flood green on the field, lime
+ *              on night, field on green and red, ink on lime).
  *  secondary → hairline outline in the surface's strong line.
  *  text      → in-line text action with a draw-in underline; no box.
- * `arrow` adds the arrow in a ring, which slides 4px on hover.
+ * `external` adds the ring with the diagonal arrow and opens a new tab.
  * Renders a Next.js <Link> when `href` is provided, otherwise a <button>.
  */
 export function Button(props: ButtonProps) {
   const {
     variant = "primary",
     size = "md",
-    arrow = false,
     external = false,
     icon,
     iconPosition = "end",
@@ -116,33 +124,28 @@ export function Button(props: ButtonProps) {
   const classes = cn(
     base,
     variants[variant],
-    isText
-      ? textSizes[size]
-      : cn(sizes[size], !arrow && (size === "lg" ? "px-7" : "px-6")),
+    isText ? textSizes[size] : cn(sizes[size], external && ringSizes[size]),
     className,
   );
 
-  const iconEl = arrow ? (
-    <ArrowRing boxed={!isText} />
+  const iconEl = external ? (
+    <ExternalRing boxed={!isText} />
   ) : icon ? (
-    <span
-      aria-hidden
-      className="hover-arrow inline-flex shrink-0 [&_svg]:size-4"
-    >
+    <span aria-hidden className="inline-flex shrink-0 [&_svg]:size-4">
       {icon}
     </span>
   ) : null;
 
   const content = (
     <>
-      {iconPosition === "start" && !arrow && iconEl}
+      {iconPosition === "start" && !external && iconEl}
       <span className={isText ? "link-underline" : undefined}>
         {children}
         {external ? (
           <span className="sr-only">, opens in a new tab</span>
         ) : null}
       </span>
-      {(iconPosition === "end" || arrow) && iconEl}
+      {(iconPosition === "end" || external) && iconEl}
     </>
   );
 

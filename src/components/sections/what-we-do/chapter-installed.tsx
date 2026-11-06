@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { FigurePlate, Waffle, WaffleKey } from "@/components/figures";
 import { Container } from "@/components/ui/container";
-import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { ShoulderImage } from "@/components/ui/shoulder-image";
 import { PHOTOS } from "@/content/images";
@@ -16,7 +15,6 @@ import {
   type Chapter,
 } from "./chapter-parts";
 import styles from "./chapter-installed.module.css";
-import { InstalledScene } from "./installed-scene";
 
 const F = INSTALLED_FIGURE;
 
@@ -25,9 +23,9 @@ const WAFFLE_LABEL = `${F.steps.map((s) => s.heading).join(". ")}. ${F.legend.un
 
 /**
  * Fig. 2, "Installed is not delivered": 136 squares of 100 MW on a night
- * plate, over the Lekki-Ikoyi bridge at the plate's foot. The Waffle reads
- * `data-step` from InstalledScene; with no step it is in its final state
- * (41 lit, 4 hatched, the rest outlined).
+ * plate, over the Lekki-Ikoyi bridge at the plate's foot. The Waffle is
+ * drawn in its final state (41 lit, 4 hatched, the rest outlined); the
+ * pinned scene's step timelines light and darken it (the module CSS).
  */
 function InstalledPlate() {
   const photo = PHOTOS[F.photo];
@@ -64,13 +62,15 @@ function InstalledPlate() {
 }
 
 /**
- * Chapter 02, Energy Economics & Policy, on night (creative brief 4.2 and
- * signature moment 3). The head, lede, body and list open the chapter
- * across the grid; below them the City Gate photograph and the three
- * steps run in columns 1 to 5 while Fig. 2 holds in columns 7 to 12 under
- * the chapter bar (pinned only behind the brief's CSS gate), stepping
- * from installed to available to delivered. On phones the plate follows
- * the three step texts, static in its final state, with its legend.
+ * Chapter two, Energy Economics & Policy, on night: the page's signature
+ * moment (DESIGN.md, Layout). The head, lede, body and list open the
+ * chapter across the grid; below them the City Gate photograph and the
+ * three steps run in columns 1 to 5 while Fig. 2 holds in columns 7 to 12
+ * under the chapter bar, stepping from installed to available to
+ * delivered as the reader scrolls (pure CSS, behind the module's gate).
+ * On phones the plate follows the three step texts, static in its final
+ * state, with its legend. The three steps are numbered: they are a
+ * sequence through the grid.
  */
 export function ChapterInstalled({ chapter }: { chapter: Chapter }) {
   return (
@@ -92,7 +92,13 @@ export function ChapterInstalled({ chapter }: { chapter: Chapter }) {
           />
         </div>
 
-        <InstalledScene className="mt-16 grid gap-y-12 lg:mt-24 lg:grid-cols-12 lg:gap-x-6">
+        <div
+          data-fold-split=""
+          className={cn(
+            styles.scene,
+            "mt-16 grid gap-y-12 lg:mt-24 lg:grid-cols-12 lg:gap-x-6",
+          )}
+        >
           <div className="lg:col-span-5">
             <ShoulderImage
               photo={chapter.photo}
@@ -112,28 +118,31 @@ export function ChapterInstalled({ chapter }: { chapter: Chapter }) {
                   data-scene-step={i + 1}
                   className={cn(styles.step, "pl-6")}
                 >
-                  <Reveal>
-                    <p className="label numerals text-primary">{step.label}</p>
-                    <h3
-                      className={cn(
-                        styles.stepHeading,
-                        "font-display text-display-sm text-ink numerals mt-3 transition-colors",
-                      )}
-                    >
-                      {step.heading}
-                    </h3>
-                    <p className="text-ink-muted mt-4 max-w-[44ch] text-lg text-pretty">
-                      {step.body}
-                    </p>
-                  </Reveal>
+                  <p className="text-primary numerals font-sans text-sm font-medium">
+                    {step.label}
+                  </p>
+                  <h3
+                    className={cn(
+                      styles.stepHeading,
+                      "font-display text-display-sm text-ink numerals mt-3",
+                    )}
+                  >
+                    {step.heading}
+                  </h3>
+                  <p className="text-ink-muted mt-4 max-w-[44ch] text-lg text-pretty">
+                    {step.body}
+                  </p>
                 </li>
               ))}
             </ol>
           </div>
-          <div className="lg:col-span-6 lg:col-start-7 lg:row-start-1">
+          <div
+            data-fold-sticky=""
+            className="lg:col-span-6 lg:col-start-7 lg:row-start-1"
+          >
             <InstalledPlate />
           </div>
-        </InstalledScene>
+        </div>
       </Container>
     </Section>
   );

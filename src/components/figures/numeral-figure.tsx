@@ -1,7 +1,7 @@
 import type { FactTag, GlyphSpec, SourceRef } from "@/types/contracts";
-import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Chip, type ChipTone } from "@/components/ui/chip";
 import { Source } from "@/components/ui/source";
+import { formatNumber } from "@/lib/figures/format";
 import { cn } from "@/lib/utils/cn";
 import { GlyphFor } from "./glyphs";
 
@@ -21,7 +21,8 @@ export type NumeralFigureProps = {
   retrieved: string;
   /**
    * band: a tile of the numbers band (no fill, a 1 px ink line on top).
-   * card: the numeral card inside a chapter (card surface, shoulder).
+   * card: the numeral card inside a chapter (card surface, square corners:
+   * an instrument, DESIGN.md Shapes).
    */
   size: "band" | "card";
   /** For a share glyph: which part is hatched (see ShareBar). */
@@ -40,8 +41,8 @@ const TAG_TONE: Record<FactTag, ChipTone> = {
 /**
  * NumeralFigure — a big number with its tag, caption, comparison glyph and
  * source line (creative brief 2.6: numeral cards carry a tag, not a Fig.
- * number). The numeral counts up on entering the viewport; the server
- * renders the final value.
+ * number). The numeral is final, always; the glyph beside it is what moves
+ * as the tile scrolls into view (DESIGN.md, Motion).
  */
 export function NumeralFigure({
   numeral,
@@ -66,7 +67,7 @@ export function NumeralFigure({
         "text-ink flex flex-col gap-5",
         band
           ? "border-ink/60 border-t pt-5"
-          : "shoulder bg-surface border-line border p-6 sm:p-7",
+          : "bg-surface border-line rounded-xs border p-6 sm:p-7",
         className,
       )}
     >
@@ -78,12 +79,9 @@ export function NumeralFigure({
             band ? undefined : { fontSize: "min(var(--text-numeral), 6rem)" }
           }
         >
-          <AnimatedNumber
-            value={numeral}
-            decimals={decimals}
-            prefix={prefix}
-            suffix={suffix}
-          />
+          {prefix}
+          {formatNumber(numeral, decimals)}
+          {suffix}
         </span>
         {unit ? (
           <span className="font-display text-display-sm text-ink">{unit}</span>
@@ -103,7 +101,7 @@ export function NumeralFigure({
       >
         <p className="text-ink max-w-[42ch] text-base text-pretty">{caption}</p>
         {glyph ? (
-          <div className="flex flex-col gap-2">
+          <div className="figure-scope flex flex-col gap-2">
             <GlyphFor spec={glyph} shareHatch={shareHatch} />
             {glyphCaption ? (
               <p className="text-ink-muted text-xs">{glyphCaption}</p>

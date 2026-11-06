@@ -61,7 +61,10 @@ export const VIEWBOX: Record<
     plotRight: 860,
     top: 20,
     bottom: 780,
-    labelGap: 104,
+    // 170 units is 55 px on the narrowest half plate (1024 px viewport,
+    // where "Sub-Saharan Africa" wraps to two lines under its value) and
+    // 75 px at 1440; 104 let the two Fig. 1 labels collide at 1024.
+    labelGap: 170,
   },
   tall: {
     w: 360,

@@ -5,9 +5,9 @@ import { INSIGHTS_PAGE } from "@/content/insights";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * The author card after an article (creative brief 4.5): a paper-deep
- * panel in the shoulder shape, the founder's portrait at 72 px in a small
- * shoulder frame, one sentence and "About our founder".
+ * The author card after an article (creative brief 4.5): a deep-field
+ * panel with square corners (an instrument, DESIGN.md Shapes), the
+ * founder's portrait at 72 px, one sentence and "About our founder".
  */
 export function AuthorCard({ className }: { className?: string }) {
   const copy = INSIGHTS_PAGE.article;
@@ -17,12 +17,12 @@ export function AuthorCard({ className }: { className?: string }) {
       data-surface="paper-deep"
       aria-label={FOUNDER.name}
       className={cn(
-        "shoulder bg-canvas text-ink flex flex-col gap-6 p-6 sm:flex-row sm:items-start sm:gap-8 sm:p-8",
+        "bg-canvas text-ink flex flex-col gap-6 rounded-xs p-6 sm:flex-row sm:items-start sm:gap-8 sm:p-8",
         className,
       )}
     >
       {portrait.src ? (
-        <div className="shoulder-sm bg-surface relative size-[72px] shrink-0 overflow-hidden">
+        <div className="bg-surface relative size-[72px] shrink-0 overflow-hidden rounded-xs">
           <Image
             src={portrait.src}
             alt={portrait.alt}
@@ -37,7 +37,7 @@ export function AuthorCard({ className }: { className?: string }) {
         <p className="font-display text-display-xs text-ink text-pretty">
           {copy.authorCard}
         </p>
-        <Button href={copy.authorLink.href} variant="text" arrow>
+        <Button href={copy.authorLink.href} variant="text">
           {copy.authorLink.label}
         </Button>
       </div>

@@ -50,10 +50,8 @@ export const HEADER_COPY = {
 export type Service = {
   /** Anchor on /what-we-do. */
   slug: ServiceSlug;
-  /** "01" to "06". */
-  number: string;
   title: string;
-  /** Chapter bar label, shown after the number ("01 Transition"). */
+  /** Chapter bar label, shown after the service's glyph. */
   short: string;
   /** One sentence, shown on the home cards and in llms.txt. */
   summary: string;
@@ -68,7 +66,6 @@ export type Service = {
 export const SERVICES: readonly Service[] = [
   {
     slug: "energy-transition-advisory",
-    number: "01",
     title: "Energy Transition Advisory",
     short: "Transition",
     summary:
@@ -78,7 +75,6 @@ export const SERVICES: readonly Service[] = [
   },
   {
     slug: "energy-economics-policy",
-    number: "02",
     title: "Energy Economics & Policy",
     short: "Economics & Policy",
     summary:
@@ -88,7 +84,6 @@ export const SERVICES: readonly Service[] = [
   },
   {
     slug: "esg-sustainability",
-    number: "03",
     title: "ESG & Sustainability",
     short: "ESG",
     summary:
@@ -98,7 +93,6 @@ export const SERVICES: readonly Service[] = [
   },
   {
     slug: "research-analytics",
-    number: "04",
     title: "Research & Analytics",
     short: "Research",
     summary:
@@ -108,7 +102,6 @@ export const SERVICES: readonly Service[] = [
   },
   {
     slug: "capacity-development",
-    number: "05",
     title: "Capacity Development",
     short: "Capacity",
     summary:
@@ -118,7 +111,6 @@ export const SERVICES: readonly Service[] = [
   },
   {
     slug: "project-advisory",
-    number: "06",
     title: "Project Advisory",
     short: "Projects",
     summary:
@@ -176,7 +168,8 @@ export const NIPEX_WORDING: string =
 export const FOOTER: {
   legalName: string;
   registration: string;
-  places: string;
+  /** One line each: the two places. */
+  places: readonly [string, string];
   headings: { services: string; company: string; contact: string };
   companyLinks: readonly Cta[];
   conversation: Cta;
@@ -185,7 +178,7 @@ export const FOOTER: {
 } = {
   legalName: SITE.legalName,
   registration: "RC 1662525",
-  places: "Fort Worth, Texas · Southwest Nigeria",
+  places: ["Fort Worth, Texas", "Southwest Nigeria"],
   headings: {
     services: "What we do",
     company: "Company",

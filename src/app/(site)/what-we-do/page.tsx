@@ -7,6 +7,13 @@ import {
 } from "@/components/sections/what-we-do";
 import { SEO } from "@/content/seo";
 import { pageMetadata } from "@/lib/seo/metadata";
+import type { Viewport } from "next";
+
+/** The browser chrome on phones takes the green hero. */
+export const viewport: Viewport = {
+  colorScheme: "light",
+  themeColor: "#047a36",
+};
 
 export const generateMetadata = pageMetadata({
   ...SEO.whatWeDo,

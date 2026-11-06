@@ -1,23 +1,33 @@
 /*
- * What we do, chapter 02: the pinned Fig. 2 scene (creative brief 4.2).
- * Static by default (phones, tablets, reduced motion, no JavaScript): the
- * steps are ordinary blocks and the plate follows them in its final state.
- * The pinned layout is enabled purely in CSS behind the brief's gate; the
- * client controller only writes data-step and data-active.
+ * What we do, chapter 02: the pinned Fig. 2 scene (creative brief 4.2;
+ * DESIGN.md, Layout: the page's signature moment). Static by default
+ * (phones, tablets, reduced motion, no JavaScript, a browser without
+ * scroll-driven animations): the steps are ordinary blocks and the plate
+ * follows them in its final state.
+ *
+ * Behind the gate the plate sticks under the chapter bar and the three
+ * steps each hold 70svh of scroll. Every change is a native scroll-driven
+ * animation: each step names a view timeline (--step-2, --step-3) that the
+ * scene scopes to its whole subtree, and the Waffle's two marked paths
+ * (data-waffle="off", the unavailable squares, and data-waffle="cover",
+ * over the hatched squares) and the step texts animate on them. A step
+ * becomes current while its top travels from 65% to 57% of the viewport
+ * (cover 35svh to 43svh of its own travel). No JavaScript.
  */
 
-/* On the night chapter the plate is raised a step so its shoulder reads. */
+/* On the night chapter the plate is raised a step so it reads. */
 .plate.plate {
   background: var(--color-night-raised);
 }
 
 /* The photograph band at the foot of the plate: the bridge under a night
-   scrim, so the squares and the caption read over it. */
+   scrim, so the squares and the caption read over it. A chart is an
+   instrument, so its corners are square (DESIGN.md, Shapes). */
 .stage {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-radius: 4px var(--radius-shoulder-sm) 4px 4px;
+  border-radius: var(--radius-xs);
   background: var(--color-night-raised);
 }
 
@@ -43,35 +53,141 @@
 
 .step {
   border-inline-start: 2px solid var(--color-line);
-  transition: border-color var(--duration-fast, 200ms) ease;
 }
 
-@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 640px) {
-  .plate {
-    position: sticky;
-    top: calc(var(--spacing-header) + 3.375rem + 1.5rem);
+@keyframes step-on {
+  from {
+    border-inline-start-color: var(--color-line);
   }
-
-  /* Each step holds about 70svh of scroll (three steps; the plate's whole
-     travel stays under 250svh). */
-  .step {
-    min-height: 70svh;
-  }
-
-  .step[data-active="true"] {
+  to {
     border-inline-start-color: var(--color-primary);
   }
-
-  .step[data-active="false"] .stepHeading {
+}
+@keyframes step-off {
+  to {
+    border-inline-start-color: var(--color-line);
+  }
+}
+@keyframes heading-on {
+  from {
+    color: var(--color-ink-muted);
+  }
+  to {
+    color: var(--color-ink);
+  }
+}
+@keyframes heading-off {
+  to {
     color: var(--color-ink-muted);
   }
 }
+@keyframes squares-off {
+  from {
+    fill-opacity: 1;
+  }
+  to {
+    fill-opacity: 0;
+  }
+}
+@keyframes cover-off {
+  from {
+    fill-opacity: 1;
+    stroke-opacity: 1;
+  }
+  to {
+    fill-opacity: 0;
+    stroke-opacity: 0;
+  }
+}
 
-/* Short desktop screens: a tighter plate so it fits under the bar. */
-@media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 640px) and (max-height: 50rem) {
-  .plate.plate {
-    top: calc(var(--spacing-header) + 3.375rem + 0.75rem);
-    gap: 0.875rem;
-    padding: 1.25rem 1.5rem;
+@supports (animation-timeline: view()) {
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 640px) {
+    .scene {
+      timeline-scope: --step-2, --step-3;
+    }
+
+    .plate {
+      position: sticky;
+      top: calc(var(--spacing-header) + 3.375rem + 1.5rem);
+    }
+
+    /* Each step holds about 70svh of scroll (three steps; the plate's whole
+       travel stays under 250svh). */
+    .step {
+      min-height: 70svh;
+    }
+    .step[data-scene-step="2"] {
+      view-timeline: --step-2 block;
+    }
+    .step[data-scene-step="3"] {
+      view-timeline: --step-3 block;
+    }
+
+    /* Step 1 is current from the start and gives way as step 2 arrives;
+       step 2 lights on its own timeline and gives way to step 3; step 3
+       lights and stays. The `off` keyframes have no `from`, so before
+       their range they leave the step alone. */
+    .step[data-scene-step="1"] {
+      border-inline-start-color: var(--color-primary);
+      animation: step-off var(--ease-out) forwards;
+      animation-timeline: --step-2;
+      animation-range: cover 35svh cover 43svh;
+    }
+    .step[data-scene-step="1"] .stepHeading {
+      animation: heading-off var(--ease-out) forwards;
+      animation-timeline: --step-2;
+      animation-range: cover 35svh cover 43svh;
+    }
+    .step[data-scene-step="2"] {
+      animation:
+        step-on var(--ease-out) both,
+        step-off var(--ease-out) forwards;
+      animation-timeline: --step-2, --step-3;
+      animation-range:
+        cover 35svh cover 43svh,
+        cover 35svh cover 43svh;
+    }
+    .step[data-scene-step="2"] .stepHeading {
+      animation:
+        heading-on var(--ease-out) both,
+        heading-off var(--ease-out) forwards;
+      animation-timeline: --step-2, --step-3;
+      animation-range:
+        cover 35svh cover 43svh,
+        cover 35svh cover 43svh;
+    }
+    .step[data-scene-step="3"] {
+      animation: step-on var(--ease-out) both;
+      animation-timeline: --step-3;
+      animation-range: cover 35svh cover 43svh;
+    }
+    .step[data-scene-step="3"] .stepHeading {
+      animation: heading-on var(--ease-out) both;
+      animation-timeline: --step-3;
+      animation-range: cover 35svh cover 43svh;
+    }
+
+    /* The grid: installed (every square lit) until step 2 arrives, then
+       the unavailable squares go dark; available until step 3 arrives,
+       then the cover over the hatched squares lifts and the gap shows. */
+    .scene [data-waffle="off"] {
+      animation: squares-off var(--ease-out) both;
+      animation-timeline: --step-2;
+      animation-range: cover 35svh cover 43svh;
+    }
+    .scene [data-waffle="cover"] {
+      animation: cover-off var(--ease-out) both;
+      animation-timeline: --step-3;
+      animation-range: cover 35svh cover 43svh;
+    }
+  }
+
+  /* Short desktop screens: a tighter plate so it fits under the bar. */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 640px) and (max-height: 50rem) {
+    .plate.plate {
+      top: calc(var(--spacing-header) + 3.375rem + 0.75rem);
+      gap: 0.875rem;
+      padding: 1.25rem 1.5rem;
+    }
   }
 }

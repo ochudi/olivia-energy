@@ -12,7 +12,11 @@ export type GlyphProps = {
   name: GlyphName;
   /** Rendered size in px (default 48). The stroke scales gently: 2px at 48, 2.5px at 64. */
   size?: number;
-  /** Marks the strokes for the `draw` reveal (inside a <Reveal variant="draw">). */
+  /**
+   * The `draw` reveal (DESIGN.md, Motion): the strokes draw themselves as
+   * the glyph scrolls into view, on a view timeline the glyph itself
+   * names. Server HTML is the finished glyph.
+   */
   draw?: boolean;
   /** Accessible name. Without it the glyph is decorative (aria-hidden). */
   title?: string;
@@ -28,9 +32,9 @@ export function glyphStrokeWidth(size: number): number {
 /**
  * Glyph — one of the fourteen line glyphs (creative brief 2.5). Strokes are
  * `currentColor`, and the `glyph` class sets that to the surface's glyph
- * colour: flood green on paper, white on green, night or red, ink on lime.
- * A text-* utility in `className` overrides it. Stroke only; dots are
- * round-capped zero-length strokes.
+ * colour: flood green on the field, white on green, night or red, ink on
+ * lime. A text-* utility in `className` overrides it. Stroke only; dots
+ * are round-capped zero-length strokes.
  */
 export function Glyph({
   name,
@@ -55,7 +59,7 @@ export function Glyph({
       role={title ? "img" : undefined}
       aria-hidden={title ? undefined : true}
       focusable="false"
-      className={cn("glyph shrink-0", className)}
+      className={cn("glyph shrink-0", draw && "draw-scope", className)}
       data-glyph={name}
     >
       {title ? <title>{title}</title> : null}

@@ -7,7 +7,6 @@
 export const CONTACT_PAGE = {
   /** Red hero with the dotted Africa map. */
   hero: {
-    eyebrow: "Contact",
     title: "Start a conversation.",
     lede: "Governments need evidence. Investors require clarity. Tell us what you are working on, and we will be in touch.",
     /** Beside the ring that marks the region (a region, not a town). */

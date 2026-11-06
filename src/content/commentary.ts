@@ -23,7 +23,7 @@ export const OPEDS: readonly OpEd[] = [
     summary:
       "Argues the Dangote Refinery IPO could turn Nigerians from fuel consumers into owners, deepen the capital market, and test whether African savings can finance African industrialisation and energy security.",
     pullQuote:
-      "It asks whether the next chapter of Africa's development can be defined by what Africans build, what Africans finance and what Africans own.",
+      "It asks whether the next chapter of Africa’s development can be defined by what Africans build, what Africans finance and what Africans own.",
   },
   {
     slug: "divided-by-barrels-united-by-football",
@@ -109,7 +109,7 @@ export const OPEDS: readonly OpEd[] = [
     publishedOn: "2025-07-14",
     topics: ["Policy"],
     summary:
-      "Argues that Nigeria's open defecation persists because of weak accountability. It calls for empowered community committees, culturally aware messaging, integrated health and sanitation data, and state partnerships with proven local sanitation champions.",
+      "Argues that Nigeria’s open defecation persists because of weak accountability. It calls for empowered community committees, culturally aware messaging, integrated health and sanitation data, and state partnerships with proven local sanitation champions.",
     pullQuote:
       "Toilets are not just about waste; they are about dignity, equality, and state legitimacy.",
   },
@@ -158,14 +158,14 @@ export const OPEDS: readonly OpEd[] = [
  */
 export const MENTIONS: readonly Mention[] = [
   {
-    title: "How Nigeria's debt bill is squeezing the budget",
+    title: "How Nigeria’s debt bill is squeezing the budget",
     outlet: "BusinessDay",
     url: "https://businessday.ng/business-economy/article/how-nigerias-debt-bill-is-squeezing-the-budget/",
     publishedOn: "2026-06-08",
     syndication: false,
   },
   {
-    title: "Nigeria's economy seen growing at fastest rate in 5 years",
+    title: "Nigeria’s economy seen growing at fastest rate in 5 years",
     outlet: "BusinessDay",
     url: "https://businessday.ng/pro/article/nigerias-economy-seen-growing-4-as-reform-shock-begins-to-fade/",
     publishedOn: "2026-05-13",

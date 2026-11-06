@@ -1,4 +1,3 @@
-import { Reveal } from "@/components/ui/reveal";
 import { MARK_PATHS } from "@/lib/brand/mark";
 
 export type QuotePanelProps = {
@@ -31,26 +30,23 @@ function FlameQuote() {
 }
 
 /**
- * QuotePanel — one quotation set large on a paper-deep panel with the
- * shoulder: the red flame quotation mark, the quote in display-md (it
- * masks up as it enters), the attribution in text-sm.
+ * QuotePanel — one quotation set large on a deep-field panel with square
+ * corners (an instrument of the record, DESIGN.md Shapes): the red flame
+ * quotation mark, the quote in display-md, the attribution in text-sm.
+ * Text is static (DESIGN.md, Motion).
  */
 export function QuotePanel({ quote, attribution }: QuotePanelProps) {
   return (
     <figure
       data-surface="paper-deep"
-      className="shoulder bg-canvas text-ink relative grid gap-6 px-6 py-10 md:grid-cols-[auto_minmax(0,1fr)] md:gap-x-10 md:px-12 md:py-14 lg:gap-x-16 lg:px-16 lg:py-20"
+      className="bg-canvas text-ink relative grid gap-6 rounded-xs px-6 py-10 md:grid-cols-[auto_minmax(0,1fr)] md:gap-x-10 md:px-12 md:py-14 lg:gap-x-16 lg:px-16 lg:py-20"
     >
       <FlameQuote />
       <div>
         <blockquote>
-          <Reveal
-            as="p"
-            variant="mask"
-            className="font-display text-display-md text-ink max-w-[28ch] font-normal text-balance"
-          >
+          <p className="font-display text-display-md text-ink max-w-[28ch] font-normal text-balance">
             {quote}
-          </Reveal>
+          </p>
         </blockquote>
         <figcaption className="text-ink-muted mt-6 max-w-[60ch] text-sm md:mt-8">
           {attribution}

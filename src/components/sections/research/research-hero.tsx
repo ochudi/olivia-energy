@@ -2,7 +2,6 @@ import type { Counts, OpEd } from "@/types/contracts";
 import { FigurePlate, PrintTimeline } from "@/components/figures";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { Lede } from "@/components/ui/lede";
 import { Section } from "@/components/ui/section";
 import { RESEARCH_PAGE } from "@/content/publications";
@@ -23,11 +22,14 @@ function span(
 }
 
 /**
- * Research hero (creative brief 4.6, section 1): paper, the H1 and lede
- * in cols 1 to 6, and Fig. 1 (the print timeline: journal articles above
- * the line, op-eds below) on a night plate in cols 7 to 12 with the two
- * counters under it (the brief puts the counters under the lede; moved so
- * the first screen at 1440 holds the H1 and the whole figure).
+ * Research hero (creative brief 4.6, section 1): the field, the H1 (a
+ * sentence, so display-lg) and lede in cols 1 to 6, and Fig. 1 (the print
+ * timeline: journal articles above the line, op-eds below) on a night
+ * plate in cols 7 to 12 with the two counters under it (the brief puts the
+ * counters under the lede; moved so the first screen at 1440 holds the H1
+ * and the whole figure). The timeline drawing itself is the page's
+ * signature moment (DESIGN.md, Layout): once on load on a desktop, on
+ * scroll below 64rem.
  * The articles counter is the journal row count; the citation figure is the
  * dated Google Scholar reading in the copy.
  */
@@ -64,8 +66,7 @@ export function ResearchHero({
             headline and the figure. */}
         <div className="grid grid-cols-1 gap-y-12 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:gap-x-6 lg:gap-y-14">
           <div className="lg:col-span-6 lg:row-span-2 lg:pr-6">
-            <Eyebrow flame>{copy.eyebrow}</Eyebrow>
-            <Display as="h1" size="xl" id="research-title" className="mt-6">
+            <Display as="h1" size="lg" headline id="research-title">
               {copy.title}
             </Display>
             <Lede className="mt-8">{copy.lede}</Lede>
@@ -98,6 +99,7 @@ export function ResearchHero({
                 to={to}
                 legend={copy.figure.legend}
                 ariaLabel={copy.figure.interpretation(counts)}
+                motion="lead"
                 className="py-4"
               />
             </FigurePlate>

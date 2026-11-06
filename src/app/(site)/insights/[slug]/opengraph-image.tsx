@@ -81,7 +81,7 @@ export default async function Image({
     ? postCategoryLabel(post.category)
     : INSIGHTS_PAGE.article.breadcrumb;
   const meta = post
-    ? `${articleByline(post)} · ${formatDate(post.published_at)} · ${readingMinutes(post.word_count)} min read`
+    ? `${articleByline(post)}, ${formatDate(post.published_at)}, ${readingMinutes(post.word_count)} min read`
     : "";
   const titleSize = title.length > 110 ? 44 : title.length > 70 ? 54 : 66;
   const host = new URL(siteUrl()).host;

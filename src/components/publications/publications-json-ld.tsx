@@ -65,7 +65,7 @@ export function PublicationsJsonLd({
         "@type": "CollectionPage",
         "@id": url,
         url,
-        name: `${RESEARCH_PAGE.hero.eyebrow} · ${SITE.name}`,
+        name: `${RESEARCH_PAGE.hero.name}, ${SITE.name}`,
         description: SEO.research.description,
         about: { "@id": ids.founder },
         isPartOf: { "@id": ids.website },

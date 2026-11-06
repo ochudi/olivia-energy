@@ -1,8 +1,6 @@
 import { getImageProps } from "next/image";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { ABOUT_STORY } from "@/content/about";
 import { PHOTOS } from "@/content/images";
@@ -58,7 +56,7 @@ function StoryPicture() {
         {...img}
         srcSet={phoneSet}
         alt={photo.alt}
-        className="wipe-inner absolute inset-0 h-full w-full object-cover"
+        className="wipe-inner parallax absolute inset-0 h-full w-full object-cover"
         style={{ objectPosition: photo.focal }}
       />
     </picture>
@@ -71,17 +69,14 @@ function StoryPicture() {
  * with the shoulder on the band's top-right corner, and the text sits at
  * its bottom left (cols 1 to 7) on a night scrim; on phones the
  * photograph is 4:5 and the text follows on night. The photograph wipes
- * up; the statement masks in.
+ * up and carries the parallax; the text is static.
  */
 export function AboutStoryBand() {
   return (
     <Section surface="photo" spacing="none" aria-labelledby="story-title">
       <div className="relative">
         <figure className="relative">
-          <Reveal
-            variant="wipe"
-            className="shoulder-lg relative isolate aspect-[4/5] w-full overflow-hidden lg:aspect-[21/9] lg:min-h-[36rem]"
-          >
+          <div className="photo-scope wipe shoulder-lg relative isolate aspect-[4/5] w-full overflow-hidden lg:aspect-[21/9] lg:min-h-[36rem]">
             <StoryPicture />
             {/* The scrim: strongest under the text panel (bottom left). */}
             <span
@@ -89,7 +84,7 @@ export function AboutStoryBand() {
               className="absolute inset-0 hidden lg:block"
               style={{ background: SCRIM }}
             />
-          </Reveal>
+          </div>
           <figcaption className="source-line text-ink-muted px-gutter pt-3 lg:absolute lg:right-0 lg:bottom-0 lg:max-w-[24rem] lg:pt-0 lg:pb-6 lg:text-right">
             {ABOUT_STORY.caption}
           </figcaption>
@@ -99,18 +94,16 @@ export function AboutStoryBand() {
           <Container>
             <div className="py-section-sm lg:grid lg:grid-cols-12 lg:gap-x-6 lg:pt-0 lg:pb-[clamp(3rem,1rem+4vw,6rem)]">
               <div className="lg:col-span-7">
-                <Eyebrow id="story-title" as="h2" className="text-ink">
-                  {ABOUT_STORY.eyebrow}
-                </Eyebrow>
+                <h2
+                  id="story-title"
+                  className="font-display text-display-xs text-ink"
+                >
+                  {ABOUT_STORY.heading}
+                </h2>
                 <p className="text-ink mt-6 max-w-[38rem] font-sans text-lg text-pretty">
                   {ABOUT_STORY.paragraph}
                 </p>
-                <Display
-                  as="p"
-                  size="sm"
-                  reveal="mask"
-                  className="mt-8 max-w-[24ch]"
-                >
+                <Display as="p" size="sm" className="mt-8 max-w-[24ch]">
                   {ABOUT_STORY.statement}
                 </Display>
               </div>

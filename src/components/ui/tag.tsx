@@ -25,10 +25,11 @@ const sizes: Record<TagSize, string> = {
 };
 
 /**
- * Tag — a compact categorical label: a pill, uppercase, tracked (legacy;
- * new work uses <Chip>). `primary` is a quiet, text-only treatment (no
- * fill) for a positive or published state. `accent` is the gap red: the
- * gap pill and nothing else.
+ * Tag — a compact categorical label: a pill, 12px medium, sentence case
+ * (legacy; new work uses <Chip>; tracked uppercase lives on table heads and
+ * chart axes only, DESIGN.md Typography). `primary` is a quiet, text-only
+ * treatment (no fill) for a positive or published state. `accent` is the
+ * gap red: the gap pill and nothing else.
  */
 export function Tag({
   variant = "default",
@@ -39,7 +40,7 @@ export function Tag({
   return (
     <span
       className={cn(
-        "rounded-pill inline-flex items-center font-sans font-semibold tracking-[0.12em] whitespace-nowrap uppercase",
+        "rounded-pill inline-flex items-center font-sans font-medium whitespace-nowrap",
         variants[variant],
         sizes[size],
         className,

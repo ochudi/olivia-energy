@@ -1,7 +1,14 @@
 import { ContactHero, ContactMessage } from "@/components/sections/contact";
 import { SEO } from "@/content/seo";
 import { pageMetadata } from "@/lib/seo/metadata";
+import type { Viewport } from "next";
 import { getSettings } from "@/lib/supabase/queries";
+
+/** The browser chrome on phones takes the red hero. */
+export const viewport: Viewport = {
+  colorScheme: "light",
+  themeColor: "#d5281b",
+};
 
 export const generateMetadata = pageMetadata({
   ...SEO.contact,

@@ -14,7 +14,7 @@ function isPro(mention: Mention): boolean {
 const COLUMNS = 2;
 
 const LINK =
-  "text-ink hover:text-primary duration-fast ease-standard decoration-line-strong underline decoration-1 underline-offset-[0.22em] transition-colors hover:decoration-current";
+  "tap text-ink hover:text-primary duration-fast ease-standard decoration-line-strong underline decoration-1 underline-offset-[0.22em] transition-colors hover:decoration-current";
 
 /**
  * Quoted in BusinessDay (creative brief 4.4 section 5), under the cover
@@ -40,7 +40,7 @@ export function QuotedIn({
       className="border-line mt-20 grid grid-cols-1 gap-y-10 border-t pt-12 lg:mt-28 lg:grid-cols-12 lg:gap-x-6 lg:pt-16"
     >
       <div className="lg:sticky lg:top-[calc(var(--spacing-header)+2rem)] lg:col-span-4 lg:self-start">
-        <Display as="h3" size="md" reveal="mask" id="quoted-title">
+        <Display as="h3" size="md" id="quoted-title">
           {copy.title}
         </Display>
         <p className="text-ink-muted mt-5 max-w-[34ch] text-lg text-pretty">
@@ -61,7 +61,7 @@ export function QuotedIn({
               <p className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <time
                   dateTime={mention.publishedOn}
-                  className="label text-ink-muted numerals"
+                  className="text-ink-muted numerals text-sm"
                 >
                   {formatDateShort(mention.publishedOn)}
                 </time>

@@ -9,7 +9,8 @@ import { RETRIEVED } from "./home";
  */
 export const RESEARCH_PAGE: {
   hero: {
-    eyebrow: string;
+    /** The collection's name in structured data. */
+    name: string;
     title: string;
     lede: string;
     counters: readonly {
@@ -27,14 +28,12 @@ export const RESEARCH_PAGE: {
     };
   };
   articles: {
-    eyebrow: string;
     title: string;
     linkLabel: string;
     /** Accessible name of the DOI link. */
     linkAriaLabel: (title: string) => string;
   };
   commentary: {
-    eyebrow: string;
     title: string;
     lede: (c: Counts) => string;
     link: Cta;
@@ -48,7 +47,7 @@ export const RESEARCH_PAGE: {
   };
 } = {
   hero: {
-    eyebrow: "Research",
+    name: "Research",
     title: "Independent research that informs decisions.",
     lede: "Peer-reviewed research and published commentary by our founder, Dr Olugbenga Olaoye, on energy economics, environmental quality and policy.",
     counters: [
@@ -79,13 +78,13 @@ export const RESEARCH_PAGE: {
     },
   },
   articles: {
-    eyebrow: "Peer-reviewed",
     title: "Journal articles",
     linkLabel: "Read the article",
-    linkAriaLabel: (title) => `Read “${title}”, opens in a new tab`,
+    /** Contains the visible label, so the accessible name matches it. */
+    linkAriaLabel: (title) =>
+      `Read the article: “${title}”, opens in a new tab`,
   },
   commentary: {
-    eyebrow: "Commentary",
     title: "In BusinessDay",
     lede: (c) =>
       `${capitalise(countWords(c.opeds))} op-eds by Dr Olaoye, newest first.`,

@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import { FlameBullet } from "@/components/ui/flame-bullet";
-import { Reveal } from "@/components/ui/reveal";
 import { laneLayout, type LaneMark } from "@/lib/figures/lane";
 import { cn } from "@/lib/utils/cn";
 
@@ -18,7 +17,13 @@ export type PrintTimelineProps = {
   ariaLabel: string;
   /** Legend labels ("Journal article", "BusinessDay op-ed"); omitted when absent. */
   legend?: { article: string; oped: string };
-  animate?: boolean;
+  /**
+   * How the timeline draws itself (DESIGN.md, Motion). `lead`: the
+   * Research page's signature moment, once on load on a desktop where the
+   * plate is in the first screen, scroll-driven below 64rem. `scroll`: as
+   * it scrolls into view. `none`: finished.
+   */
+  motion?: "lead" | "scroll" | "none";
   className?: string;
 };
 
@@ -70,7 +75,9 @@ function Marker({ kind }: { kind: TimelineItem["kind"] }) {
  * above the line, stacked by year: their month is not known) and op-eds
  * (flames, below the line, at their month). Op-eds that would touch zigzag
  * in two rows around their mean date (`laneLayout`), so a burst of writing
- * reads as a dense run, never a tower. Each marker pops in date order.
+ * reads as a dense run, never a tower. The axis and the marks are drawn by
+ * one sweep from the first year to the last; each marker pops as the sweep
+ * reaches its date.
  */
 export function PrintTimeline({
   items,
@@ -78,7 +85,7 @@ export function PrintTimeline({
   to,
   ariaLabel,
   legend,
-  animate = true,
+  motion = "scroll",
   className,
 }: PrintTimelineProps) {
   const span = to + 1 - from;
@@ -141,18 +148,22 @@ export function PrintTimeline({
     })),
   ].sort((a, b) => a.p.t - b.p.t);
 
-  const body = (
-    <>
+  return (
+    <div
+      role="group"
+      aria-label={ariaLabel}
+      className={cn(
+        "@container w-full",
+        motion !== "none" && "figure-scope",
+        motion === "lead" && "figure-lead",
+        className,
+      )}
+    >
+      {/* The sweep clips the axis and every mark, so the marks appear in
+          date order as it passes them. */}
       <div
-        className="relative"
-        style={
-          {
-            height: laneTop + (rows - 1) * ROW + FLAME,
-            // Markers pop at once, 20 ms apart, in date order.
-            "--duration-draw": "0ms",
-            "--duration-hatch": "0ms",
-          } as CSSProperties
-        }
+        className="sweep relative"
+        style={{ height: laneTop + (rows - 1) * ROW + FLAME }}
       >
         <div
           aria-hidden="true"
@@ -184,7 +195,9 @@ export function PrintTimeline({
                 ...place,
                 transform: "translateX(-50%)",
                 color,
-                "--reveal-delay": `${i * 20}ms`,
+                // Where along the sweep this mark sits (the lead figure's
+                // load animation pops it as the sweep reaches it).
+                "--pop-at": p.x.toFixed(3),
               } as CSSProperties
             }
           >
@@ -218,22 +231,6 @@ export function PrintTimeline({
           </li>
         </ul>
       ) : null}
-    </>
-  );
-
-  return (
-    <div
-      role="group"
-      aria-label={ariaLabel}
-      className={cn("@container w-full", className)}
-    >
-      {animate ? (
-        <Reveal as="div" variant="sweep">
-          {body}
-        </Reveal>
-      ) : (
-        body
-      )}
     </div>
   );
 }

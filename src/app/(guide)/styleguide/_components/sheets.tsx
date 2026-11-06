@@ -1,11 +1,10 @@
 import type { CSSProperties } from "react";
 import { Chip } from "@/components/ui/chip";
-import { Display, Turn } from "@/components/ui/display";
+import { Display } from "@/components/ui/display";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { FlameBullet } from "@/components/ui/flame-bullet";
 import { Glyph } from "@/components/ui/glyph";
 import { GLYPH_NAMES } from "@/components/ui/glyphs";
-import { Reveal } from "@/components/ui/reveal";
 import { RingMark } from "@/components/ui/ring";
 import { ShoulderImage } from "@/components/ui/shoulder-image";
 import { PHILOSOPHY, PILLARS, VALUES_LIST, WHY_OLIVIA } from "@/content/brand";
@@ -145,7 +144,7 @@ export function ShapeSheet({ tokens }: { tokens: Token[] }) {
 /* A line with its hatch, end markers and a gap pill: enough to see sweep, hatch and pop. */
 function SweepDemo() {
   return (
-    <Reveal variant="sweep" className="relative">
+    <div className="figure-scope relative">
       <svg
         viewBox="0 0 600 200"
         className="h-auto w-full"
@@ -221,82 +220,77 @@ function SweepDemo() {
       <div className="pop absolute top-[36%] right-[8%]">
         <Chip tone="gap">{HOME_EVIDENCE.tiles[0].tag}</Chip>
       </div>
-    </Reveal>
+    </div>
   );
 }
 
 type MotionRow = {
   name: string;
   moves: string;
+  /** A duration token for a load-time motion, a range token for a scroll-driven one. */
   duration: string;
   ease: string;
   trigger: string;
 };
 
-/** Brief 2.8, with each value read from its token. */
+/** DESIGN.md, Motion, with each value read from its token. */
 const MOTION_ROWS: readonly MotionRow[] = [
   {
-    name: "mask",
-    moves: "Display heading clips up from its baseline",
-    duration: "--duration-mask",
-    ease: "--ease-out-expo",
-    trigger: "20% in view",
-  },
-  {
-    name: "fade",
-    moves: "Body blocks: opacity and a 16px lift, stagger 90ms",
-    duration: "--duration-reveal",
-    ease: "--ease-out",
-    trigger: "15% in view",
-  },
-  {
     name: "wipe",
-    moves: "Photographs clip up; the image settles from 1.08",
-    duration: "--duration-wipe",
+    moves: "A photograph's frame clips up; the image settles from 1.08",
+    duration: "--range-wipe",
     ease: "--ease-in-out",
-    trigger: "20% in view",
+    trigger: "scroll, as it enters",
+  },
+  {
+    name: "parallax",
+    moves: "A photograph drifts a tenth of its height through its frame",
+    duration: "--range-wipe-inner",
+    ease: "--ease-linear",
+    trigger: "scroll, the whole crossing",
   },
   {
     name: "draw",
-    moves: "Glyph, ring and chart-line strokes",
-    duration: "--duration-draw-glyph",
+    moves: "Glyph, ring and timeline strokes draw themselves",
+    duration: "--range-draw-glyph",
     ease: "--ease-in-out",
-    trigger: "30% in view",
+    trigger: "scroll, as it enters",
   },
   {
-    name: "sweep",
-    moves: "Chart lines clipped open from the left",
+    name: "sweep, hatch, pop",
+    moves:
+      "Chart lines open from the left; the gap hatch and the labels follow",
+    duration: "--range-sweep",
+    ease: "--ease-in-out",
+    trigger: "scroll, as it enters",
+  },
+  {
+    name: "ring-close",
+    moves: "The ring's gap closes (every close band)",
+    duration: "--range-draw",
+    ease: "--ease-in-out",
+    trigger: "scroll, as it enters",
+  },
+  {
+    name: "assemble",
+    moves: "The Insights cover wall: each cover slides in from its side",
+    duration: "--range-assemble",
+    ease: "--ease-out",
+    trigger: "scroll, as it enters",
+  },
+  {
+    name: "figure-lead",
+    moves: "The Research timeline and the Contact map, once on load from 64rem",
     duration: "--duration-draw",
     ease: "--ease-in-out",
-    trigger: "30% in view",
-  },
-  {
-    name: "hatch",
-    moves: "The gap hatch fades and clips in after sweep",
-    duration: "--duration-hatch",
-    ease: "--ease-out",
-    trigger: "sweep end",
-  },
-  {
-    name: "pop",
-    moves: "Gap pill and end labels scale in after hatch",
-    duration: "--duration-pop",
-    ease: "--ease-out-expo",
-    trigger: "hatch end",
-  },
-  {
-    name: "count",
-    moves: "Numerals count up",
-    duration: "--duration-counter",
-    ease: "--ease-out",
-    trigger: "60% in view",
+    trigger: "load",
   },
   {
     name: "light",
     moves: "Why Olivia line turns white; flame bullet grows",
     duration: "--duration-light",
     ease: "--ease-out",
-    trigger: "scroll threshold",
+    trigger: "the home scene's scroll controller",
   },
   {
     name: "settle",
@@ -306,11 +300,19 @@ const MOTION_ROWS: readonly MotionRow[] = [
     trigger: "load",
   },
   {
-    name: "close",
-    moves: "The ring's gap closes",
-    duration: "--duration-draw",
-    ease: "--ease-in-out",
-    trigger: "50% in view",
+    name: "rise",
+    moves: "The home hero's turn, lede, actions and card, 90ms apart",
+    duration: "--duration-rise",
+    ease: "--ease-out",
+    trigger: "load",
+  },
+  {
+    name: "page",
+    moves:
+      "Route change: the old page leaves, the new one lifts in, the H1 morphs",
+    duration: "--duration-page",
+    ease: "--ease-out",
+    trigger: "navigation",
   },
 ];
 
@@ -322,18 +324,22 @@ export function MotionTable({ tokens }: { tokens: Token[] }) {
     <div className="overflow-x-auto">
       <table className="w-full min-w-[44rem] border-collapse text-sm">
         <caption className="sr-only">
-          Each named motion with what it moves, its duration and easing tokens,
-          and what triggers it.
+          Each named motion with what it moves, its duration or scroll-range
+          token and easing token, and what triggers it.
         </caption>
         <thead>
           <tr className="border-line-strong border-b text-left">
-            {["Name", "What moves", "Duration", "Easing", "Trigger"].map(
-              (h) => (
-                <th key={h} className="label text-ink-muted py-2 pr-4">
-                  {h}
-                </th>
-              ),
-            )}
+            {[
+              "Name",
+              "What moves",
+              "Duration or range",
+              "Easing",
+              "Trigger",
+            ].map((h) => (
+              <th key={h} className="label text-ink-muted py-2 pr-4">
+                {h}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -364,7 +370,11 @@ export function MotionTable({ tokens }: { tokens: Token[] }) {
   );
 }
 
-/** Every reveal variant playing live, with a replay for each stage. */
+/**
+ * The scroll-driven reveals, live. Scroll this sheet into view to see them;
+ * Replay re-mounts the block, which resets each view timeline to the
+ * block's current position on screen.
+ */
 export function MotionStages() {
   return (
     <div className="flex flex-col gap-8">
@@ -372,40 +382,38 @@ export function MotionStages() {
         <Replay>
           <div className="grid gap-10 lg:grid-cols-2">
             <div className="flex flex-col gap-4">
-              <Code>mask</Code>
-              <Display as="p" size="md" reveal="mask">
-                {PHILOSOPHY.statement.first}{" "}
-                <Turn>{PHILOSOPHY.statement.turn}</Turn>
+              <Code>text: static</Code>
+              <Display as="p" size="md">
+                {PHILOSOPHY.statement}
               </Display>
             </div>
             <div className="flex flex-col gap-4">
-              <Code>fade, stagger 90ms</Code>
+              <Code>none: headings, ledes, lists and cards never animate</Code>
               <ul className="flex flex-col gap-3">
-                {PHILOSOPHY.lines.map((line, i) => (
-                  <Reveal key={line} as="li" delay={i * 90} className="text-lg">
+                {PHILOSOPHY.lines.map((line) => (
+                  <li key={line} className="text-lg">
                     {line}
-                  </Reveal>
+                  </li>
                 ))}
               </ul>
             </div>
             <div className="flex flex-col gap-4">
-              <Code>draw: glyphs 900ms, ring 1200ms</Code>
-              <Reveal
-                variant="draw"
-                className="flex flex-wrap items-center gap-5"
-              >
+              <Code>
+                draw: glyphs over --range-draw-glyph, rings over --range-draw
+              </Code>
+              <div className="flex flex-wrap items-center gap-5">
                 {VALUES_LIST.map((v) => (
                   <Glyph key={v.glyph} name={v.glyph} size={48} draw />
                 ))}
-              </Reveal>
+              </div>
               <div className="flex items-center gap-6">
                 <RingMark size={96} animate="draw" />
                 <RingMark size={96} animate="close" />
-                <Code>draw, close</Code>
+                <Code>draw, ring-close</Code>
               </div>
             </div>
             <div className="flex flex-col gap-4">
-              <Code>sweep, then hatch, then pop</Code>
+              <Code>sweep, then hatch, then pop, on one figure-scope</Code>
               <SweepDemo />
             </div>
           </div>
@@ -432,7 +440,7 @@ export function MotionStages() {
               </ul>
             </div>
             <div className="flex flex-col gap-4">
-              <Code>wipe</Code>
+              <Code>wipe and parallax</Code>
               <ShoulderImage
                 photo="ethiopia-lineman"
                 ratio="4/5"

@@ -112,7 +112,7 @@ describe("the surface table (creative brief 2.1)", () => {
     ),
   )("%s: %s matches the ratio the brief states", (_surface, _role, pair) => {
     const ratio = contrastRatio(pair.foreground, pair.background);
-    // The brief rounds to one decimal below 10:1 and to a whole number above.
+    // DESIGN.md rounds to one decimal below 10:1 and to a whole number above.
     const stated = pair.stated as number;
     expect(Math.abs(ratio - stated)).toBeLessThan(stated >= 10 ? 0.5 : 0.1);
   });
@@ -141,18 +141,19 @@ describe("the surface table (creative brief 2.1)", () => {
     expect(contrastRatio("#4A5A50", BRAND.paperDeep)).toBeGreaterThanOrEqual(
       4.5,
     );
-    // The turn on paper-deep passes only as large text.
-    const turnDeep = contrastRatio(BRAND.floodGreen, BRAND.paperDeep);
-    expect(turnDeep).toBeGreaterThanOrEqual(3);
-    expect(turnDeep).toBeLessThan(4.5);
+    // Green text on the deep field passes only as large text.
+    const greenDeep = contrastRatio(BRAND.floodGreen, BRAND.paperDeep);
+    expect(greenDeep).toBeGreaterThanOrEqual(3);
+    expect(greenDeep).toBeLessThan(4.5);
     // Lime is never text on paper, green or red.
     expect(contrastRatio(BRAND.lime, BRAND.paper)).toBeLessThan(3);
     expect(contrastRatio(BRAND.lime, BRAND.floodGreen)).toBeLessThan(3);
     expect(contrastRatio(BRAND.lime, BRAND.red)).toBeLessThan(3);
-    // Red is never small text on paper; red ink is.
-    expect(contrastRatio(BRAND.red, BRAND.paper)).toBeLessThan(4.5);
+    // Red reaches 4.5:1 on the field by a hair, which leaves no margin for
+    // the browser's rendering, so small red text still uses red ink (5.7:1).
+    expect(contrastRatio(BRAND.red, BRAND.paper)).toBeLessThan(4.6);
     expect(contrastRatio(BRAND.redInk, BRAND.paper)).toBeGreaterThanOrEqual(
-      4.5,
+      5.5,
     );
     // The scrim floors are the exact thresholds for white and pale lime.
     expect(

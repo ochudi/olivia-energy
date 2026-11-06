@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import type { Surface } from "@/types/contracts";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { Section } from "@/components/ui/section";
 import { MISSION, VISION } from "@/content/brand";
 import { cn } from "@/lib/utils/cn";
@@ -9,7 +8,7 @@ import { cn } from "@/lib/utils/cn";
 type Panel = {
   id: string;
   surface: Extract<Surface, "green" | "lime">;
-  eyebrow: string;
+  heading: string;
   text: string;
   /** Inner padding that lines the text up with the page grid. */
   pad: string;
@@ -24,14 +23,14 @@ const PANELS: readonly Panel[] = [
   {
     id: "vision",
     surface: "green",
-    eyebrow: VISION.eyebrow,
+    heading: VISION.heading,
     text: VISION.text,
     pad: "lg:pr-[clamp(3rem,1rem+4vw,6rem)] lg:pl-[var(--edge)]",
   },
   {
     id: "mission",
     surface: "lime",
-    eyebrow: MISSION.eyebrow,
+    heading: MISSION.heading,
     text: MISSION.text,
     pad: "lg:pr-[var(--edge)] lg:pl-[clamp(3rem,1rem+4vw,6rem)]",
   },
@@ -40,8 +39,10 @@ const PANELS: readonly Panel[] = [
 /**
  * About section 4, vision and mission (creative brief 4.3): two flood
  * panels side by side, each half the viewport and at least 560 px tall,
- * each with the large shoulder on its top-right corner; the statement in
- * display-md, at most 520 px wide, masking in. Stacked on phones.
+ * each with the large shoulder on its top-right corner (a flood panel is
+ * one of the firm's own objects, DESIGN.md Shapes); the heading in
+ * Newsreader at display-xs, the statement in display-md, at most 520 px
+ * wide. Stacked on phones. Static.
  */
 export function VisionMission() {
   return (
@@ -68,15 +69,10 @@ export function VisionMission() {
               panel.pad,
             )}
           >
-            <Eyebrow as="h2" className="text-ink">
-              {panel.eyebrow}
-            </Eyebrow>
-            <Display
-              as="p"
-              size="md"
-              reveal="mask"
-              className="max-w-[min(22ch,32.5rem)]"
-            >
+            <h2 className="font-display text-display-xs text-ink">
+              {panel.heading}
+            </h2>
+            <Display as="p" size="md" className="max-w-[min(22ch,32.5rem)]">
               {panel.text}
             </Display>
           </div>

@@ -321,13 +321,16 @@ export function SiteHeader({
       ref={headerRef}
       data-scrolled={scrolled}
       data-menu-open={open}
-      className="site-header h-header fixed inset-x-0 top-0 z-50"
+      className="site-header h-header fixed inset-x-0 top-0 z-50 pt-[env(safe-area-inset-top,0px)]"
+      // Named for the route transition: the header is pinned in place
+      // while the page beneath it changes (globals.css, "Page to page").
+      style={{ viewTransitionName: "site-header" }}
     >
       <Container className="relative z-10 flex h-full items-center justify-between gap-8">
         <Link
           href="/"
           className={cn(
-            "flex shrink-0 rounded-xs text-[1.375rem] leading-none",
+            "tap flex shrink-0 rounded-xs text-[1.375rem] leading-none",
             RING,
           )}
         >
@@ -349,7 +352,7 @@ export function SiteHeader({
                       href={item.href}
                       aria-current={ariaCurrent(pathname, item.href)}
                       className={cn(
-                        "text-ink duration-fast ease-standard relative inline-flex items-center rounded-xs py-2 text-[0.9375rem] font-medium transition-opacity",
+                        "text-ink tap duration-fast ease-standard relative inline-flex items-center rounded-xs py-2 text-[0.9375rem] font-medium transition-opacity",
                         RING,
                         // The current page: a 2 px underline in currentColor.
                         "after:duration-base after:absolute after:inset-x-0 after:bottom-0.5 after:h-0.5 after:origin-left after:bg-current after:transition-transform after:ease-out",
@@ -381,7 +384,7 @@ export function SiteHeader({
           aria-controls={open ? "site-menu" : undefined}
           onClick={() => (open ? closeMenu(true) : openMenu())}
           className={cn(
-            "rounded-pill border-line-strong text-ink hover:border-ink active:duration-instant duration-fast ease-standard -mr-1 inline-flex h-10 min-w-22 items-center justify-center gap-2 border px-4 text-sm font-medium transition-colors active:translate-y-px motion-reduce:transform-none lg:hidden",
+            "rounded-pill tap border-line-strong text-ink hover:border-ink active:duration-instant duration-fast ease-standard -mr-1 inline-flex h-10 min-w-22 items-center justify-center gap-2 border px-4 text-sm font-medium transition-colors active:translate-y-px motion-reduce:transform-none lg:hidden",
             RING,
           )}
         >
@@ -464,7 +467,7 @@ function MobileMenu({
           <path d={MARK_MONO_PATH} fill="currentColor" />
         </svg>
       </div>
-      <Container className="pt-header relative flex min-h-full flex-col pb-10">
+      <Container className="pt-header relative flex min-h-full flex-col pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]">
         <nav aria-label="Primary" className="pt-6">
           <ul>
             {NAV.map((item, index) => {
@@ -492,12 +495,6 @@ function MobileMenu({
                     >
                       {item.label}
                     </span>
-                    <span
-                      aria-hidden="true"
-                      className="label text-ink-muted numerals"
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
                   </Link>
                 </li>
               );
@@ -509,7 +506,6 @@ function MobileMenu({
           <Button
             href={NAV_CTA.href}
             size="lg"
-            arrow
             aria-current={ariaCurrent(pathname, NAV_CTA.href)}
             onClick={pathname === NAV_CTA.href ? onNavigate : undefined}
           >

@@ -1,0 +1,65 @@
+/*
+ * The Contact map settling on Southwest Nigeria (DESIGN.md, Layout: the
+ * page's signature moment). The map starts a tenth larger, scaled about the
+ * region (its transform origin), and settles to size while the ring draws
+ * itself around the region and the label appears. On a desktop the map is
+ * in the first screen, so it settles once on load (`lead`); below 64rem it
+ * follows the text and settles as it scrolls into view. Server HTML, no
+ * JavaScript, reduced motion and browsers without scroll-driven animations
+ * all get the settled map.
+ */
+
+@keyframes settle-map {
+  from {
+    scale: 1.1;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  /* On load, from 64rem. */
+  @media (min-width: 64rem) {
+    .lead .map {
+      animation: settle-map var(--duration-settle) var(--ease-out) both;
+    }
+    .lead .ring :global(.draw) {
+      animation: draw var(--duration-draw) var(--ease-in-out) 500ms both;
+    }
+    .lead .label {
+      animation: appear var(--duration-base) var(--ease-out) 1500ms both;
+    }
+  }
+
+  /* As it scrolls into view, below 64rem (and everywhere for a map that
+     is not the lead). */
+  @supports (animation-timeline: view()) {
+    .scope {
+      view-timeline: --map block;
+    }
+    .scope .map {
+      animation: settle-map var(--ease-out) both;
+      animation-timeline: --map;
+      animation-range: cover 0 cover 60svh;
+    }
+    .scope .ring :global(.draw) {
+      animation: draw var(--ease-in-out) both;
+      animation-timeline: --map;
+      animation-range: cover 10svh cover 50svh;
+    }
+    .scope .label {
+      animation: appear var(--ease-out) both;
+      animation-timeline: --map;
+      animation-range: cover 40svh cover 50svh;
+    }
+    @media (min-width: 64rem) {
+      .lead .map,
+      .lead .ring :global(.draw),
+      .lead .label {
+        animation-timeline: auto;
+        animation-range: normal;
+      }
+    }
+  }
+}

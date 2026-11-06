@@ -93,27 +93,28 @@ client.
 
 ## Scripts
 
-| Command                 | What it does                                                                            |
-| ----------------------- | --------------------------------------------------------------------------------------- |
-| `npm run dev`           | Start the dev server (Turbopack; writes to `.next/dev`, so it never clobbers a build)   |
-| `npm run build`         | Production build                                                                        |
-| `npm run start`         | Serve the production build                                                              |
-| `npm run lint`          | Run ESLint                                                                              |
-| `npm run lint:fix`      | Run ESLint and auto-fix                                                                 |
-| `npm run format`        | Format the codebase with Prettier                                                       |
-| `npm run format:check`  | Verify formatting without writing                                                       |
-| `npm run typecheck`     | Type-check with `tsc --noEmit`                                                          |
-| `npm run shots`         | Screenshot a route at 390/768/1440 (see Visual QA)                                      |
-| `npm run a11y`          | Lighthouse accessibility audit, mobile and desktop                                      |
-| `npm run lighthouse`    | Lighthouse mobile, all four categories, on Home and What We Do                          |
-| `npm run db:start`      | Start the local Supabase stack (Docker) and apply migrations                            |
-| `npm run db:reset`      | Recreate the local database: the migration, then `seed.sql` and `seeds/*.sql`           |
-| `npm run test`          | Vitest: contact and admin actions, route guard, schema guard, SEO helpers, revalidation |
-| `npm run db:types`      | Regenerate `src/lib/supabase/database.types.ts` from the local stack                    |
-| `npm run db:test`       | RLS proof against the local stack (`scripts/rls-test.mjs`)                              |
-| `npm run db:hosted-sql` | Regenerate `supabase/hosted-setup.sql`, the one file a hosted project is set up from    |
-| `npm run db:stop`       | Stop the local stack                                                                    |
-| `npm run admin:create`  | Create or promote an admin user on the local stack                                      |
+| Command                 | What it does                                                                                                         |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `npm run dev`           | Start the dev server (Turbopack; writes to `.next/dev`, so it never clobbers a build)                                |
+| `npm run build`         | Production build                                                                                                     |
+| `npm run start`         | Serve the production build                                                                                           |
+| `npm run lint`          | Run ESLint                                                                                                           |
+| `npm run lint:fix`      | Run ESLint and auto-fix                                                                                              |
+| `npm run format`        | Format the codebase with Prettier                                                                                    |
+| `npm run format:check`  | Verify formatting without writing                                                                                    |
+| `npm run typecheck`     | Type-check with `tsc --noEmit`                                                                                       |
+| `npm run shots`         | Screenshot a route at 390/768/1440 (see Visual QA)                                                                   |
+| `npm run a11y`          | Lighthouse accessibility audit, mobile and desktop                                                                   |
+| `npm run slop`          | Design-tell gate: avoid-ai-design detect over the rendered HTML of a running build (`--url`); P0 and P1 must be zero |
+| `npm run lighthouse`    | Lighthouse mobile, all four categories, on Home and What We Do                                                       |
+| `npm run db:start`      | Start the local Supabase stack (Docker) and apply migrations                                                         |
+| `npm run db:reset`      | Recreate the local database: the migration, then `seed.sql` and `seeds/*.sql`                                        |
+| `npm run test`          | Vitest: contact and admin actions, route guard, schema guard, SEO helpers, revalidation                              |
+| `npm run db:types`      | Regenerate `src/lib/supabase/database.types.ts` from the local stack                                                 |
+| `npm run db:test`       | RLS proof against the local stack (`scripts/rls-test.mjs`)                                                           |
+| `npm run db:hosted-sql` | Regenerate `supabase/hosted-setup.sql`, the one file a hosted project is set up from                                 |
+| `npm run db:stop`       | Stop the local stack                                                                                                 |
+| `npm run admin:create`  | Create or promote an admin user on the local stack                                                                   |
 
 Before opening a PR or deploying, run:
 

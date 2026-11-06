@@ -41,8 +41,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# agent instructions (Claude-specific, not part of the product)
+# agent instructions and locally installed agent skills (Claude-specific,
+# not part of the product; .claude/skills holds third-party skills and a
+# 17 MB detector binary)
 /CLAUDE.md
+/DESIGN.md
+/.claude/
+/.impeccable/
 
 # supabase CLI state
 /supabase/.branches

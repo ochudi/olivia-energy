@@ -10,13 +10,14 @@ import { CONTACT } from "@/content/site";
 
 /** The 404 page (creative brief 4.8): a green flood with an open ring. */
 export const NOT_FOUND: {
-  eyebrow: string;
+  /** The status, as a line of text above the title. */
+  code: string;
   title: string;
   lede: string;
   /** Pills under the lede. */
   links: readonly Cta[];
 } = {
-  eyebrow: "Error 404",
+  code: "Error 404",
   title: "Page not found.",
   lede: "This is one gap we can close. Try one of these instead.",
   links: [
@@ -28,7 +29,6 @@ export const NOT_FOUND: {
 };
 
 export const ARTICLE_NOT_FOUND = {
-  eyebrow: "Insights",
   title: "That article is not here.",
   lede: "It may be unpublished or have moved. Browse Insights for current analysis and commentary.",
   action: "All Insights",
@@ -36,7 +36,6 @@ export const ARTICLE_NOT_FOUND = {
 } as const;
 
 export const ROUTE_ERROR = {
-  eyebrow: "Error",
   title: "Something went wrong on our side.",
   lede: `Try again. If the problem continues, write to us at ${CONTACT.email}.`,
   actions: {
@@ -57,7 +56,6 @@ export const ADMIN_ERROR = {
 } as const;
 
 export const GLOBAL_ERROR = {
-  eyebrow: "Error",
   title: "Something went wrong on our side.",
   lede: `Reload the page, or try again. If the problem continues, write to us at ${CONTACT.email}.`,
   actions: {

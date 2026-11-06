@@ -1,15 +1,22 @@
-import type { ReactNode } from "react";
+import { ViewTransition, type ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
-import { Reveal } from "./reveal";
 
 export type DisplaySize = "2xl" | "xl" | "lg" | "md" | "sm" | "xs";
 
 export type DisplayProps = {
   as: "h1" | "h2" | "h3" | "p";
-  /** The display scale (creative brief 2.2): 2xl is the home H1 only. */
+  /**
+   * The display scale (DESIGN.md, Typography): 2xl is the home H1 only; xl
+   * is for statements of six words or fewer; lg for every H1 that is a
+   * sentence and for section H2s.
+   */
   size: DisplaySize;
-  /** `mask` clips the heading up from its baseline as it enters (never above the fold). */
-  reveal?: "mask" | "none";
+  /**
+   * The page's one headline: named for the route transition, so it morphs
+   * into the next page's headline on a client-side navigation (DESIGN.md,
+   * Motion). One per page.
+   */
+  headline?: boolean;
   id?: string;
   className?: string;
   children: ReactNode;
@@ -26,33 +33,34 @@ const SIZES: Record<DisplaySize, string> = {
 
 const BASE = "font-display text-ink font-normal text-balance";
 
+/** The name and class every page headline shares for the route morph. */
+export const HEADLINE_TRANSITION = {
+  name: "page-headline",
+  share: "morph",
+  default: "none",
+} as const;
+
 /**
- * Display — a headline in Newsreader 400 at one of the six display sizes.
- * Leading and tracking come with the size token. Put the italic turn
- * inside it with <Turn>.
+ * Display — a headline in Newsreader 400 at one of the six display sizes,
+ * roman, static: text never animates in (DESIGN.md, Motion). Leading and
+ * tracking come with the size token.
  */
 export function Display({
   as,
   size,
-  reveal = "none",
+  headline = false,
   id,
   className,
   children,
 }: DisplayProps) {
-  const classes = cn(BASE, SIZES[size], className);
-  if (reveal === "mask") {
-    return (
-      <Reveal as={as} variant="mask" id={id} className={classes}>
-        {children}
-      </Reveal>
-    );
-  }
   const Tag = as;
-  return (
-    <Tag id={id} className={classes}>
+  const heading = (
+    <Tag id={id} className={cn(BASE, SIZES[size], className)}>
       {children}
     </Tag>
   );
+  if (!headline) return heading;
+  return <ViewTransition {...HEADLINE_TRANSITION}>{heading}</ViewTransition>;
 }
 
 export type TurnProps = {
@@ -62,9 +70,10 @@ export type TurnProps = {
 };
 
 /**
- * Turn — the italic turn inside a statement: Newsreader italic in the
- * surface's turn colour (flood green on paper, lime on night, pale lime on
- * photographs, white on green and red, ink on lime). At most one per screen.
+ * Turn — Newsreader italic in the surface's turn colour, for one line on
+ * the site: the second line of the client's tagline, "Inspiring sustainable
+ * futures.", on the home hero and in the footer (DESIGN.md, Typography).
+ * Never a word or a sentence inside any other heading or statement.
  */
 export function Turn({ children, block = false }: TurnProps) {
   return <em className={cn("turn", block && "block")}>{children}</em>;

@@ -38,30 +38,28 @@ export function ComponentsSheet() {
       <Demo
         name="Button"
         path="@/components/ui/button"
-        description="Three variants and three sizes. Renders a Next.js link when given an href. A pill, with the arrow inside its own ring."
+        description="Three variants and three sizes. Renders a Next.js link when given an href. A pill that carries its label and nothing else (DESIGN.md, Shapes)."
         usage={[
           "One primary per section: it answers what to do here. It is flood green on paper, lime on night, paper on green and red, ink on lime.",
           "Secondary is an outline pill that pairs with primary or stands alone.",
           "Text is an inline action with a draw-in underline; use it in cards and lists.",
-          "arrow adds the ring. external opens a new tab and says so to screen readers.",
+          "external opens a new tab, says so to screen readers and adds the one marker a button carries: the ring with the diagonal arrow.",
           "Ghost, size sm, icon and iconPosition still work for the older sections.",
         ]}
         props={[
           { name: "variant", type: '"primary" | "secondary" | "text"' },
           { name: "size", type: '"md" | "lg"', note: "sm kept for old code." },
           { name: "href", type: "string", note: "Switches to <Link>." },
-          { name: "arrow / external", type: "boolean" },
+          { name: "external", type: "boolean" },
         ]}
       >
         <div className="flex flex-col gap-8">
           <DemoCell label="variants">
-            <Button href={NAV_CTA.href} arrow>
-              {NAV_CTA.label}
-            </Button>
-            <Button href={HOME_HERO.primaryCta.href} variant="secondary" arrow>
+            <Button href={NAV_CTA.href}>{NAV_CTA.label}</Button>
+            <Button href={HOME_HERO.primaryCta.href} variant="secondary">
               {HOME_HERO.primaryCta.label}
             </Button>
-            <Button href={HOME_HERO.secondaryCta.href} variant="text" arrow>
+            <Button href="https://businessday.ng" variant="text" external>
               {HOME_HERO.secondaryCta.label}
             </Button>
           </DemoCell>
@@ -101,7 +99,7 @@ export function ComponentsSheet() {
         description="Every headline is Newsreader at 400. The turn is the one italic word or phrase, once per screen."
         usage={[
           "Six sizes: 2xl is the home H1 only; xl is the inner-page H1 and closing statements; lg the section H2.",
-          "reveal=mask clips the heading up as it enters. Never on an above-the-fold H1.",
+          "headline names the page's one H1 for the route morph. Text never animates in (DESIGN.md, Motion).",
           "The turn takes its colour from the surface: lime on night, pale lime on photographs, flood green on paper, ink on lime, white on green and red.",
           "A lede is text-xl, muted, at most 42 characters a line.",
         ]}
@@ -132,7 +130,7 @@ export function ComponentsSheet() {
         path="@/components/ui/eyebrow"
         description="The 12px label above a heading: uppercase, 600, tracked, in the surface's muted ink."
         usage={[
-          "One eyebrow per heading. It names the section; it does not summarise it.",
+          "Not used on the public site since the November 2026 craft pass: nothing sits above a heading (DESIGN.md, Typography). Kept for this guide.",
           "The rule is the default mark; flame swaps in the mark's flame; number takes the section numeral.",
         ]}
         props={[
@@ -142,13 +140,13 @@ export function ComponentsSheet() {
       >
         <div className="flex flex-wrap gap-x-12 gap-y-6">
           <DemoCell label="default">
-            <Eyebrow>{HOME_EVIDENCE.eyebrow}</Eyebrow>
+            <Eyebrow>The gaps, measured</Eyebrow>
           </DemoCell>
           <DemoCell label="flame">
-            <Eyebrow flame>{PHILOSOPHY.eyebrow}</Eyebrow>
+            <Eyebrow flame>{PHILOSOPHY.heading}</Eyebrow>
           </DemoCell>
           <DemoCell label="number">
-            <Eyebrow number={SERVICES[0].number}>{SERVICES[0].title}</Eyebrow>
+            <Eyebrow number="01">{SERVICES[0].title}</Eyebrow>
           </DemoCell>
         </div>
       </Demo>
@@ -314,7 +312,7 @@ export function ComponentsSheet() {
           ))}
           <Divider />
           <Divider strong />
-          <Divider label={MISSION.eyebrow} />
+          <Divider label={MISSION.heading} />
         </div>
       </Demo>
 

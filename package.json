@@ -26,6 +26,7 @@
     "test": "vitest run",
     "shots": "node scripts/screenshot.mjs",
     "a11y": "node scripts/lighthouse.mjs --categories=accessibility",
+    "slop": "node scripts/slop.mjs",
     "db:start": "supabase start -x studio,imgproxy,mailpit,edge-runtime,logflare,vector,supavisor,realtime,postgres-meta",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",

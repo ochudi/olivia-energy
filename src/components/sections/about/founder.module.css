@@ -1,10 +1,11 @@
 /*
  * The founder's credentials timeline (creative brief 4.3, section 6).
  * Phones: vertical, the line on the left. From 768 px: horizontal, a 1 px
- * line with a ring node above each dated item. The line draws when the
- * timeline is 30% in view (Reveal variant="draw" writes data-reveal on
- * .dated); each node pops as the line reaches it (--pos, 0 to 1). Server
- * HTML is the final state; reduced motion collapses every transition.
+ * line with a ring node above each dated item. The line draws as the
+ * timeline scrolls into view (`.dated` is a draw-scope and names the view
+ * timeline; globals.css, Motion); each node pops as the line reaches it
+ * (--pos, 0 to 1). Server HTML is the final state; the motion exists only
+ * behind the same gate as every other scroll-driven reveal.
  */
 
 .dated {
@@ -27,13 +28,7 @@
   left: 5.5px;
   width: 1px;
   background: var(--color-primary);
-  transform: none;
   transform-origin: 50% 0;
-  transition: transform var(--duration-draw) var(--ease-in-out);
-}
-
-[data-reveal="hidden"] .line {
-  transform: scaleY(0);
 }
 
 .item {
@@ -49,18 +44,50 @@
   border: 2px solid var(--color-primary);
   border-radius: 999px;
   background: var(--color-canvas);
-  opacity: 1;
-  transform: scale(1);
-  transition:
-    opacity var(--duration-pop) var(--ease-out-expo)
-      calc(var(--duration-draw) * var(--pos, 0)),
-    transform var(--duration-pop) var(--ease-out-expo)
-      calc(var(--duration-draw) * var(--pos, 0));
 }
 
-[data-reveal="hidden"] .node {
-  opacity: 0;
-  transform: scale(0.4);
+@keyframes line-draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes line-draw-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes node-pop {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    .line {
+      animation: line-draw var(--ease-in-out) both;
+      animation-timeline: --draw;
+      animation-range: cover 0 cover var(--range-draw);
+    }
+    /* Each node pops where the line has reached it. */
+    .node {
+      animation: node-pop var(--ease-out-expo) both;
+      animation-timeline: --draw;
+      animation-range: cover calc(var(--range-draw) * var(--pos, 0)) cover
+        calc(var(--range-draw) * var(--pos, 0) + 6svh);
+    }
+  }
 }
 
 @media (min-width: 48rem) {
@@ -81,10 +108,7 @@
     width: auto;
     height: 1px;
     transform-origin: 0 50%;
-  }
-
-  [data-reveal="hidden"] .line {
-    transform: scaleX(0);
+    animation-name: line-draw-x;
   }
 
   .node {

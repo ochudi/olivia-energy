@@ -2,8 +2,6 @@ import { OpEdCover, wallTones } from "@/components/blocks";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { isEnergyOpEd } from "@/content/commentary";
 import { HOME_COMMENTARY } from "@/content/home";
@@ -13,7 +11,6 @@ import type { PostCategory } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils/cn";
 
 const MAX = 3;
-const STAGGER = 90;
 
 /** Written out in full so Tailwind sees every class. */
 const COLUMNS = { 2: "md:grid-cols-2", 3: "md:grid-cols-3" } as const;
@@ -44,14 +41,12 @@ export async function RelatedOpEds({ category }: { category: PostCategory }) {
 
   const header = (
     <div className={cn(one ? "lg:col-span-5" : "lg:col-span-7")}>
-      <Eyebrow flame>{copy.eyebrow}</Eyebrow>
-      <Display as="h2" size="lg" id={titleId} className="mt-6">
+      <Display as="h2" size="lg" id={titleId}>
         {copy.title}
       </Display>
       <Button
         href={HOME_COMMENTARY.allLink.href}
         variant="text"
-        arrow
         className="mt-8"
       >
         {HOME_COMMENTARY.allLink.label}
@@ -65,7 +60,7 @@ export async function RelatedOpEds({ category }: { category: PostCategory }) {
         {one ? (
           <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-12 lg:items-end lg:gap-x-6">
             {header}
-            <Reveal className="lg:col-span-6 lg:col-start-7">
+            <div className="lg:col-span-6 lg:col-start-7">
               <OpEdCover
                 oped={picked[0]}
                 size="standard"
@@ -73,7 +68,7 @@ export async function RelatedOpEds({ category }: { category: PostCategory }) {
                 tone={tones[0]}
                 headingLevel={3}
               />
-            </Reveal>
+            </div>
           </div>
         ) : (
           <>
@@ -87,7 +82,7 @@ export async function RelatedOpEds({ category }: { category: PostCategory }) {
               )}
             >
               {picked.map((oped, i) => (
-                <Reveal key={oped.slug} as="li" delay={i * STAGGER}>
+                <li key={oped.slug}>
                   <OpEdCover
                     oped={oped}
                     size="standard"
@@ -95,7 +90,7 @@ export async function RelatedOpEds({ category }: { category: PostCategory }) {
                     tone={tones[i]}
                     headingLevel={3}
                   />
-                </Reveal>
+                </li>
               ))}
             </ul>
           </>

@@ -247,14 +247,14 @@ export default function StyleguidePage() {
     "--text-display-lg": HOME_EVIDENCE.title,
     "--text-display-md": WHY_OLIVIA.lines[0] ?? "",
     "--text-display-sm": VALUES_LIST[0]?.name ?? "",
-    "--text-display-xs": MISSION.eyebrow,
+    "--text-display-xs": MISSION.heading,
   };
   const textSamples: Record<string, string> = {
     "--text-xl": PHILOSOPHY.lines[0] ?? "",
     "--text-lg": VISION.text,
     "--text-base": MISSION.text,
     "--text-sm": `${HOME_EVIDENCE.tiles[0].numeral} ${HOME_EVIDENCE.tiles[0].unit ?? ""} ${HOME_EVIDENCE.tiles[0].caption}`,
-    "--text-xs": HOME_EVIDENCE.eyebrow,
+    "--text-xs": "Last updated 29 September 2026",
   };
 
   const tile = HOME_EVIDENCE.tiles[0];
@@ -773,8 +773,7 @@ export default function StyleguidePage() {
                         <div className="flex flex-col items-start gap-3 p-5">
                           <Chip tone="solid">{surface}</Chip>
                           <Display as="p" size="md">
-                            {PHILOSOPHY.statement.first}{" "}
-                            <Turn>{PHILOSOPHY.statement.turn}</Turn>
+                            {PHILOSOPHY.statement}
                           </Display>
                         </div>
                       </SurfaceFrame>
@@ -806,7 +805,7 @@ export default function StyleguidePage() {
                 >
                   <div className="flex flex-col gap-4">
                     <Row label="label">
-                      <p className="label text-ink">{HOME_EVIDENCE.eyebrow}</p>
+                      <p className="label text-ink">Year</p>
                     </Row>
                     <Row label="source-line">
                       <p className="source-line text-ink-muted">
@@ -1015,8 +1014,9 @@ export default function StyleguidePage() {
                   <ul className="text-ink-muted space-y-2 text-sm">
                     <li>
                       <span className="text-ink font-medium">Hover</span>: the
-                      button arrow moves 4px, a card photograph scales to 1.04,
-                      a cover lifts 4px, at 200, 600 and 300ms.
+                      external-link ring moves 4px, a card photograph scales to
+                      1.04, a cover lifts 4px, at 200, 600 and 300ms; fine
+                      pointers only.
                     </li>
                     <li>
                       <span className="text-ink font-medium">Press</span>:
@@ -1136,7 +1136,7 @@ export default function StyleguidePage() {
                     </ul>
                     <blockquote>
                       <p>{VISION.text}</p>
-                      <cite>{VISION.eyebrow}</cite>
+                      <cite>{VISION.heading}</cite>
                     </blockquote>
                     <h3>Access to electricity, share of population</h3>
                     <table>

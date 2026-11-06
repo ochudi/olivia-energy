@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { Container } from "@/components/ui/container";
-import { Display, Turn } from "@/components/ui/display";
+import { Display } from "@/components/ui/display";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { FigTag } from "@/components/ui/fig-tag";
 import { FlameBullet } from "@/components/ui/flame-bullet";
@@ -158,9 +158,9 @@ export function SurfaceKit({ surface }: { surface: Surface }) {
 
         <Row label="Eyebrow">
           <div className="flex flex-wrap gap-x-10 gap-y-3">
-            <Eyebrow>{HOME_EVIDENCE.eyebrow}</Eyebrow>
-            <Eyebrow flame>{PHILOSOPHY.eyebrow}</Eyebrow>
-            <Eyebrow number={SERVICES[0].number}>{SERVICES[0].title}</Eyebrow>
+            <Eyebrow>The gaps, measured</Eyebrow>
+            <Eyebrow flame>{PHILOSOPHY.heading}</Eyebrow>
+            <Eyebrow number="01">{SERVICES[0].title}</Eyebrow>
           </div>
         </Row>
 
@@ -171,8 +171,7 @@ export function SurfaceKit({ surface }: { surface: Surface }) {
             id={`kit-${surface}-title`}
             className="max-w-[16ch]"
           >
-            {PHILOSOPHY.statement.first}{" "}
-            <Turn>{PHILOSOPHY.statement.turn}</Turn>
+            {PHILOSOPHY.statement}
           </Display>
           <Display as="p" size="md" className="mt-6 max-w-[22ch]">
             {HOME_EVIDENCE.title}
@@ -194,13 +193,11 @@ export function SurfaceKit({ surface }: { surface: Surface }) {
 
         <Row label="Buttons">
           <div className="flex flex-wrap items-center gap-4">
-            <Button href={NAV_CTA.href} arrow>
-              {NAV_CTA.label}
-            </Button>
-            <Button href={HOME_HERO.primaryCta.href} variant="secondary" arrow>
+            <Button href={NAV_CTA.href}>{NAV_CTA.label}</Button>
+            <Button href={HOME_HERO.primaryCta.href} variant="secondary">
               {HOME_HERO.primaryCta.label}
             </Button>
-            <Button href={HOME_HERO.secondaryCta.href} variant="text" arrow>
+            <Button href="https://businessday.ng" variant="text" external>
               {HOME_HERO.secondaryCta.label}
             </Button>
             <Button href={NAV_CTA.href} size="lg">
@@ -255,7 +252,7 @@ export function SurfaceKit({ surface }: { surface: Surface }) {
               </h3>
               <p className="text-ink-muted mt-3 text-sm">{value.text}</p>
               <div className="mt-6">
-                <Button href={NAV_CTA.href} variant="text" arrow size="sm">
+                <Button href={NAV_CTA.href} variant="text" size="sm">
                   {NAV_CTA.label}
                 </Button>
               </div>

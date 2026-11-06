@@ -6,7 +6,6 @@
  * cookies) are true of the code; the client may edit the wording freely.
  */
 export const PRIVACY = {
-  eyebrow: "Privacy",
   /** The H1 (creative brief 4.9). */
   title: "Privacy",
   lede: "This site collects personal information in one place, the contact form, and uses it for one purpose, replying to you. This notice sets out what that involves.",

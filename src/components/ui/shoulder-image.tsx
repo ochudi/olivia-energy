@@ -2,7 +2,6 @@ import Image from "next/image";
 import { PHOTOS } from "@/content/images";
 import type { PhotoKey } from "@/types/contracts";
 import { cn } from "@/lib/utils/cn";
-import { Reveal } from "./reveal";
 
 export type ShoulderImageProps = {
   photo: PhotoKey;
@@ -10,13 +9,23 @@ export type ShoulderImageProps = {
   sizes: string;
   /** Crop. `auto` keeps the file's own proportions. */
   ratio?: "4/5" | "3/2" | "16/9" | "21/9" | "1/1" | "auto";
-  /** The shoulder radius (brief 2.4): lg for photographs, md for cards, sm for tiles. */
+  /** The corner (DESIGN.md, Shapes): `lg` is the shoulder of a photograph; `none` for a square frame. */
   corner?: "lg" | "md" | "sm" | "none";
   /** Preload (the page's largest image only). */
   preload?: boolean;
   quality?: 60 | 75;
-  /** `wipe` clips the photograph up as it enters (brief 2.8). */
+  /**
+   * `wipe`: the frame clips up as it scrolls into view and the image
+   * settles from 1.08 (DESIGN.md, Motion). Scroll-driven; the server HTML
+   * is the finished photograph.
+   */
   reveal?: "wipe" | "none";
+  /**
+   * Depth on photography (DESIGN.md, Motion): the image drifts through its
+   * frame by a tenth of its height as the frame crosses the viewport. On
+   * by default; off for a photograph that is itself the page's scene.
+   */
+  parallax?: boolean;
   /** Shows the caption and credit under the image. */
   caption?: "below" | "none";
   className?: string;
@@ -74,8 +83,8 @@ export function photoCaption(entry: Pick<PhotoEntry, "caption" | "credit">) {
 
 /**
  * ShoulderImage — a photograph from the manifest in the shoulder shape, with
- * next/image doing the sizing. The image keeps its final state in server
- * HTML; with `reveal="wipe"` it clips up and settles as it enters.
+ * next/image doing the sizing. The frame names the view timeline (the
+ * `photo-scope` class) that the wipe and the parallax inside it play on.
  */
 export function ShoulderImage({
   photo,
@@ -85,6 +94,7 @@ export function ShoulderImage({
   preload = false,
   quality = 75,
   reveal = "none",
+  parallax = true,
   caption = "none",
   className,
   imgClassName,
@@ -96,42 +106,39 @@ export function ShoulderImage({
     );
   }
   const fill = ratio !== "auto";
-  const img = (
-    <Image
-      src={entry.src}
-      alt={entry.alt}
-      {...(fill
-        ? { fill: true }
-        : { width: entry.width, height: entry.height })}
-      sizes={sizes}
-      quality={quality}
-      preload={preload}
-      // A blur placeholder costs about 1.5 KB of HTML and RSC payload per
-      // image; only an above-the-fold (preloaded) photograph carries one.
-      placeholder={preload ? "blur" : "empty"}
-      blurDataURL={preload ? entry.blurDataURL : undefined}
+  const box = (
+    <div
       className={cn(
-        "h-full w-full object-cover",
-        reveal === "wipe" && "wipe-inner",
-        imgClassName,
+        "photo-scope relative isolate overflow-hidden",
+        reveal === "wipe" && "wipe",
+        CORNERS[corner],
+        RATIOS[ratio],
+        caption === "none" && className,
       )}
-      style={entry.focal ? { objectPosition: entry.focal } : undefined}
-    />
+    >
+      <Image
+        src={entry.src}
+        alt={entry.alt}
+        {...(fill
+          ? { fill: true }
+          : { width: entry.width, height: entry.height })}
+        sizes={sizes}
+        quality={quality}
+        preload={preload}
+        // A blur placeholder costs about 1.5 KB of HTML and RSC payload per
+        // image; only an above-the-fold (preloaded) photograph carries one.
+        placeholder={preload ? "blur" : "empty"}
+        blurDataURL={preload ? entry.blurDataURL : undefined}
+        className={cn(
+          "h-full w-full object-cover",
+          reveal === "wipe" && "wipe-inner",
+          parallax && "parallax",
+          imgClassName,
+        )}
+        style={entry.focal ? { objectPosition: entry.focal } : undefined}
+      />
+    </div>
   );
-  const boxClass = cn(
-    "relative isolate overflow-hidden",
-    CORNERS[corner],
-    RATIOS[ratio],
-    caption === "none" && className,
-  );
-  const box =
-    reveal === "wipe" ? (
-      <Reveal variant="wipe" className={boxClass}>
-        {img}
-      </Reveal>
-    ) : (
-      <div className={boxClass}>{img}</div>
-    );
   if (caption === "none") return box;
   return (
     <figure className={className}>

@@ -1,6 +1,5 @@
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { FlameBullet } from "@/components/ui/flame-bullet";
 import { Lede } from "@/components/ui/lede";
 import { Section } from "@/components/ui/section";
@@ -27,9 +26,8 @@ export default function Page() {
   return (
     <Section surface="paper" hero="light" aria-labelledby="credits-title">
       <Container>
-        <div className="max-w-[52rem] pb-16 lg:pb-24">
-          <Eyebrow flame>{CREDITS_PAGE.eyebrow}</Eyebrow>
-          <Display as="h1" size="xl" id="credits-title" className="mt-6">
+        <div className="max-w-text pb-16 lg:pb-24">
+          <Display as="h1" size="xl" headline id="credits-title">
             {CREDITS_PAGE.title}
           </Display>
           <Lede className="mt-8">{CREDITS_PAGE.lede}</Lede>
@@ -58,44 +56,48 @@ export default function Page() {
         </CreditRow>
 
         <CreditRow id="typefaces" title={CREDITS_PAGE.typefaces.title}>
-          <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-            {FONT_CREDITS.map((font, i) => (
-              <li
-                key={font.name}
-                className="shoulder bg-card border-line flex flex-col border p-6 sm:p-8"
-              >
-                <p
-                  className={cn(
-                    "text-ink text-display-md",
-                    i === 0 ? "font-display" : "font-sans font-medium",
-                  )}
+          <div className="@container">
+            <ul className="grid grid-cols-1 gap-4 @xl:grid-cols-2 @xl:gap-6">
+              {FONT_CREDITS.map((font, i) => (
+                <li
+                  key={font.name}
+                  className="bg-card border-line flex flex-col rounded-xs border p-6 sm:p-8"
                 >
-                  <a
-                    href={font.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={LINK}
+                  <p
+                    className={cn(
+                      "text-ink text-display-md",
+                      i === 0 ? "font-display" : "font-sans font-medium",
+                    )}
                   >
-                    {font.name}
-                    <span className="sr-only">{MICROCOPY.newTab}</span>
-                  </a>
-                </p>
-                <p className="text-ink mt-6 text-sm">{font.designers}</p>
-                <p className="text-ink-muted mt-1 text-sm">{font.copyright}</p>
-                <p className="mt-6 text-sm">
-                  <a
-                    href={font.licenceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(LINK, "text-ink")}
-                  >
-                    {font.licence}
-                    <span className="sr-only">{MICROCOPY.newTab}</span>
-                  </a>
-                </p>
-              </li>
-            ))}
-          </ul>
+                    <a
+                      href={font.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={LINK}
+                    >
+                      {font.name}
+                      <span className="sr-only">{MICROCOPY.newTab}</span>
+                    </a>
+                  </p>
+                  <p className="text-ink mt-6 text-sm">{font.designers}</p>
+                  <p className="text-ink-muted mt-1 text-sm">
+                    {font.copyright}
+                  </p>
+                  <p className="mt-6 text-sm">
+                    <a
+                      href={font.licenceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn(LINK, "text-ink")}
+                    >
+                      {font.licence}
+                      <span className="sr-only">{MICROCOPY.newTab}</span>
+                    </a>
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
         </CreditRow>
 
         <p className="border-line text-ink flex items-start gap-3 border-t pt-10 text-base lg:pl-[calc((100%+1.5rem)/3)]">

@@ -76,9 +76,16 @@ Notes:
 - **Resend** sends contact-form email, invitations and password resets. **Cloudflare
   Turnstile** protects the contact form and admin sign-in.
 - **Tiptap** is the article editor in the admin. **Zod** validates forms.
-- Motion on the public site is hand-written CSS plus a few small client components; no
-  animation library ships to visitors (framer-motion is used only by the `/styleguide` demos).
-  Reduced motion and no-JavaScript both render the final state.
+- Motion on the public site (since the November 2026 craft pass; `DESIGN.md`, Motion) is
+  native CSS scroll-driven animation (`animation-timeline: view()` behind `@supports`,
+  `src/app/globals.css`, "Motion") plus two small client controllers (the home opening's
+  scroll scene, the sticky chapter bar) and React `ViewTransition` between routes (the
+  `(site)` template, the header pinned by name, each page's H1 morphing). Three reveals,
+  tied to content type: `wipe` for photographs (with a 10% parallax), `draw` for data
+  (strokes, the hatch, the ring, the chart sweep) and none for text. One signature moment
+  per page. No animation library ships to visitors (framer-motion is used only by the
+  `/styleguide` demos). Reduced motion, no JavaScript and older browsers all render the
+  final state.
 - Public pages are statically generated and revalidated hourly, or at once when the admin
   saves (cache tags in `src/lib/supabase/tags.ts`, `POST /api/revalidate`).
 - Hosting target: **Vercel** (Hobby or Pro is still undecided; Hobby is non-commercial only).
@@ -91,7 +98,7 @@ Notes:
 | Page sections                       | `src/components/sections/{home,what-we-do,about,insights,research,contact}`                                    |
 | Shared building blocks              | `src/components/blocks` (close band, cover wall, op-ed cover, who we serve, quote panel)                       |
 | Data figures                        | `src/components/figures`, `src/lib/figures`                                                                    |
-| UI primitives                       | `src/components/ui` (button, chip, glyph, section, display, reveal, shoulder image, ...)                       |
+| UI primitives                       | `src/components/ui` (button, chip, glyph, section, display, shoulder image, ring, ...)                         |
 | **All copy**                        | `src/content/*.ts` (home, what-we-do, about, insights, contact, credits, seo, brand, legal)                    |
 | Facts and numbers                   | `src/content/data/facts.ts` / `facts.json`; 13 data series in `src/content/data/series/`                       |
 | Op-eds and mentions (fallback copy) | `src/content/commentary.ts`, generated from `supabase/seeds/source/commentary.json`                            |
@@ -126,6 +133,13 @@ Notes:
 10. **Screenshots:** Google Chrome is not installed. Use
     `CHROME_PATH=~/Library/Caches/ms-playwright/chromium-1140/chrome-mac/Chromium.app/Contents/MacOS/Chromium`
     for `npm run shots` and `npm run a11y`.
+11. **Design-tell gate:** `npm run slop` (needs a running production build on port 3002,
+    or `-- --url`) scans the rendered HTML of every public route with the avoid-ai-design
+    detector; P0 and P1 must be zero. The only ignores live in `scripts/slop.mjs`, each a
+    KEEP verdict of `docs/design/2026-11-craft-audit.md` citing `DESIGN.md`. The detector
+    is a project-local skill under `.claude/skills` (git-ignored; reinstall from
+    `funboy322/avoid-ai-design` if missing). Read `DESIGN.md` before changing any
+    visible choice.
 
 ## 7. The UI, screen by screen
 

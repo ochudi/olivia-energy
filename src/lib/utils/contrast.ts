@@ -133,9 +133,9 @@ export const BRAND = {
   redInk: "#B8231A",
   night: "#06170E",
   nightRaised: "#0E2418",
-  paper: "#F5F0E4",
-  paperDeep: "#EAE2CE",
-  card: "#FBF8F0",
+  paper: "#F1F3EA",
+  paperDeep: "#E6EBDC",
+  card: "#FAFBF7",
   chartTint: "#3FCB79",
   limePale: "#D3EDA6",
   ink: "#0B1F14",
@@ -145,7 +145,11 @@ export const BRAND = {
 /** `--color-error` on night and photo. */
 export const ERROR_ON_DARK = "#FFB4AA";
 
-/** The surface table (creative brief 2.1), every pair with its threshold. */
+/**
+ * The surface table (creative brief 2.1; the ground is the field of
+ * DESIGN.md, Colors, since November 2026), every pair with its threshold.
+ * `stated` is the ratio DESIGN.md records for the pair.
+ */
 export const SURFACE_PAIRS: readonly ContrastPair[] = [
   // paper
   {
@@ -162,7 +166,7 @@ export const SURFACE_PAIRS: readonly ContrastPair[] = [
     foreground: "#4A5A50",
     background: BRAND.paper,
     minimum: 4.5,
-    stated: 6.4,
+    stated: 6.5,
   },
   {
     surface: "paper",
@@ -244,15 +248,15 @@ export const SURFACE_PAIRS: readonly ContrastPair[] = [
     foreground: "#4A5A50",
     background: BRAND.paperDeep,
     minimum: 4.5,
-    stated: 5.7,
+    stated: 6.0,
   },
   {
     surface: "paper-deep",
-    role: "Turn (large text only)",
+    role: "Green text (large text only)",
     foreground: BRAND.floodGreen,
     background: BRAND.paperDeep,
     minimum: 3,
-    stated: 4.2,
+    stated: 4.5,
   },
   {
     surface: "paper-deep",

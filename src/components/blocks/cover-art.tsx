@@ -12,8 +12,8 @@ import type { CoverMotif } from "./cover-tone";
  *
  * Colours come from two custom properties the cover sets from its own
  * surface: --art-fill (a tint of the cover colour) and --art-line (a
- * stronger tint for the one stroke that draws in when the cover is
- * revealed; the `draw` class responds to the nearest Reveal).
+ * stronger tint for the one stroke that draws itself as the cover scrolls
+ * into view: the svg names the view timeline, the `draw` class plays on it).
  */
 
 type Placement = { x: number; y: number; s: number };
@@ -60,12 +60,8 @@ function Motif({ motif, stroke }: { motif: CoverMotif; stroke: number }) {
         <path
           d={cornerArc(184)}
           pathLength={1}
-          className="draw"
-          style={{
-            ...LINE,
-            strokeWidth: stroke,
-            transitionDelay: "calc(var(--reveal-delay, 0ms) + 160ms)",
-          }}
+          className="draw draw-late"
+          style={{ ...LINE, strokeWidth: stroke }}
         />
       </>
     );
@@ -146,7 +142,7 @@ export function CoverArt({
       preserveAspectRatio="xMaxYMin meet"
       aria-hidden="true"
       focusable="false"
-      className={cn("block h-full w-full", className)}
+      className={cn("draw-scope block h-full w-full", className)}
     >
       <Motif motif={motif} stroke={stroke} />
     </svg>

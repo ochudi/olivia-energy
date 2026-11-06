@@ -1,7 +1,6 @@
 import { IgnitionLazy } from "@/components/signature/ignition";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { Lede } from "@/components/ui/lede";
 import { Section } from "@/components/ui/section";
 import { ABOUT_HERO } from "@/content/about";
@@ -46,8 +45,8 @@ function AboutMark() {
 }
 
 /**
- * About section 1, "Ignition" (creative brief 4.3; signature moment 4):
- * night, the header transparent over it. Copy in cols 1 to 7, the mark
+ * About section 1, "Ignition" (creative brief 4.3; the page's signature
+ * moment, DESIGN.md Layout): night, the header transparent over it. Copy in cols 1 to 7, the mark
  * (about 340 x 472) in cols 8 to 12, vertically centred; on phones the
  * mark (150 x 208) sits centred above the copy. On eligible desktops
  * Ignition's sparks converge into the mark; everywhere else the mark draws
@@ -71,12 +70,12 @@ export function AboutHero() {
             </div>
           </div>
           <div className="lg:order-1 lg:col-span-7">
-            <Eyebrow>{ABOUT_HERO.eyebrow}</Eyebrow>
             <Display
               as="h1"
               size="lg"
+              headline
               id="about-title"
-              className="mt-6 max-w-[15ch] md:mt-8"
+              className="max-w-[15ch]"
             >
               {ABOUT_HERO.title}
             </Display>

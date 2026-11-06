@@ -11,6 +11,8 @@ const eslintConfig = [
     ignores: [
       "node_modules/**",
       ".next/**",
+      // Third-party agent skills installed project-locally; not our code.
+      ".claude/**",
       "out/**",
       "build/**",
       "next-env.d.ts",

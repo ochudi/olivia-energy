@@ -131,34 +131,6 @@
   padding-bottom: 2rem;
 }
 
-/* The eyebrow and the card meta wrap as whole items, never at a separator: each
-   item after the first carries its dot as ::before, and the row is pulled
-   left by one separator's width inside a clipping box, so the dot of an
-   item that starts a line falls in the clipped margin. Screen readers get
-   the string once, from the sr-only copy. */
-.separatedClip {
-  display: block;
-  overflow: hidden;
-}
-
-.separated {
-  --separator: 1.3em;
-  display: flex;
-  flex-wrap: wrap;
-  margin-left: calc(-1 * var(--separator));
-}
-
-.separatedItem {
-  white-space: nowrap;
-}
-
-.separatedItem::before {
-  content: "\00B7";
-  display: inline-block;
-  width: var(--separator);
-  text-align: center;
-}
-
 .title {
   margin-top: 1.25rem;
   font-size: var(--text-display-2xl);
@@ -241,7 +213,8 @@
   }
 }
 
-/* The latest op-ed: night at 92%, a 1px lime rule on top, the shoulder. */
+/* The latest op-ed: night at 92%, a 1px lime rule on top, the shoulder
+   (one of the firm's own objects, DESIGN.md Shapes). */
 .card {
   position: relative;
   width: 100%;
@@ -320,7 +293,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .rise {
-    animation: rise var(--duration-reveal) var(--ease-out) both;
+    animation: rise var(--duration-rise) var(--ease-out) both;
     animation-delay: var(--rise-delay, 0ms);
   }
 }
@@ -496,11 +469,11 @@
   margin-top: 0.24em;
 }
 
+/* The landing line: roman, like every statement (DESIGN.md, Typography),
+   with the lime underline that draws when it lights. */
 .closing {
   grid-area: closing;
   margin: 0.5rem 0 0;
-  font-family: var(--font-display-italic);
-  font-style: italic;
   font-size: var(--text-display-lg);
   line-height: 1.12;
   letter-spacing: var(--text-display-lg--letter-spacing);

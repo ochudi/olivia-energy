@@ -19,15 +19,12 @@ import type {
 } from "@/types/contracts";
 import { POSITIONING } from "./brand";
 import { RETRIEVED, type FigureCopy } from "./home";
-import type { Service } from "./site";
 
 export const WWD_HERO: {
-  eyebrow: string;
   title: string;
   lede: string;
   figure: FigureCopy & { labels: { start: string; end: string }; pill: string };
 } = {
-  eyebrow: "What we do",
   title: "Research, strategic advice and practical solutions.",
   /**
    * A light reframe of the positioning statement that opens the client's
@@ -74,11 +71,6 @@ export const WWD_HERO: {
  * brief gives no wording; approved in the Q2 copy audit (3 Oct 2026).
  */
 export const CHAPTER_BAR_LABEL: string = "Services on this page";
-
-/** "01 / 06": the label above each chapter title. */
-export function chapterLabel(service: Pick<Service, "number">): string {
-  return `${service.number} / ${String(SERVICE_LINES.length).padStart(2, "0")}`;
-}
 
 export type NumeralCard = {
   fact?: FactId;

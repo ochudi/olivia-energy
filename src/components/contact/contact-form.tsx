@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, ArrowRight } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import {
   useActionState,
@@ -261,6 +261,7 @@ export function ContactForm({ siteKey, contactEmail }: ContactFormProps) {
               type="email"
               inputMode="email"
               autoComplete="email"
+              spellCheck={false}
               required
               value={values.email}
               onChange={(e) => set("email")(e.target.value)}
@@ -301,6 +302,7 @@ export function ContactForm({ siteKey, contactEmail }: ContactFormProps) {
           <TextArea
             id={`${id}-message`}
             name="message"
+            autoComplete="off"
             required
             rows={6}
             value={values.message}
@@ -344,7 +346,6 @@ export function ContactForm({ siteKey, contactEmail }: ContactFormProps) {
         <Button
           type="submit"
           size="lg"
-          icon={<ArrowRight />}
           disabled={pending || !siteKey}
           className="min-w-[11rem]"
         >

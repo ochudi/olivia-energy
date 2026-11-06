@@ -7,7 +7,14 @@ import {
 } from "@/components/sections/insights";
 import { SEO } from "@/content/seo";
 import { pageMetadata } from "@/lib/seo/metadata";
+import type { Viewport } from "next";
 import { getPublishedPosts } from "@/lib/supabase/queries";
+
+/** The browser chrome on phones takes the lime hero. */
+export const viewport: Viewport = {
+  colorScheme: "light",
+  themeColor: "#88c029",
+};
 
 export const generateMetadata = pageMetadata({
   ...SEO.insights,

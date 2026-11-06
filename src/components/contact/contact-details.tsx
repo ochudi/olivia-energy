@@ -26,7 +26,7 @@ export function placesFrom(settings: SiteSettings): readonly string[] {
   return places.length ? places : copy.whereLines;
 }
 
-const heading = "label text-ink-muted";
+const heading = "text-ink-muted font-sans text-sm font-medium";
 
 /**
  * The details column beside the form (creative brief 4.7): Email (from

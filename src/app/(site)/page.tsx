@@ -8,6 +8,13 @@ import {
 import { HomeOpening } from "@/components/sections/home/opening";
 import { SEO } from "@/content/seo";
 import { pageMetadata } from "@/lib/seo/metadata";
+import type { Viewport } from "next";
+
+/** The browser chrome on phones takes the night of the photograph the home page opens on. */
+export const viewport: Viewport = {
+  colorScheme: "light",
+  themeColor: "#06170e",
+};
 
 export const generateMetadata = pageMetadata({
   ...SEO.home,

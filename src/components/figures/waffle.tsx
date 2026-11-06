@@ -22,20 +22,12 @@ const UNIT = SIZE + GAP;
 /**
  * Waffle — `total` squares in rows from the top left, as one path per
  * class: lit, hatched (available but not generated) and outlined
- * (unavailable). Static SVG; an ancestor's `data-step` (1, 2, 3) changes
- * the state with one 400 ms fill transition:
- *   step 1, installed: every square lit;
- *   step 2, available: the available squares lit, the rest outlined;
- *   step 3 or no step (the server HTML): generated lit, the hatched gap,
- *   the rest outlined. Reduced motion collapses the transition globally.
+ * (unavailable). Static SVG in its final state (generated lit, the hatched
+ * gap, the rest outlined). The pinned scene on What we do (chapter-
+ * installed.module.css) animates the two marked paths on the step
+ * timelines: `data-waffle="off"` is the unavailable squares, lit at step 1;
+ * `data-waffle="cover"` lies over the hatched squares, lit at steps 1 and 2.
  */
-const FADE =
-  "transition-[fill-opacity,stroke-opacity] duration-[400ms] ease-[var(--ease-out)]";
-const LIT_AT_1 = "in-data-[step=1]:[fill-opacity:1]";
-const LIT_AT_2 = "in-data-[step=2]:[fill-opacity:1]";
-/* The cover also hides the hatched squares' red outline while it is lit. */
-const EDGE_AT_1_2 =
-  "in-data-[step=1]:[stroke-opacity:1] in-data-[step=2]:[stroke-opacity:1]";
 export function Waffle({
   total,
   available,
@@ -67,7 +59,7 @@ export function Waffle({
         <HatchPattern id={hatchId} pitch={9} />
       </defs>
       <path
-        className={cn(FADE, LIT_AT_1)}
+        data-waffle="off"
         d={off}
         fill="var(--chart-1)"
         fillOpacity={0}
@@ -84,7 +76,7 @@ export function Waffle({
         vectorEffect="non-scaling-stroke"
       />
       <path
-        className={cn(FADE, LIT_AT_1, LIT_AT_2, EDGE_AT_1_2)}
+        data-waffle="cover"
         d={gap}
         fill="var(--chart-1)"
         fillOpacity={0}

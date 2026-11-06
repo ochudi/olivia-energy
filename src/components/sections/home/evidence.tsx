@@ -1,14 +1,11 @@
 import { FigurePlate, LineChart, NumeralFigure } from "@/components/figures";
 import { Container } from "@/components/ui/container";
 import { Lede } from "@/components/ui/lede";
-import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { getSeries } from "@/content/data/series";
 import { HOME_EVIDENCE } from "@/content/home";
 import { dataHref, seriesTable } from "@/lib/figures/table";
 import { HomeSectionHeader } from "./section-header";
-
-const STAGGER = 90;
 
 /* Fig. 1 draws the three lines in this order (the lead first); the readout
    names them in the order of its copy: Nigeria, sub-Saharan Africa, world. */
@@ -40,36 +37,30 @@ function evenTicks(from: number, to: number, count: number): number[] {
 }
 
 /**
- * The gaps, measured (creative brief 4.1 section 3, signature moment 2): a
- * lime flood with four numerals whose glyphs grow in (three hatched gaps and
- * one solid opening), then Fig. 1 on a night plate, sweeping across with
- * the World to Nigeria gap hatching in behind it, and a pointer and
- * keyboard readout. Every number comes from the content's fact ids and the
- * series file.
+ * The gaps, measured (creative brief 4.1 section 3): a lime flood with four
+ * numerals, final and still, whose glyphs grow in as they scroll into view
+ * (three hatched gaps and one solid opening), then Fig. 1 on a night plate,
+ * sweeping across with the World to Nigeria gap hatching in behind it, and a
+ * pointer and keyboard readout. Every number comes from the content's fact
+ * ids and the series file.
  */
 export function HomeEvidence() {
-  const { eyebrow, title, lede, tiles, figure: f } = HOME_EVIDENCE;
+  const { title, lede, tiles, figure: f } = HOME_EVIDENCE;
   const span = yearSpan(f.series);
   return (
     <Section surface="lime" id="evidence" aria-labelledby="evidence-title">
       <Container>
         <HomeSectionHeader
-          eyebrow={eyebrow}
           title={title}
           titleId="evidence-title"
           aside={<Lede>{lede}</Lede>}
         />
 
         <ul className="mt-14 grid grid-cols-1 gap-x-6 gap-y-14 md:mt-20 lg:grid-cols-2 lg:gap-y-20">
-          {tiles.map((tile, i) => (
-            <Reveal
-              key={tile.fact}
-              as="li"
-              delay={(i % 2) * STAGGER}
-              className="flex"
-            >
+          {tiles.map((tile) => (
+            <li key={tile.fact} className="flex">
               <NumeralFigure {...tile} size="band" className="w-full" />
-            </Reveal>
+            </li>
           ))}
         </ul>
 

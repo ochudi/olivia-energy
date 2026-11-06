@@ -18,20 +18,19 @@ import type { Counts, PhotoKey } from "@/types/contracts";
 import { countWords } from "@/lib/content/format";
 import { BRAND_STORY, VALUES_LIST } from "./brand";
 
-export const ABOUT_HERO: { eyebrow: string; title: string; lede: string } = {
-  eyebrow: BRAND_STORY.eyebrow,
+export const ABOUT_HERO: { title: string; lede: string } = {
   title: BRAND_STORY.headline,
   lede: BRAND_STORY.lede,
 };
 
 export const ABOUT_STORY: {
-  eyebrow: string;
+  heading: string;
   paragraph: string;
   statement: string;
   photo: PhotoKey;
   caption: string;
 } = {
-  eyebrow: BRAND_STORY.storyEyebrow,
+  heading: BRAND_STORY.storyHeading,
   paragraph: BRAND_STORY.paragraph,
   statement: BRAND_STORY.statement,
   photo: "abuja-lightpoles",
@@ -46,9 +45,9 @@ export type FounderPageCounter = {
 };
 
 export const FOUNDER_PAGE: {
-  eyebrow: string;
   name: string;
-  role: string;
+  /** Two lines under the name: the title, then the discipline and place. */
+  roles: readonly [string, string];
   points: (c: Counts) => readonly string[];
   timeline: {
     heading: string;
@@ -60,9 +59,8 @@ export const FOUNDER_PAGE: {
   /** Pills under the portrait; URLs from FOUNDER.links and settings. */
   profileLabels: readonly string[];
 } = {
-  eyebrow: "Our founder",
   name: "Dr Olugbenga Olaoye",
-  role: "Founder/CEO, Olivia Energy · Energy economist · Fort Worth, Texas",
+  roles: ["Founder/CEO, Olivia Energy", "Energy economist, Fort Worth, Texas"],
   points: (c) => [
     "A PhD in Economics from Covenant University, with a focus on energy and environmental economics.",
     "A Master of Public Service from the Clinton School of Public Service, University of Arkansas, grounded in governance and policy.",
@@ -103,12 +101,10 @@ export const FOUNDER_PAGE: {
 
 /** "Where we started": the retail origin, told once (decision 8). */
 export const ORIGIN: {
-  eyebrow: string;
   title: string;
   paragraph: string;
   facts: readonly { term: string; detail: string }[];
 } = {
-  eyebrow: "Where we started",
   title: "Real-world operations, since 2020.",
   paragraph:
     "Olivia Energy and Power Company Limited was incorporated in Nigeria on 26 February 2020. That year it opened two fuel retail outlets in Southwest Nigeria, in June and in November. Running them is where our practical view of energy markets began.",
@@ -117,24 +113,22 @@ export const ORIGIN: {
     {
       term: "Nigeria",
       detail:
-        "Olivia Energy and Power Company Limited · RC 1662525 · Incorporated 26 February 2020",
+        "Olivia Energy and Power Company Limited, RC 1662525, incorporated 26 February 2020",
     },
     {
       term: "United States",
       detail:
-        "Olivia Group LLC · Registration ID 805857089 · Formed 14 January 2025",
+        "Olivia Group LLC, Registration ID 805857089, formed 14 January 2025",
     },
-    { term: "Locations", detail: "Fort Worth, Texas · Southwest Nigeria" },
+    { term: "Locations", detail: "Fort Worth, Texas, and Southwest Nigeria" },
   ],
 };
 
 /** "Our values" (About section 5): header plus the five rows of VALUES_LIST. */
 export const ABOUT_VALUES: {
-  eyebrow: string;
   title: string;
   items: typeof VALUES_LIST;
 } = {
-  eyebrow: "Our values",
   title: "What we hold ourselves to.",
   items: VALUES_LIST,
 };
@@ -149,7 +143,7 @@ export const FOUNDER = {
   name: "Dr Olugbenga Olaoye",
   /** Person.jobTitle in structured data. */
   role: "Founder/CEO",
-  /** Person.hasCredential; the page sets them as "PhD · MPS · MBA · PMP · CSM". */
+  /** Person.hasCredential; the page sets them as "PhD, MPS, MBA, PMP, CSM". */
   credentials: [
     "PhD in Economics",
     "Master of Public Service",
@@ -211,7 +205,7 @@ export const REGISTRATIONS: readonly Registration[] = [
   {
     region: "Nigeria",
     label: "Olivia Energy and Power Company Limited",
-    detail: "RC 1662525 · Incorporated 2020",
+    detail: "RC 1662525, incorporated 2020",
     registry: "RC",
     number: "1662525",
     founded: "2020-02-26",
@@ -219,7 +213,7 @@ export const REGISTRATIONS: readonly Registration[] = [
   {
     region: "United States",
     label: "Olivia Group LLC",
-    detail: "Registration ID 805857089 · Formed 2025",
+    detail: "Registration ID 805857089, formed 2025",
     registry: "Registration ID",
     number: "805857089",
     founded: "2025-01-14",

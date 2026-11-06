@@ -3,18 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 import { Container } from "@/components/ui/container";
 import { Lede } from "@/components/ui/lede";
-import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { HOME_COMMENTARY } from "@/content/home";
 import { getCommentaryCounts, getOpEds } from "@/lib/supabase/queries";
 import { HomeSectionHeader } from "./section-header";
 
 /**
- * On the record, in BusinessDay (creative brief 4.1 section 7, signature
- * moment 5): the founder's op-eds as a cover wall (the newest as the lime
- * lead, then the next four energy op-eds), his Dangote line set large in
- * the quotation panel, and the eight Insights formats as chips. Op-eds and
- * counts come from the publication data, with the static list as fallback.
+ * On the record, in BusinessDay (creative brief 4.1 section 7): the
+ * founder's op-eds as a cover wall (the newest as the lime lead, then the
+ * next four energy op-eds; the wall assembles on Insights, not here), his
+ * Dangote line set large in the quotation panel, and the eight Insights
+ * formats as chips. Op-eds and counts come from the publication data, with
+ * the static list as fallback.
  */
 export async function HomeCommentary() {
   const [opeds, counts] = await Promise.all([
@@ -36,17 +36,16 @@ export async function HomeCommentary() {
     >
       <Container>
         <HomeSectionHeader
-          eyebrow={c.eyebrow}
           title={c.title}
           titleId="businessday-title"
           size="xl"
           lede={<Lede className="max-w-[46ch]">{c.lede(counts)}</Lede>}
           aside={
             <div className="flex flex-col items-start gap-4 lg:items-end lg:text-right">
-              <p className="label text-ink-muted numerals">
+              <p className="text-ink-muted numerals text-sm">
                 {c.countLine(counts)}
               </p>
-              <Button href={c.allLink.href} variant="text" arrow>
+              <Button href={c.allLink.href} variant="text">
                 {c.allLink.label}
               </Button>
             </div>
@@ -66,7 +65,7 @@ export async function HomeCommentary() {
           </div>
         ) : null}
 
-        <Reveal className="border-line mt-14 grid gap-6 border-t pt-8 md:mt-20 lg:grid-cols-12 lg:items-start lg:gap-x-6">
+        <div className="border-line mt-14 grid gap-6 border-t pt-8 md:mt-20 lg:grid-cols-12 lg:items-start lg:gap-x-6">
           <p className="font-display text-display-xs text-ink lg:col-span-4">
             {c.insightsLine}
           </p>
@@ -78,11 +77,11 @@ export async function HomeCommentary() {
             ))}
           </ul>
           <div className="lg:col-span-2 lg:justify-self-end">
-            <Button href={c.insightsCta.href} variant="text" arrow>
+            <Button href={c.insightsCta.href} variant="text">
               {c.insightsCta.label}
             </Button>
           </div>
-        </Reveal>
+        </div>
       </Container>
     </Section>
   );

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
-import { Display, Turn } from "@/components/ui/display";
+import { Display } from "@/components/ui/display";
 import { Logo } from "@/components/ui/logo";
 import { PHILOSOPHY, TAGLINE } from "@/content/brand";
 import { PHOTOS } from "@/content/images";
@@ -110,7 +110,7 @@ function SurfaceCard({ surface }: { surface: Surface }) {
           <Logo variant="lockup" size={26} />
         </div>
         <Display as="p" size="md" className="max-w-[18ch]">
-          {PHILOSOPHY.statement.first} <Turn>{PHILOSOPHY.statement.turn}</Turn>
+          {PHILOSOPHY.statement}
         </Display>
         <dl className="grid grid-cols-[4.5rem_1fr] items-baseline gap-x-4 gap-y-1">
           <dt className="source-line text-ink-muted">ink</dt>
@@ -121,9 +121,7 @@ function SurfaceCard({ surface }: { surface: Surface }) {
           <dd className="text-ink-subtle text-sm">{TAGLINE.line2}</dd>
         </dl>
         <div className="flex flex-wrap items-center gap-4">
-          <Button href="#surfaces" arrow>
-            {TAGLINE.line1.replace(/\.$/, "")}
-          </Button>
+          <Button href="#surfaces">{TAGLINE.line1.replace(/\.$/, "")}</Button>
           <Button href="#surfaces" variant="secondary">
             {TAGLINE.line2.replace(/\.$/, "")}
           </Button>

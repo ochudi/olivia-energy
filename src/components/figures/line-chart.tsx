@@ -1,7 +1,6 @@
 import { Fragment, useId } from "react";
 import type { SeriesId } from "@/types/contracts";
 import { Chip } from "@/components/ui/chip";
-import { Reveal } from "@/components/ui/reveal";
 import { getSeries } from "@/content/data/series";
 import { MICROCOPY } from "@/content/site";
 import {
@@ -55,8 +54,12 @@ export type LineChartProps = {
    */
   readout?: boolean | { template: string; names?: string[] };
   ariaLabel: string;
-  /** Wrap in a sweep Reveal (sweep, hatch, pop on entering the viewport). */
-  animate?: boolean;
+  /**
+   * The figure's motion (DESIGN.md, Motion): the lines sweep, the hatch
+   * follows and the labels pop as the chart scrolls into view, on a view
+   * timeline the chart names. `none` draws it finished.
+   */
+  motion?: "scroll" | "none";
   /** How wide the plate is shown at 768px+ (sets the hatch pitch). */
   plate?: "full" | "half";
   className?: string;
@@ -323,7 +326,7 @@ export function LineChart({
   pill,
   readout,
   ariaLabel,
-  animate = true,
+  motion = "scroll",
   plate = "full",
   className,
 }: LineChartProps) {
@@ -483,15 +486,9 @@ export function LineChart({
     <div
       role="group"
       aria-label={ariaLabel}
-      className={cn("w-full", className)}
+      className={cn("w-full", motion === "scroll" && "figure-scope", className)}
     >
-      {animate ? (
-        <Reveal as="div" variant="sweep">
-          {content}
-        </Reveal>
-      ) : (
-        content
-      )}
+      {content}
     </div>
   );
 }

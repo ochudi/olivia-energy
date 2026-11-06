@@ -9,7 +9,10 @@ import { HATCH_BACKGROUND } from "./hatch";
 /* Comparison glyphs for the numeral tiles and cards (brief 4.1 section */
 /* 3 and 4.2 chapters). Bars are HTML so the hatch is pixel-exact; the  */
 /* dots are one SVG path. Colour is currentColor: ink on lime, ink on   */
-/* card, white on night. The hatch is red and means the gap.            */
+/* card, white on night. The hatch is red and means the gap. The glyph  */
+/* is what moves on a tile (DESIGN.md, Motion: numerals never count     */
+/* up): the dots appear, the bars sweep and the hatch follows, on the   */
+/* view timeline of the tile's figure-scope (or the dots' own svg).     */
 /* ------------------------------------------------------------------ */
 
 const HATCH_STYLE: CSSProperties = {
@@ -48,7 +51,7 @@ export function DotRow({ count, perRow, ariaLabel, className }: DotRowProps) {
       role="img"
       aria-label={ariaLabel}
       viewBox={`0 0 ${cols * unit} ${rows * unit}`}
-      className={cn("block h-auto w-full", className)}
+      className={cn("draw-scope block h-auto w-full", className)}
     >
       <path className="draw-dot" d={dotsPath(centres, r)} fill="currentColor" />
     </svg>

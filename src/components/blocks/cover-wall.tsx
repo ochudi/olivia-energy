@@ -1,5 +1,5 @@
+import type { CSSProperties } from "react";
 import type { OpEd } from "@/types/contracts";
-import { Reveal } from "@/components/ui/reveal";
 import { isEnergyOpEd } from "@/content/commentary";
 import { cn } from "@/lib/utils/cn";
 import { OpEdCover } from "./op-ed-cover";
@@ -16,6 +16,13 @@ export type CoverWallProps = {
    * shares the full width; on phones, compact covers in one column.
    */
   layout: "home" | "archive";
+  /**
+   * The Insights page's signature moment (DESIGN.md, Layout): the wall
+   * assembles as the reader arrives at it, each cover sliding into place
+   * from its own side on a scroll-driven timeline. Off on the home wall,
+   * where the opening is the moment and the covers' art only draws.
+   */
+  assemble?: boolean;
   id?: string;
   /** Level of each cover's title. */
   headingLevel?: 3 | 4;
@@ -23,22 +30,42 @@ export type CoverWallProps = {
 
 /** Covers after the lead on the home wall (creative brief 4.1 section 7). */
 const HOME_COUNT = 4;
-const STAGGER = 90;
+
+/**
+ * Where a cover comes from when the wall assembles: the lead and the first
+ * column slide in from the left, the last column from the right, the
+ * middle from below; each column a little after the one before it.
+ */
+function arrival(column: 0 | 1 | 2, lead = false): CSSProperties {
+  const from = lead
+    ? { "--from-x": "-3rem", "--from-y": "0px" }
+    : column === 0
+      ? { "--from-x": "-2.5rem", "--from-y": "1rem" }
+      : column === 2
+        ? { "--from-x": "2.5rem", "--from-y": "1rem" }
+        : { "--from-x": "0px", "--from-y": "2.5rem" };
+  return { ...from, "--assemble-offset": `${column * 5}svh` } as CSSProperties;
+}
 
 /**
  * CoverWall — the founder's op-eds as a wall of report covers (creative
  * brief 2.9 "On the record"). Only the wall: the section, heading and count
- * line belong to the page. Covers fade in with a stagger and their art
- * draws; colours are assigned so no two covers of one colour touch.
+ * line belong to the page. Colours are assigned so no two covers of one
+ * colour touch; every cover's art draws itself as it comes into view.
  */
 export function CoverWall({
   opeds,
   layout,
+  assemble = false,
   id,
   headingLevel = 3,
 }: CoverWallProps) {
   if (opeds.length === 0) return null;
   const [lead, ...rest] = opeds;
+  const motion = (column: 0 | 1 | 2, isLead = false) =>
+    assemble
+      ? { className: "assemble", style: arrival(column, isLead) }
+      : { className: undefined, style: undefined };
 
   if (layout === "home") {
     // The two sanitation pieces (and any op-ed that is only Policy or
@@ -48,16 +75,21 @@ export function CoverWall({
     // 2 x 2 beside the lead: wall[3] sits under wall[1], wall[4] under wall[2].
     const tones = wallTones(wall, (i) => (i >= 3 ? i - 2 : undefined));
     return (
-      <div id={id} className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-12">
-        <Reveal className="lg:col-span-6">
+      <div
+        id={id}
+        data-fold-split=""
+        className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-12"
+      >
+        <div className="lg:col-span-6">
           <OpEdCover
             oped={lead}
             size="lead"
             tone={tones[0]}
             headingLevel={headingLevel}
           />
-        </Reveal>
+        </div>
         <ul
+          data-scroll-rail=""
           className={cn(
             // Phones: a native rail, 260 px covers, the next one cut.
             "-mx-gutter px-gutter scroll-px-gutter flex snap-x snap-mandatory [scrollbar-width:none] gap-4 overflow-x-auto pb-2",
@@ -66,10 +98,8 @@ export function CoverWall({
           )}
         >
           {four.map((oped, i) => (
-            <Reveal
+            <li
               key={oped.slug}
-              as="li"
-              delay={(i + 1) * STAGGER}
               className="w-[260px] shrink-0 snap-start md:w-auto"
             >
               <OpEdCover
@@ -78,7 +108,7 @@ export function CoverWall({
                 tone={tones[i + 1]}
                 headingLevel={headingLevel}
               />
-            </Reveal>
+            </li>
           ))}
         </ul>
       </div>
@@ -107,47 +137,66 @@ export function CoverWall({
             ? i - 3
             : undefined,
   );
+  /** The grid column (0 to 2) a cover after the lead lands in at 1024 px. */
+  const columnOf = (i: number): 0 | 1 | 2 =>
+    i < beside
+      ? 2
+      : i >= tailFrom
+        ? ((((i - tailFrom) * 2) % 3) as 0 | 2)
+        : (((i - beside) % 3) as 0 | 1 | 2);
+  const leadMotion = motion(0, true);
+  // Columns follow the wall's own width (container queries), so a
+  // near-square screen such as a foldable's inner display gets two columns
+  // rather than a stretched phone stack; a half-folded one splits the wall
+  // either side of the hinge (data-fold-split, globals.css "Foldables").
   return (
-    <ul
-      id={id}
-      className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-12"
-    >
-      <Reveal
-        as="li"
-        className={cn(
-          "md:col-span-2 lg:col-span-8",
-          beside === 2 && "lg:row-span-2",
-        )}
+    <div className="@container">
+      <ul
+        id={id}
+        data-fold-split=""
+        className="grid grid-cols-1 gap-4 @xl:grid-cols-2 @xl:gap-6 @4xl:grid-cols-12"
       >
-        <OpEdCover
-          oped={lead}
-          size="lead"
-          tone={tones[0]}
-          headingLevel={headingLevel}
-        />
-      </Reveal>
-      {rest.map((oped, i) => (
-        <Reveal
-          key={oped.slug}
-          as="li"
-          delay={((i % 3) + 1) * STAGGER}
-          className={
-            i >= tailFrom
-              ? tail === 2
-                ? "lg:col-span-6"
-                : "lg:col-span-12"
-              : "lg:col-span-4"
-          }
+        <li
+          className={cn(
+            "@xl:col-span-2 @4xl:col-span-8",
+            beside === 2 && "@4xl:row-span-2",
+            leadMotion.className,
+          )}
+          style={leadMotion.style}
         >
           <OpEdCover
-            oped={oped}
-            size="standard"
-            compactOnPhone
-            tone={tones[i + 1]}
+            oped={lead}
+            size="lead"
+            tone={tones[0]}
             headingLevel={headingLevel}
           />
-        </Reveal>
-      ))}
-    </ul>
+        </li>
+        {rest.map((oped, i) => {
+          const m = motion(columnOf(i));
+          return (
+            <li
+              key={oped.slug}
+              className={cn(
+                i >= tailFrom
+                  ? tail === 2
+                    ? "@4xl:col-span-6"
+                    : "@4xl:col-span-12"
+                  : "@4xl:col-span-4",
+                m.className,
+              )}
+              style={m.style}
+            >
+              <OpEdCover
+                oped={oped}
+                size="standard"
+                compactOnPhone
+                tone={tones[i + 1]}
+                headingLevel={headingLevel}
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }

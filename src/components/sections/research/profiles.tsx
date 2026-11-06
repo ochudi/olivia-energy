@@ -44,7 +44,7 @@ export function Profiles({ scholarUrl }: { scholarUrl?: string }) {
             <ul className="mt-8 flex flex-wrap gap-3">
               {pills.map((p) => (
                 <li key={p.label}>
-                  <Button href={p.href} variant="secondary" arrow external>
+                  <Button href={p.href} variant="secondary" external>
                     {p.label}
                   </Button>
                 </li>

@@ -2,7 +2,6 @@ import { PostCard } from "@/components/insights";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { Lede } from "@/components/ui/lede";
 import { Section } from "@/components/ui/section";
 import { ARTICLE_NOT_FOUND } from "@/content/errors";
@@ -21,12 +20,11 @@ export default async function NotFound() {
     <>
       <Section surface="paper" hero="light" aria-labelledby="missing-title">
         <Container>
-          <Eyebrow>{ARTICLE_NOT_FOUND.eyebrow}</Eyebrow>
-          <Display as="h1" size="xl" id="missing-title" className="mt-6">
+          <Display as="h1" size="lg" id="missing-title">
             {ARTICLE_NOT_FOUND.title}
           </Display>
           <Lede className="mt-6">{ARTICLE_NOT_FOUND.lede}</Lede>
-          <Button href="/insights" arrow className="mt-10">
+          <Button href="/insights" className="mt-10">
             {ARTICLE_NOT_FOUND.action}
           </Button>
         </Container>

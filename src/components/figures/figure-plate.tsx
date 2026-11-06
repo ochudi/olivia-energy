@@ -1,6 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { SourceRef } from "@/types/contracts";
-import { Chip } from "@/components/ui/chip";
 import { FigTag } from "@/components/ui/fig-tag";
 import { Source } from "@/components/ui/source";
 import { MICROCOPY } from "@/content/site";
@@ -18,7 +17,7 @@ export type FigurePlateProps = {
   subtitle?: string;
   /** night: a night slab (sets its own surface). card: the card fill on paper. */
   surface?: "night" | "card";
-  /** "Figure · October 2026", top right. */
+  /** "Figure, October 2026": the figure's date, top right, as a line of text. */
   dateChip?: string;
   /** One or two sentences under the chart. */
   interpretation?: string;
@@ -34,17 +33,19 @@ export type FigurePlateProps = {
 
 /* Cell and row styles live on the table, so a long table stays light. */
 const TABLE = cn(
-  "numerals text-ink w-full border-collapse text-sm tracking-normal normal-case",
+  "numerals text-ink w-full border-collapse text-sm font-normal",
   "[&_:is(th,td)]:px-3 [&_:is(th,td)]:py-1.5 [&_:is(th,td)]:text-left [&_:is(th,td)]:align-top",
   "[&_:is(th,td):first-child]:pl-0 [&_:is(th,td):last-child]:pr-0",
   "[&_tr]:border-line [&_tr]:border-b [&_tbody_th]:font-normal",
 );
 
 /**
- * FigurePlate — the plate every chart sits on (creative brief 2.6): the
- * Fig. tag and title, an optional subtitle, the chart, the interpretation,
- * the source line, then "View as table" and "Get the data (CSV)". Night
- * plates declare their own surface so the chart variables follow.
+ * FigurePlate — the plate every chart sits on (creative brief 2.6): "Fig. n"
+ * and the title as one caption line, an optional subtitle, the chart, the
+ * interpretation, the source line, then "View as table" and "Get the data
+ * (CSV)". A chart is an instrument, so the plate's corners are square
+ * (DESIGN.md, Shapes). Night plates declare their own surface so the chart
+ * variables follow.
  */
 export function FigurePlate({
   n,
@@ -71,7 +72,7 @@ export function FigurePlate({
           : undefined
       }
       className={cn(
-        "shoulder text-ink relative isolate flex flex-col gap-5 p-5 sm:p-6 lg:p-8",
+        "text-ink relative isolate flex flex-col gap-5 rounded-xs p-5 sm:p-6 lg:p-8",
         surface === "night" ? "bg-canvas" : "bg-surface border-line border",
         className,
       )}
@@ -83,9 +84,9 @@ export function FigurePlate({
             {title}
           </p>
           {dateChip ? (
-            <Chip tone="outline" className="text-ink-muted sm:ml-auto">
+            <p className="text-ink-muted numerals text-xs sm:ml-auto">
               {dateChip}
-            </Chip>
+            </p>
           ) : null}
         </div>
         {subtitle ? <p className="text-ink-muted text-sm">{subtitle}</p> : null}
@@ -102,10 +103,10 @@ export function FigurePlate({
       <div className="flex flex-col gap-3">
         <Source sources={sources} retrieved={retrieved} />
         {table || dataHref ? (
-          <div className="label text-ink-muted flex flex-wrap items-start gap-x-5 gap-y-2">
+          <div className="text-ink-muted flex flex-wrap items-start gap-x-5 gap-y-2 text-xs font-medium">
             {table ? (
               <details className="group min-w-0 grow">
-                <summary className="hover:text-ink inline-flex cursor-pointer list-none items-center gap-1.5 [&::-webkit-details-marker]:hidden">
+                <summary className="hover:text-ink tap inline-flex cursor-pointer list-none items-center gap-1.5 [&::-webkit-details-marker]:hidden">
                   <span
                     aria-hidden="true"
                     className="inline-block transition-transform group-open:rotate-90"
@@ -149,7 +150,7 @@ export function FigurePlate({
               <a
                 href={dataHref}
                 download
-                className="hover:text-ink underline decoration-current/40 underline-offset-[0.2em]"
+                className="hover:text-ink tap inline-block underline decoration-current/40 underline-offset-[0.2em]"
               >
                 {MICROCOPY.getData}
               </a>

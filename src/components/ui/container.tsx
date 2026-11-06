@@ -31,7 +31,7 @@ export function Container<T extends ElementType = "div">({
   const Tag = (as ?? "div") as ElementType;
   return (
     <Tag
-      className={cn("px-gutter mx-auto w-full", sizes[size], className)}
+      className={cn("px-page mx-auto w-full", sizes[size], className)}
       {...rest}
     />
   );

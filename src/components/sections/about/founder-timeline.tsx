@@ -1,23 +1,24 @@
 import type { CSSProperties } from "react";
 import { Chip } from "@/components/ui/chip";
-import { Reveal } from "@/components/ui/reveal";
 import { FOUNDER_PAGE } from "@/content/about";
 import styles from "./founder.module.css";
 
 /**
  * "Credentials": the dated degrees on a 1 px line with ring nodes (in the
  * order of the ORCID record), then the undated credentials as wrapping
- * chips (the longest runs to two lines on a phone). The line draws and the nodes pop in order (founder.module.css).
+ * chips (the longest runs to two lines on a phone). The line draws and the
+ * nodes pop in order as the timeline scrolls into view (founder.module.css).
  */
 export function FounderTimeline() {
   const { timeline } = FOUNDER_PAGE;
   const n = timeline.dated.length;
   return (
     <div>
-      <h3 className="label text-ink-muted">{timeline.heading}</h3>
-      <Reveal
-        variant="draw"
-        className={`${styles.dated} mt-8`}
+      <h3 className="font-display text-display-xs text-ink">
+        {timeline.heading}
+      </h3>
+      <div
+        className={`${styles.dated} draw-scope mt-8`}
         style={{ "--n": n } as CSSProperties}
       >
         <span aria-hidden="true" className={styles.line} />
@@ -38,7 +39,7 @@ export function FounderTimeline() {
             </li>
           ))}
         </ol>
-      </Reveal>
+      </div>
       <ul className="mt-8 flex flex-wrap gap-2">
         {timeline.undated.map((label) => (
           <Chip key={label} as="li" wrap>

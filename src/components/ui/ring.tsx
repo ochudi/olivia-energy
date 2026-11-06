@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import { cn } from "@/lib/utils/cn";
-import { Reveal } from "./reveal";
 
 export type RingMarkProps = {
   /** Diameter in px. */
@@ -10,8 +9,10 @@ export type RingMarkProps = {
   /** The open gap as a fraction of the circumference (default 0.25). */
   gap?: number;
   /**
-   * close: the gap closes when the ring is half in view (the close band).
+   * close: the gap closes as the ring scrolls into view (the close band).
    * draw: the ring draws itself from nothing. none: static, with its gap.
+   * Both motions are scroll-driven on a view timeline the ring names
+   * (DESIGN.md, Motion); server HTML is the finished ring.
    */
   animate?: "close" | "draw" | "none";
   /**
@@ -31,9 +32,8 @@ function gapRotation(gap: number): number {
 
 /**
  * RingMark — the ring of the mark as a line: the closing ring on every red
- * close band, the halo, the 404's open ring. Server-rendered in its final
- * state; `close` and `draw` use Reveal's observer, so there is no new client
- * code. Circles appear only where the ring is meant (brief 2.4).
+ * close band, the halo, the 404's open ring. Circles appear only where the
+ * ring is meant (brief 2.4).
  */
 export function RingMark({
   size,
@@ -47,7 +47,7 @@ export function RingMark({
   const c = size / 2;
   const d = `M${c} ${c - r}A${r} ${r} 0 1 1 ${c} ${c + r}A${r} ${r} 0 1 1 ${c} ${c - r}`;
   const open = animate === "none" && gap > 0;
-  const svg = (
+  return (
     <svg
       viewBox={`0 0 ${size} ${size}`}
       width={fill ? undefined : size}
@@ -55,7 +55,12 @@ export function RingMark({
       fill="none"
       aria-hidden="true"
       focusable="false"
-      className={cn("ring-mark shrink-0", fill && "h-full w-full", className)}
+      className={cn(
+        "ring-mark shrink-0",
+        fill && "h-full w-full",
+        animate !== "none" && "draw-scope",
+        className,
+      )}
     >
       <path
         d={d}
@@ -79,16 +84,5 @@ export function RingMark({
         }
       />
     </svg>
-  );
-  if (animate === "none") return svg;
-  return (
-    <Reveal
-      as="span"
-      variant={animate}
-      className={fill ? "block h-full w-full" : "inline-flex"}
-      style={fill ? undefined : { width: size, height: size }}
-    >
-      {svg}
-    </Reveal>
   );
 }

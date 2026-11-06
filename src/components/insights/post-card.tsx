@@ -130,7 +130,7 @@ export function PostCard({
               <time dateTime={post.published_at}>
                 {formatDateShort(post.published_at)}
               </time>
-              <span aria-hidden> · </span>
+              <span aria-hidden>, </span>
             </>
           ) : null}
           <span className="whitespace-nowrap">

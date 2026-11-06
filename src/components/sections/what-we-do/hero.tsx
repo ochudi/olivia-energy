@@ -1,9 +1,7 @@
 import { FigurePlate, LineChart } from "@/components/figures";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { Lede } from "@/components/ui/lede";
-import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { getSeries } from "@/content/data/series";
 import { WWD_HERO } from "@/content/what-we-do";
@@ -26,12 +24,11 @@ function yearAxis() {
 }
 
 /**
- * What we do, section 1 (creative brief 4.2): the green hero. The eyebrow,
- * the H1 (the page's LCP, never animated) and the lede in columns 1 to 6;
- * Fig. 1, the price of solar modules on a log scale, on a night plate in
- * columns 7 to 12. On phones the plate follows the lede with its tall
- * viewBox. The chart sweeps in and its pill pops when it enters the
- * viewport below the fold; above the fold it is drawn on arrival.
+ * What we do, section 1 (creative brief 4.2): the green hero. The H1 (a
+ * sentence, so display-lg; the page's LCP, never animated) and the lede in
+ * columns 1 to 6; Fig. 1, the price of solar modules on a log scale, on a
+ * night plate in columns 7 to 12. On phones the plate follows the lede with
+ * its tall viewBox and sweeps in as it scrolls into view.
  */
 export function WhatWeDoHero() {
   const f = WWD_HERO.figure;
@@ -48,18 +45,16 @@ export function WhatWeDoHero() {
       <Container>
         <div className="grid gap-y-12 lg:grid-cols-12 lg:items-center lg:gap-x-6">
           <div className="lg:col-span-6 lg:pr-6">
-            <Eyebrow flame>{WWD_HERO.eyebrow}</Eyebrow>
             <Display
               as="h1"
-              size="xl"
+              size="lg"
+              headline
               id="what-we-do-title"
-              className="mt-6 max-w-[12ch] lg:mt-8"
+              className="max-w-[14ch]"
             >
               {WWD_HERO.title}
             </Display>
-            <Reveal>
-              <Lede className="mt-8 lg:mt-10">{WWD_HERO.lede}</Lede>
-            </Reveal>
+            <Lede className="mt-8 lg:mt-10">{WWD_HERO.lede}</Lede>
           </div>
 
           <div className="lg:col-span-6 lg:col-start-7">

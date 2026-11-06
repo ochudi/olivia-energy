@@ -46,31 +46,29 @@ export const WHY_OLIVIA: {
 
 /** Our Philosophy (the home close band, "We believe"). */
 export const PHILOSOPHY: {
-  eyebrow: string;
+  /** The small heading over the four lines. */
+  heading: string;
   lines: readonly string[];
-  /** Set as one statement; `turn` is the italic second sentence. */
-  statement: { first: string; turn: string };
+  /** Set as one statement, roman: italic belongs to the tagline alone (DESIGN.md, Typography). */
+  statement: string;
 } = {
-  eyebrow: "We believe",
+  heading: "We believe",
   lines: [
     "Energy changes lives.",
     "Policy shapes markets.",
     "Innovation accelerates progress.",
     "Knowledge drives transformation.",
   ],
-  statement: {
-    first: "Sustainability is not a choice.",
-    turn: "It is a responsibility.",
-  },
+  statement: "Sustainability is not a choice. It is a responsibility.",
 };
 
-export const VISION: { eyebrow: string; text: string } = {
-  eyebrow: "Our vision",
+export const VISION: { heading: string; text: string } = {
+  heading: "Our vision",
   text: "To be Africa’s leading energy transition, sustainability and policy advisory firm, shaping resilient energy systems that drive economic prosperity, environmental stewardship and inclusive development.",
 };
 
-export const MISSION: { eyebrow: string; text: string } = {
-  eyebrow: "Our mission",
+export const MISSION: { heading: string; text: string } = {
+  heading: "Our mission",
   text: "To provide innovative research, strategic advice and practical solutions that help governments, businesses and institutions navigate a changing energy landscape while advancing sustainability, energy security and economic growth.",
 };
 
@@ -114,11 +112,9 @@ export type Pillar = {
 
 /** Four Pillars (What we do section 10). */
 export const PILLARS: {
-  eyebrow: string;
   title: string;
   items: readonly Pillar[];
 } = {
-  eyebrow: "How we work",
   title: "Four pillars.",
   items: [
     {
@@ -150,11 +146,9 @@ export const PILLARS: {
 
 /** What makes us different (What we do section 9). */
 export const DIFFERENTIATORS_BLOCK: {
-  eyebrow: string;
   title: string;
   items: readonly string[];
 } = {
-  eyebrow: "What makes us different",
   title: "Practical advice, informed by real operations.",
   items: [
     "Deep industry expertise across conventional and renewable energy.",
@@ -178,12 +172,10 @@ export type Audience = {
  * block.
  */
 export const AUDIENCES: {
-  eyebrow: string;
   title: string;
   lede: string;
   items: readonly Audience[];
 } = {
-  eyebrow: "Who we serve",
   title: "For the institutions that shape energy systems.",
   lede: "Our advice is built for four kinds of institution, from energy ministries and regulators to investors, development partners and research institutes.",
   items: [
@@ -236,7 +228,6 @@ export type FormatItem = {
  * counts from the publication data.
  */
 export const FORMATS: {
-  eyebrow: string;
   title: string;
   lede: string;
   items: readonly FormatItem[];
@@ -246,7 +237,6 @@ export const FORMATS: {
     papers: (articles: number) => string;
   };
 } = {
-  eyebrow: "What we publish",
   title: "Eight formats, one standard of evidence.",
   lede: "Olivia Energy Insights is building a library for decision makers. Two formats are already in print. The others are in preparation, and each will appear here with its first issue.",
   items: [
@@ -314,18 +304,17 @@ export const FORMATS: {
 
 /** The Brand Story: About hero (headline, lede) and story band. */
 export const BRAND_STORY: {
-  eyebrow: string;
   headline: string;
   lede: string;
-  storyEyebrow: string;
+  /** The story band's heading. */
+  storyHeading: string;
   paragraph: string;
   statement: string;
 } = {
-  eyebrow: "About Olivia Energy",
   headline:
     "Powering Africa’s energy future through knowledge, innovation and sustainable solutions.",
   lede: "The global energy landscape is going through its greatest transformation in history. As nations balance energy security, economic growth and environmental responsibility, the need for trusted advisers has never been greater.",
-  storyEyebrow: "Our story",
+  storyHeading: "Our story",
   paragraph:
     "At Olivia Energy, we bridge the gap between policy, business, research and technology, helping governments, corporations, development institutions and investors navigate the complexities of the energy transition.",
   statement:
@@ -334,11 +323,9 @@ export const BRAND_STORY: {
 
 /** A Refined Brand Narrative (About "Who we are"). */
 export const NARRATIVE: {
-  eyebrow: string;
   title: string;
   paragraphs: readonly [string, string];
 } = {
-  eyebrow: "Who we are",
   title: "One of the defining challenges of our time.",
   paragraphs: [
     "Olivia Energy is a strategic energy advisory, research and sustainability firm dedicated to helping organisations navigate the global energy transition. We combine deep industry experience with rigorous research and innovative thinking.",
@@ -353,11 +340,11 @@ export const CONVERSATION_CTA: Cta = {
 };
 
 export type CloseCopy = {
-  eyebrow?: string;
+  /** A small heading over the lines (the home band's "We believe"). */
+  heading?: string;
   lines?: readonly string[];
+  /** Set roman in full, at display-xl. */
   statement: string;
-  /** Italic second sentence of the statement, when it has one. */
-  turn?: string;
   cta: Cta;
 };
 
@@ -367,10 +354,9 @@ export const CLOSES: Record<
   CloseCopy
 > = {
   home: {
-    eyebrow: PHILOSOPHY.eyebrow,
+    heading: PHILOSOPHY.heading,
     lines: PHILOSOPHY.lines,
-    statement: PHILOSOPHY.statement.first,
-    turn: PHILOSOPHY.statement.turn,
+    statement: PHILOSOPHY.statement,
     cta: CONVERSATION_CTA,
   },
   whatWeDo: {
@@ -398,19 +384,22 @@ export const CLOSES: Record<
 export const COVER_COPY: {
   label: (publishedOn: string) => string;
   leadLabel: (publishedOn: string) => string;
-  /** Accessible name of the whole cover link. */
+  /** Accessible name of the hero card's icon-only link. */
   linkLabel: (title: string) => string;
+  /** Read after a cover's title by screen readers: where the link goes. */
+  onOutlet: string;
   /** Under the large quotation. */
   attribution: (oped: Pick<OpEd, "title" | "outlet" | "publishedOn">) => string;
   /** Count line beside the wall's heading. */
   countLine: (c: Counts) => string;
 } = {
-  label: (publishedOn) => `BusinessDay · ${formatDateShort(publishedOn)}`,
+  label: (publishedOn) => `BusinessDay, ${formatDateShort(publishedOn)}`,
   leadLabel: (publishedOn) =>
-    `Latest · BusinessDay · ${formatDateShort(publishedOn)}`,
+    `Latest, BusinessDay, ${formatDateShort(publishedOn)}`,
   linkLabel: (title) => `Read “${title}” on BusinessDay, opens in a new tab`,
+  onOutlet: ", on BusinessDay, opens in a new tab",
   attribution: (oped) =>
     `Dr Olugbenga Olaoye, “${oped.title}”, ${oped.outlet}, ${formatDateLong(oped.publishedOn)}`,
   countLine: (c) =>
-    `${c.opeds} op-eds · quoted in ${c.mentions} BusinessDay reports`,
+    `${c.opeds} op-eds, quoted in ${c.mentions} BusinessDay reports`,
 };

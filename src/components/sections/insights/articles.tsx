@@ -3,9 +3,7 @@ import { PostCard } from "@/components/insights/post-card";
 import { POST_GRID_CLASS, postGridCell } from "@/components/insights/post-grid";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Eyebrow } from "@/components/ui/eyebrow";
 import { Lede } from "@/components/ui/lede";
-import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
 import { capitalise } from "@/lib/content/format";
 import { cn } from "@/lib/utils/cn";
@@ -16,9 +14,6 @@ import {
   type PostSummary,
 } from "@/lib/supabase/types";
 
-const STAGGER = 90;
-const COLUMNS = 3;
-
 export type ArticlesProps = {
   /** Published posts, newest first: the same cached list every route reads. */
   posts: PostSummary[];
@@ -27,11 +22,11 @@ export type ArticlesProps = {
 };
 
 /**
- * Articles (creative brief 4.4 section 3), on paper deep: the header, the
- * topic filter and a three-column grid of post cards. On /insights it is
- * the third section (eyebrow "Latest analysis", H2 "Articles"). A category
- * page opens with it as its hero: the eyebrow "Insights", the category label
- * as the H1 and what the category covers as the lede.
+ * Articles (creative brief 4.4 section 3), on the deep field: the heading,
+ * the topic filter and a three-column grid of post cards. On /insights it
+ * is the third section (H2 "Articles"). A category page opens with it as
+ * its hero: the category label as the H1 and what the category covers as
+ * the lede. Static.
  */
 export function Articles({ posts, active }: ArticlesProps) {
   const copy = INSIGHTS_PAGE.articles;
@@ -56,19 +51,12 @@ export function Articles({ posts, active }: ArticlesProps) {
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-x-6">
           <div className="lg:col-span-8">
-            <Eyebrow>{isPage ? copy.categoryEyebrow : copy.eyebrow}</Eyebrow>
             {isPage ? (
-              <Display as="h1" size="xl" id={headingId} className="mt-6">
+              <Display as="h1" size="xl" headline id={headingId}>
                 {postCategoryLabel(active)}
               </Display>
             ) : (
-              <Display
-                as="h2"
-                size="lg"
-                reveal="mask"
-                id={headingId}
-                className="mt-6"
-              >
+              <Display as="h2" size="lg" id={headingId}>
                 {copy.title}
               </Display>
             )}
@@ -89,19 +77,14 @@ export function Articles({ posts, active }: ArticlesProps) {
             {scoped.map((post, i) => {
               const cell = postGridCell(i, scoped.length);
               return (
-                <Reveal
-                  key={post.slug}
-                  as="li"
-                  delay={(i % COLUMNS) * STAGGER}
-                  className={cell.className}
-                >
+                <li key={post.slug} className={cell.className}>
                   <PostCard
                     post={post}
                     headingLevel={isPage ? "h2" : "h3"}
                     lead={cell.lead}
                     sizes={cell.sizes}
                   />
-                </Reveal>
+                </li>
               );
             })}
           </ul>

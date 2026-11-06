@@ -41,4 +41,4 @@ export function CreditRow({
 }
 
 export const LINK =
-  "decoration-current/40 hover:decoration-current focus-visible:ring-focus focus-visible:ring-offset-canvas underline underline-offset-[0.2em] transition-[text-decoration-color] duration-200 focus-visible:rounded-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none";
+  "tap decoration-current/40 hover:decoration-current focus-visible:ring-focus focus-visible:ring-offset-canvas underline underline-offset-[0.2em] transition-[text-decoration-color] duration-200 focus-visible:rounded-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none";
