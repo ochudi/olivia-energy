@@ -37,7 +37,7 @@ function evenTicks(from: number, to: number, count: number): number[] {
 }
 
 /**
- * The gaps, measured (creative brief 4.1 section 3): a lime flood with four
+ * The gaps, measured: a lime flood with four
  * numerals, final and still, whose glyphs grow in as they scroll into view
  * (three hatched gaps and one solid opening), then Fig. 1 on a night plate,
  * sweeping across with the World to Nigeria gap hatching in behind it, and a

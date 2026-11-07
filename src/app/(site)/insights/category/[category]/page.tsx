@@ -46,7 +46,7 @@ export async function generateMetadata(
 }
 
 /**
- * One Insights category (creative brief 4.4 section 3): the Articles
+ * One Insights category: the Articles
  * section as the page's hero, headed by the category label, over the same
  * cached, tagged post list /insights reads; then the founder's op-eds on
  * the category's topics (RelatedOpEds) and the red close. The

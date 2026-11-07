@@ -74,7 +74,7 @@ export async function generateMetadata({
 }
 
 /**
- * Article page (creative brief 4.5). Rendered from the cached read layer
+ * Article page. Rendered from the cached read layer
  * (tags posts and post:[slug]); the body is Tiptap JSON rendered on the
  * server. The header and cover run the page container's width; from 1024 px
  * the body, its footer and the author card sit in columns 4 to 11, so the

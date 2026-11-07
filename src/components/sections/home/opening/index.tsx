@@ -16,12 +16,12 @@ import s from "./opening.module.css";
 
 const CLIP_ID = "olivia-mark-clip";
 
-/** Stagger for the load fades (brief 4.1: from 150 ms, 90 ms apart; the card at 400 ms). */
+/** Stagger for the load fades (from 150 ms, 90 ms apart; the card at 400 ms). */
 const rise = (ms: number) => ({ "--rise-delay": `${ms}ms` }) as CSSProperties;
 
 /**
  * HomeOpening (P1) — the home page's first two sections, `#hero` and
- * `#why-olivia`, in one DOM with two layouts (creative brief 2.10): the
+ * `#why-olivia`, in one DOM with two layouts: the
  * page's signature moment (DESIGN.md, Layout).
  *
  *  • Static (phones, tablets, reduced motion, no JavaScript): the graded

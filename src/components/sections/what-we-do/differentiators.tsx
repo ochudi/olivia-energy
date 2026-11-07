@@ -5,7 +5,7 @@ import { Section } from "@/components/ui/section";
 import { DIFFERENTIATORS_BLOCK } from "@/content/brand";
 
 /**
- * What we do, section 9 (creative brief 4.2): what makes us different, on
+ * What we do, section 9: what makes us different, on
  * a green flood. The H2 in columns 1 to 5; six statements in display-xs in
  * columns 6 to 12, each after the mark's flame, divided by the green
  * surface's line. Not a sequence, so not numbered; static. Stacked on

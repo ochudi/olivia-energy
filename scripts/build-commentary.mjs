@@ -9,7 +9,7 @@
  *
  * The default source is supabase/seeds/source/commentary.json, the verified
  * research list trimmed to the fields used here (the full research file also
- * holds reviewer notes). The same selection rules apply to either file:
+ * holds editorial notes). The same selection rules apply to either file:
  *
  *   authored   every row with founder_role "author" (op-eds in BusinessDay)
  *   mentions   BusinessDay reports that quote him, plus the one syndicated

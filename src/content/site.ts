@@ -1,6 +1,6 @@
 /**
  * Site-wide content: name, navigation, services, contact, header and
- * footer furniture, and the shared microcopy (creative brief 3.1 to 3.6).
+ * footer furniture, and the shared microcopy.
  *
  * Keeping it here (rather than inside components) means the header, footer
  * and mobile menu can never disagree, and the copy can be changed without
@@ -19,7 +19,7 @@ export const SITE = {
   name: "Olivia Energy",
   legalName: "Olivia Energy and Power Company Limited",
   /**
-   * Tagline 1 in full (decision 1). The footer reads the tagline from
+   * Tagline 1 in full. The footer reads the tagline from
    * Admin, Settings when it is set and splits it at the first full stop.
    */
   tagline: `${TAGLINE.line1} ${TAGLINE.line2}`,
@@ -40,7 +40,7 @@ export const NAV: readonly NavLink[] = [
 /** The header button, and the last item of the phone menu. */
 export const NAV_CTA: Cta = { label: "Start a conversation", href: "/contact" };
 
-/** Header furniture (creative brief 3.1). */
+/** Header furniture. */
 export const HEADER_COPY = {
   menu: "Menu",
   close: "Close",
@@ -161,7 +161,7 @@ export const NIPEX_WORDING: string =
   "NIPEX Vendor ID S77939994. Categories: Consultancy QA/QC, Petroleum Products Haulage/Logistics, Goods/Materials Haulage.";
 
 /**
- * The footer (creative brief 3.2). Row 1 is the tagline (SITE.tagline or
+ * The footer. Row 1 is the tagline (SITE.tagline or
  * the settings value), row 2 four columns, row 3 the legal line and the
  * photograph credits.
  */
@@ -201,7 +201,7 @@ export const FOOTER: {
   },
 };
 
-/** Shared microcopy (creative brief 3.6). */
+/** Shared microcopy. */
 export const MICROCOPY: {
   /** Visually hidden suffix on every external link. */
   newTab: string;

@@ -27,7 +27,7 @@ export type AfricaMapProps = {
 };
 
 /**
- * AfricaMap — the dotted Africa (Contact hero, brief 4.7): the generated
+ * AfricaMap — the dotted Africa (Contact hero): the generated
  * SVG shown with <img> (white dots at 35% opacity) and a region marked by a
  * ring in the surface's ink (white on the red hero, since lime is never on
  * red) over a faint disc, with the label beside it. The ring is sized in

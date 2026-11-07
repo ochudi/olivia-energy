@@ -5,7 +5,7 @@ import { Section } from "@/components/ui/section";
 import { ABOUT_VALUES } from "@/content/about";
 
 /**
- * About section 5, "Our values" (creative brief 4.3; Core Values): the
+ * About section 5, "Our values" (Core Values): the
  * header, then five full-width rows divided by hairlines: the glyph at
  * 48 px (col 1), the name in display-sm (cols 2 to 5), the sentence in
  * text-lg (cols 6 to 12). On phones glyph and name share a line and the

@@ -19,8 +19,7 @@ export type ChapterBarProps = {
 };
 
 /**
- * ChapterBar — the six chapter links of What we do (creative brief 4.2,
- * section 2), sticky under the fixed header on a paper strip. Adapted from
+ * ChapterBar — the six chapter links of What we do sticky under the fixed header on a paper strip. Adapted from
  * the first release's service-nav: plain anchors (the chapters'
  * scroll-margin clears the header and this bar), each with its service's
  * glyph and short name (the services are not a sequence, so no numbers;

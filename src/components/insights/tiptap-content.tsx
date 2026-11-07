@@ -95,7 +95,7 @@ function renderNode(
     case "listItem":
       return <li key={key}>{children}</li>;
     case "blockquote":
-      // The red flame is the quotation mark (creative brief 4.5).
+      // The red flame is the quotation mark.
       return (
         <blockquote key={key}>
           <FlameBullet />

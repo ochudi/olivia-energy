@@ -24,7 +24,7 @@ import { PHOTOS } from "@/content/images";
 import { NAV_CTA, SERVICES } from "@/content/site";
 import type { Surface } from "@/types/contracts";
 
-/* The gap hatch (brief 2.1) as a swatch: the figures kit's <HatchPattern>
+/* The gap hatch as a swatch: the figures kit's <HatchPattern>
    in the surface's hatch colour, with its outline. */
 function HatchSwatch({ id }: { id: string }) {
   return (
@@ -94,7 +94,7 @@ const HERO_PHOTO = PHOTOS["lagos-third-mainland"];
 
 /**
  * Every primitive once, on one surface. The page renders it seven times so
- * each surface's remap can be checked against the brief's table.
+ * each surface's remap can be checked against the surface table in contrast.ts.
  */
 /** Every primitive once, on one surface (was /preview). */
 export function SurfaceKit({ surface }: { surface: Surface }) {

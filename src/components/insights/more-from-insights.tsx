@@ -8,7 +8,7 @@ import { POST_GRID_CLASS, postGridCell } from "./post-grid";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * "More insights" (creative brief 4.5): three more articles, same category
+ * "More insights": three more articles, same category
  * first, then the newest, as the Insights grid's cards on paper deep.
  */
 export function MoreFromInsights({ posts }: { posts: PostSummary[] }) {

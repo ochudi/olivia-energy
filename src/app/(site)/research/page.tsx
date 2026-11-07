@@ -23,8 +23,8 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * Research (creative brief 4.6): the print timeline, his Dangote line in the
- * quotation panel (Q3, client review idea 4), the journal articles,
+ * Research: the print timeline, his Dangote line in the
+ * quotation panel, the journal articles,
  * the BusinessDay commentary, the profiles, and the red close. Journal rows
  * and op-eds come from the database (static data when it is unavailable);
  * all reads are cached by tag, so the page is static until an admin saves.

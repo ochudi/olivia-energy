@@ -32,7 +32,7 @@ export async function generateStaticParams() {
 }
 export const dynamicParams = true;
 
-/* The night ground of the site card (creative brief 3.4): night, white
+/* The night ground of the site card: night, white
    type, night-muted labels, the lime rule. */
 const NIGHT = "#06170e";
 const LIME = MARK_COLORS.lime;

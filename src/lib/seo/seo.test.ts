@@ -4,7 +4,7 @@ import { SEO } from "@/content/seo";
 import { SITE } from "@/content/site";
 import { articleTitle } from "./metadata";
 
-/** Every page entry in SEO: a title and a description (creative brief 3.5). */
+/** Every page entry in SEO: a title and a description. */
 const PAGES = [
   ["home", SEO.home],
   ["whatWeDo", SEO.whatWeDo],

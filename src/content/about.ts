@@ -1,5 +1,5 @@
 /**
- * About page copy (creative brief 4.3): hero, our story, who we are,
+ * About page copy: hero, our story, who we are,
  * vision and mission, values, the founder, where we started, the close.
  * Guideline blocks come from ./brand.
  *
@@ -12,11 +12,12 @@
  * his ORCID record; the Master of Public Service and USAEE membership from
  * his BusinessDay author notes; citations from Google Scholar on
  * 2 October 2026. Employers, years of experience and talks are left out
- * until the client supplies evidence (decision 13).
+ * until the firm supplies evidence.
  */
 import type { Counts, PhotoKey } from "@/types/contracts";
 import { countWords } from "@/lib/content/format";
 import { BRAND_STORY, VALUES_LIST } from "./brand";
+import { PORTRAITS } from "./images";
 
 export const ABOUT_HERO: { title: string; lede: string } = {
   title: BRAND_STORY.headline,
@@ -99,7 +100,7 @@ export const FOUNDER_PAGE: {
   profileLabels: ["ORCID", "Google Scholar", "LinkedIn"],
 };
 
-/** "Where we started": the retail origin, told once (decision 8). */
+/** "Where we started": the retail origin, told once. */
 export const ORIGIN: {
   title: string;
   paragraph: string;
@@ -174,14 +175,10 @@ export const FOUNDER = {
     "Obafemi Awolowo University",
   ],
   memberOf: "United States Association for Energy Economics",
-  portrait: {
-    /** Supplied 2026-09-06 as a 622×622 PNG on white; cropped to 4:5 on the page. */
-    src: "/founder/dr-olugbenga-olaoye.png" as string | null,
-    aspect: "4 / 5",
-    alt: "Dr Olugbenga Olaoye, founder of Olivia Energy",
-    /** Shown under the frame only if the portrait file is removed. */
-    caption: "Dr Olugbenga Olaoye, Founder/CEO and energy economist",
-  },
+  /** The suit portrait: Home, the author card and structured data. */
+  portrait: PORTRAITS.suit,
+  /** The academic-attire portrait: About, beside the credentials. */
+  academicPortrait: PORTRAITS.academic,
 } as const;
 
 export type Registration = {

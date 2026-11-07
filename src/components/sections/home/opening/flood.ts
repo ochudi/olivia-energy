@@ -1,7 +1,7 @@
 import { MARK_HEIGHT, MARK_MONO_PATH, MARK_WIDTH } from "@/lib/brand/mark";
 
 /**
- * The mark window's geometry (creative brief 2.10). Pure functions, shared
+ * The mark window's geometry. Pure functions, shared
  * by the server markup and the client stage, so the path data is built once
  * and never changes: only the <g>'s transform moves.
  *
@@ -26,7 +26,7 @@ export const FLOOD_PATH = `M${-FAR} ${-FAR}H${MARK_WIDTH + FAR}V${MARK_HEIGHT + 
 export const ANCHOR = { x: 8.5, y: 64 } as const;
 
 /**
- * Progress windows (brief 2.10). `why` is 0.18, not 0.22 (Q3): by 0.18 the
+ * Progress windows. `why` is 0.18, not 0.22: by 0.18 the
  * flood has cleared the text columns, and the earlier fade removes a beat
  * of flat green with no words between the hero copy and Why Olivia.
  */
@@ -43,7 +43,7 @@ export const P = {
 
 export const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
-/** The brief's in-out curve, cubic-bezier(0.65, 0, 0.35, 1), approximated by a symmetric cubic (max error under 2%). */
+/** The in-out curve, cubic-bezier(0.65, 0, 0.35, 1), approximated by a symmetric cubic (max error under 2%). */
 export function easeInOut(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }

@@ -9,7 +9,7 @@ export type QuotePanelProps = {
 
 /**
  * The large quotation mark: two of the mark's flames side by side, in the
- * brand red (creative brief 2.1: "the big quotation flame").
+ * brand red (the big quotation flame).
  */
 function FlameQuote() {
   return (

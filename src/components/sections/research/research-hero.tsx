@@ -22,11 +22,11 @@ function span(
 }
 
 /**
- * Research hero (creative brief 4.6, section 1): the field, the H1 (a
+ * Research hero (section 1): the field, the H1 (a
  * sentence, so display-lg) and lede in cols 1 to 6, and Fig. 1 (the print
  * timeline: journal articles above the line, op-eds below) on a night
- * plate in cols 7 to 12 with the two counters under it (the brief puts the
- * counters under the lede; moved so the first screen at 1440 holds the H1
+ * plate in cols 7 to 12 with the two counters under it (the counters sit under the
+ * plate rather than the lede, so the first screen at 1440 holds the H1
  * and the whole figure). The timeline drawing itself is the page's
  * signature moment (DESIGN.md, Layout): once on load on a desktop, on
  * scroll below 64rem.

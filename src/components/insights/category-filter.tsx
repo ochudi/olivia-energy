@@ -16,7 +16,7 @@ export type CategoryFilterProps = {
 };
 
 /**
- * The topic filter (creative brief 4.4 section 3) as a row of chips: "All
+ * The topic filter as a row of chips: "All
  * topics" and each category that has articles. Each chip is a static
  * route (/insights or /insights/category/[category]), so a change is a
  * server-rendered navigation with nothing fetched on the client. A small
@@ -57,7 +57,7 @@ export function CategoryFilter({
       aria-label={copy.filterLabel}
       className={cn(
         // Phones: the rail scrolls sideways, so its right edge fades out
-        // as a cue that more chips follow (client review P2-17).
+        // as a cue that more chips follow.
         "after:-right-gutter after:from-canvas relative after:pointer-events-none after:absolute after:inset-y-0 after:w-6 after:bg-linear-to-l after:to-transparent md:after:hidden",
         className,
       )}

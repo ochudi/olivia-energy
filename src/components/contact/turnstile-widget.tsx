@@ -131,7 +131,7 @@ export function TurnstileWidget({
         src={SCRIPT_SRC}
         // After the load event: a third-party origin requested before
         // first paint cost /contact about 0.5 s of simulated LCP on mobile
-        // (Q1 Lighthouse, 3 October 2026). The form is below the hero.
+        // (measured with Lighthouse). The form is below the hero.
         strategy="lazyOnload"
         onLoad={() => setScriptReady(true)}
         onError={() => setStatus("unavailable")}

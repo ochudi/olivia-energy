@@ -12,7 +12,7 @@ import { formatDateShort } from "@/lib/content/format";
 const copy = RESEARCH_PAGE.commentary;
 
 /**
- * Commentary (creative brief 4.6, section 3): paper. The heading block sits
+ * Commentary (section 3): paper. The heading block sits
  * in cols 1 to 4 (sticky beside the list from 1024 px); the op-eds run as dated rows in cols 5 to
  * 12, newest first: short date, the title as an external link, topic chips.
  * Then the link to the covers on Insights.

@@ -1,5 +1,5 @@
 /**
- * Contact page copy (creative brief 4.7). Addresses, phones, the email and
+ * Contact page copy. Addresses, phones, the email and
  * social links come from settings (src/lib/supabase/types.ts); this file
  * holds the page furniture and the form's states. The form's labels, help
  * text, validation messages and success message are unchanged.

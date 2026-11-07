@@ -6,7 +6,7 @@ import { TiptapContent } from "./tiptap-content";
 
 /**
  * The article body: the Tiptap document rendered on the server into the
- * shared Prose, restyled for the rebuild (creative brief 4.5) by
+ * shared Prose, restyled for the rebuild by
  * article-body.module.css.
  */
 export function ArticleBody({

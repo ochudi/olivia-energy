@@ -21,7 +21,7 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * What we do (creative brief 4.2): the green hero with Fig. 1, the chapter
+ * What we do: the green hero with Fig. 1, the chapter
  * bar and six service chapters (Fig. 2 in chapter 02), what makes us
  * different, the four pillars, who we serve and the red close. Copy lives
  * in content/what-we-do, content/site and content/brand.

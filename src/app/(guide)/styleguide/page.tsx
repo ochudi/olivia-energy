@@ -114,7 +114,7 @@ const REQUIRED_TOKENS = [
   ...["xl", "lg", "md", "sm", "xs"].map((s) => `--text-display-${s}`),
 ] as const;
 
-/** Brief 2.1: the brand and surface colours, in the brief's order. */
+/** The brand and surface colours. */
 const BRAND_TOKENS = [
   "--color-brand-green",
   "--color-flood-green",
@@ -583,7 +583,7 @@ export default function StyleguidePage() {
 
                 <GuideSub
                   title="Ink steps"
-                  description="The text colours per surface, with the ratio the brief states for each. Surfaces map ink, ink-muted and ink-subtle onto these."
+                  description="The text colours per surface, with the ratio each is held to. Surfaces map ink, ink-muted and ink-subtle onto these."
                 >
                   <TokenTable tokens={ink} showSwatch valueLabel="Value" />
                 </GuideSub>

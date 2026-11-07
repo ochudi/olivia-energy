@@ -130,7 +130,7 @@ export function ComponentsSheet() {
         path="@/components/ui/eyebrow"
         description="The 12px label above a heading: uppercase, 600, tracked, in the surface's muted ink."
         usage={[
-          "Not used on the public site since the November 2026 craft pass: nothing sits above a heading (DESIGN.md, Typography). Kept for this guide.",
+          "Not used on the public site: nothing sits above a heading (DESIGN.md, Typography). Kept for this guide.",
           "The rule is the default mark; flame swaps in the mark's flame; number takes the section numeral.",
         ]}
         props={[

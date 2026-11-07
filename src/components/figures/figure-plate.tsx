@@ -40,7 +40,7 @@ const TABLE = cn(
 );
 
 /**
- * FigurePlate — the plate every chart sits on (creative brief 2.6): "Fig. n"
+ * FigurePlate — the plate every chart sits on: "Fig. n"
  * and the title as one caption line, an optional subtitle, the chart, the
  * interpretation, the source line, then "View as table" and "Get the data
  * (CSV)". A chart is an instrument, so the plate's corners are square

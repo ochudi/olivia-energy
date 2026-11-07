@@ -19,7 +19,7 @@ const IDS: Record<CloseBandVariant, string> = {
 };
 
 /**
- * CloseBand — the red flood that ends every page (creative brief 3.3): a
+ * CloseBand — the red flood that ends every page: a
  * ghosted mark bleeding off the right edge, the ring whose gap closes as
  * the band scrolls into view (the one thing that moves here), an optional
  * small heading and lines, the statement in display-xl, roman in full, and

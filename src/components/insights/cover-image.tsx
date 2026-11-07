@@ -10,7 +10,7 @@ export type CoverImageProps = {
   /** Preloads with high priority (the article cover); otherwise lazy. */
   priority?: boolean;
   sizes: string;
-  /** 3:2 on cards, 16:9 in the article header (creative brief 4.4, 4.5). */
+  /** 3:2 on cards, 16:9 in the article header (4.5). */
   ratio?: "3/2" | "16/9";
   /** The shoulder radius: `md` on cards, `lg` for the article cover. */
   corner?: "md" | "lg";
@@ -42,7 +42,7 @@ const RATIOS = { "3/2": "aspect-[3/2]", "16/9": "aspect-video" } as const;
 const CORNERS = { md: "shoulder", lg: "shoulder-lg" } as const;
 
 /**
- * A post cover in the shoulder shape (creative brief 2.4): three tight
+ * A post cover in the shoulder shape: three tight
  * corners and the rounded top-right. Without a source it renders a flat
  * panel in the surface's muted fill, so cards keep their shape.
  */

@@ -37,7 +37,7 @@ const SURFACE_ROOTS =
  * container, so they keep data-surface for their own colours but never
  * repaint the header: on a phone, where a tile is nearly as wide as the
  * screen, the header no longer flashes red, green, night and lime as tiles
- * pass under it (client review P1-1). Two half-width panels that read as
+ * pass under it. Two half-width panels that read as
  * one band say so with data-header-surface on their section.
  */
 const FULL_BLEED_SLACK = 1;
@@ -182,7 +182,7 @@ function useSurfaceUnderHeader(
 }
 
 /**
- * SiteHeader — fixed chrome for every public page (creative brief 3.1).
+ * SiteHeader — fixed chrome for every public page.
  *
  *  • Takes the surface beneath its bottom edge (data-on, see above), with a
  *    1 px line in that surface's line colour. Transparent while the page is

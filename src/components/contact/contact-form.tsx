@@ -66,7 +66,7 @@ const focusOnMount = (node: HTMLHeadingElement | null) => {
 
 /**
  * Keeps disabled controls at full strength inside the dimmed field group,
- * and restyles the shared controls for this form (brief 4.7): a 1px ink
+ * and restyles the shared controls for this form: a 1px ink
  * line, 4px corners, 48px tall, 17px text, a 2px flood-green focus ring.
  */
 const pendingControl =

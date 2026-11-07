@@ -22,7 +22,7 @@ export type ChartReadoutProps = {
   template: string;
   /** Left and right edges of the plot as percents of the box: wide (768px+) and tall. */
   plot: { wide: [number, number]; tall: [number, number] };
-  /** Visually hidden instruction (the brief's readout hint). */
+  /** Visually hidden instruction (the readout hint). */
   hint: string;
   children: ReactNode;
 };

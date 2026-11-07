@@ -7,7 +7,7 @@ import { CONTACT_PAGE } from "@/content/contact";
 const copy = CONTACT_PAGE.hero;
 
 /**
- * Contact hero (creative brief 4.7, section 1): the red flood. Cols 1 to 6
+ * Contact hero (section 1): the red flood. Cols 1 to 6
  * carry the H1 in white and the lede; cols 7 to 12 the dotted Africa with a
  * ring around Southwest Nigeria (a region, not a town) and its label, and
  * under the map, as its own line, the second place. The map settling on

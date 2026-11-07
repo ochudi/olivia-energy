@@ -1,5 +1,5 @@
 /**
- * Home page copy (creative brief 4.1). Section order: hero, Why Olivia? in
+ * Home page copy. Section order: hero, Why Olivia? in
  * the mark window, the gaps measured, services, who we serve, founder, on
  * the record in BusinessDay, the close band, footer. Guideline blocks shared
  * with other pages live in ./brand; service titles and summaries in ./site.
@@ -235,9 +235,8 @@ export const HOME_FOUNDER: {
   /** Visually hidden expansion of `credentials`. */
   credentialsLong: string;
   /**
-   * Not rendered on the band since the November 2026 device QA: prose
-   * never sits on night (DESIGN.md, Colors). Kept for the client's record;
-   * the bio is on About.
+   * Not rendered on the band: prose never sits on night (DESIGN.md,
+   * Colors). Kept for the record; the bio is on About.
    */
   lede: string;
   counters: readonly FounderCounter[];
@@ -304,7 +303,7 @@ export const HOME_COMMENTARY: {
 
 /**
  * The settings default for `stats`, read by src/lib/supabase/types.ts. No
- * page shows a stats band (decision 12); this only fills the admin form.
+ * page shows a stats band; this only fills the admin form.
  */
 export const STATS: readonly {
   value: number;

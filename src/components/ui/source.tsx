@@ -48,7 +48,7 @@ function One({ source }: { source: SourceRef }) {
 }
 
 /**
- * Source — the source line under every figure and numeral card (brief 2.6):
+ * Source — the source line under every figure and numeral card:
  * "Source: {org}, {title} ({code}), {licence}. Retrieved 2 October 2026."
  * 12px regular, sentence case, in the surface's muted ink.
  */

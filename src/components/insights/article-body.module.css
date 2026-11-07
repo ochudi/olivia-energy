@@ -1,5 +1,5 @@
 /*
- * The article body (creative brief 4.5): the shared Prose, restyled for
+ * The article body: the shared Prose, restyled for
  * the rebuild without touching src/styles/prose.css. These rules are not
  * in a cascade layer, so they win over the `components` layer that prose
  * lives in.

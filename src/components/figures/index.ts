@@ -1,5 +1,5 @@
 export { AfricaMap, type AfricaMapProps } from "./africa-map";
-export { ChartReadout, type ChartReadoutProps } from "./chart-readout";
+export { type ChartReadoutProps } from "./chart-readout";
 export {
   FigurePlate,
   type FigurePlateProps,
@@ -8,19 +8,13 @@ export {
 export {
   CompareBars,
   DotRow,
-  GlyphFor,
   ShareBar,
   type CompareBarsProps,
   type DotRowProps,
   type GlyphForProps,
   type ShareBarProps,
 } from "./glyphs";
-export {
-  HATCH_BACKGROUND,
-  HatchPattern,
-  hatchPitch,
-  type HatchPatternProps,
-} from "./hatch";
+export { HatchPattern, type HatchPatternProps } from "./hatch";
 export { LineChart, type ChartColor, type LineChartProps } from "./line-chart";
 export { NumeralFigure, type NumeralFigureProps } from "./numeral-figure";
 export {

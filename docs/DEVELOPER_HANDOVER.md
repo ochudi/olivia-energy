@@ -158,9 +158,8 @@ Notes: everything runs on Node 22 (the Supabase client needs its native
 WebSocket). `next dev` writes to `.next/dev`, so a dev run never clobbers a
 production build. Next.js 16 also refuses to optimise images from local IPs;
 `next.config.ts` allows them outside production so local Supabase covers work.
-If Docker is unavailable, `scripts/harness/start.sh` runs Postgres,
-PostgREST and an API stand-in with Homebrew packages; enough for QA, not
-for the RLS proof or invitations (see `scripts/harness/README.md`).
+The local Supabase stack (`npm run db:start`) needs Docker, or a compatible
+container runtime, running first.
 Resend can be pointed at a local mock by setting `RESEND_BASE_URL`. The Next
 data cache in `.next/cache` persists between runs; `POST /api/revalidate`
 purges it.
@@ -210,7 +209,7 @@ except the one setting in step 2.
 1. SQL Editor: paste `supabase/hosted-setup.sql` and run it. It creates the
    `olivia_energy` schema, the bucket and the seed content in one transaction
    and refuses to run twice. Never run `supabase link`, `supabase db push` or
-   `supabase config push` against a shared project: migration history is kept
+   `supabase config push` against a project that hosts other applications: migration history is kept
    per project, not per application, and `config push` would apply this
    repository's local Auth settings (sign-ups off, a localhost Site URL) to
    every application in it.
@@ -236,7 +235,7 @@ except the one setting in step 2.
 5. Until Resend is configured no email goes out. An invitation then shows its
    link for the admin to pass on, and a forgotten password is replaced with
    `scripts/create-admin.mjs <email> '<new password>' --set-password`.
-6. Keys: a publishable key and a secret key. On a shared project the secret
+6. Keys: a publishable key and a secret key. On a project that hosts other applications the secret
    key can read and write every application's data, so it belongs in Vercel's
    environment variables and nowhere else. Prefer a secret key created for
    this site alone (Project Settings → API Keys), which can be revoked
@@ -299,10 +298,10 @@ account. Transfer it from the repository's Settings → General → Danger Zone 
 Transfer ownership to the client's GitHub organisation (GitHub redirects the
 old URL), then connect it to Vercel if Git-based deploys are wanted.
 `.gitignore` already excludes `node_modules`, `.next`, every `.env*` file
-except `.env.example`, `.screenshots` and the local harness state.
+except `.env.example` and `.screenshots`.
 
-**Supabase.** At launch the data lives in a Supabase project the developer
-shares with other applications. That project cannot be transferred, and its
+**Supabase.** At launch the data lives in a Supabase project that also
+hosts other applications. That project cannot be transferred, and its
 secret key reaches every application in it, so neither the key nor a Vercel
 project that holds it may be handed over. To give the client the data, create
 a project of their own and move into it:
@@ -310,13 +309,13 @@ a project of their own and move into it:
 1. Run `supabase/hosted-setup.sql` there and expose the schema (§7).
 2. Copy the content:
    `pg_dump --data-only -n olivia_energy --exclude-table-data=olivia_energy.profiles`
-   from the shared project, restored after emptying the seeded tables and
+   from the launch project, restored after emptying the seeded tables and
    with `posts.author_id` set to null, plus the objects in the
    `olivia-energy-media` bucket. Profiles are left out because they point at
    Auth users, which do not move between projects.
 3. Recreate the admins with `scripts/create-admin.mjs`.
 4. Replace the three Supabase variables in Vercel, redeploy, then drop the
-   schema, the bucket and the four storage policies from the shared project.
+   schema, the bucket and the four storage policies from the launch project.
 
 **Vercel project.** Only after the Supabase move above. From the project:
 Settings → General → Transfer Project, choose the client's team (they need a
@@ -361,7 +360,7 @@ Every factual line on the site traces to one of these sources (checked
 - **Supplied by the client.** The email address, the three social profile
   URLs, the logo and the portrait.
 
-Two claims from the client's brief were held back until he confirmed them,
+Two claims from the client's brand guideline were held back until he confirmed them,
 which he did on 3 October 2026: the United States entity now appears in
 `REGISTRATIONS` (`src/content/about.ts`), on About, in structured data and
 in llms.txt, and the NIPEX line is the default of the NIPEX wording setting
@@ -378,7 +377,7 @@ editable in Admin → Settings. The site otherwise carries only sourced facts
 - Whether to show the figures band on the homepage (Admin → Settings).
   The four figures are true as seeded.
 - The positioning copy: services, who we serve, values, vision, mission and
-  philosophy were written for the brief, not taken from a source.
+  philosophy were written for the site, not taken from a source.
 - The four Insights articles, published under the founder's byline with a
   Sources section each; unpublish any he does not want to stand behind.
 

@@ -10,7 +10,7 @@ const DESKTOP = "(min-width: 1024px)";
 
 /**
  * Night scrim over the left and the foot of the photograph, so white text
- * keeps 4.5:1 over the brightest sky behind the panel (brief 2.7).
+ * keeps 4.5:1 over the brightest sky behind the panel.
  */
 const SCRIM =
   "linear-gradient(90deg, rgba(6,23,14,.9) 0%, rgba(6,23,14,.74) 42%, rgba(6,23,14,0) 72%), linear-gradient(0deg, rgba(6,23,14,.86) 0%, rgba(6,23,14,0) 64%)";
@@ -64,7 +64,7 @@ function StoryPicture() {
 }
 
 /**
- * About section 2, "Our story" (creative brief 4.3): the Abuja street
+ * About section 2, "Our story": the Abuja street
  * lights at sunset. From 1024 px the photograph runs full bleed at 21:9
  * with the shoulder on the band's top-right corner, and the text sits at
  * its bottom left (cols 1 to 7) on a night scrim; on phones the

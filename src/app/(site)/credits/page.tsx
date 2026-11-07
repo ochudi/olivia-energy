@@ -3,7 +3,12 @@ import { Display } from "@/components/ui/display";
 import { FlameBullet } from "@/components/ui/flame-bullet";
 import { Lede } from "@/components/ui/lede";
 import { Section } from "@/components/ui/section";
-import { CREDITS_PAGE, FONT_CREDITS, MAP_CREDIT } from "@/content/credits";
+import {
+  CREDITS_PAGE,
+  FONT_CREDITS,
+  MAP_CREDIT,
+  PORTRAIT_CREDITS,
+} from "@/content/credits";
 import { SEO } from "@/content/seo";
 import { MICROCOPY } from "@/content/site";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -18,7 +23,7 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * Credits (creative brief 4.9): paper. Photographs, data, the map and the
+ * Credits: paper. Photographs, data, the map and the
  * typefaces, each with its author and licence, from content/credits; then
  * the share-alike note. Each typeface is named in its own face.
  */
@@ -35,6 +40,17 @@ export default function Page() {
 
         <CreditRow id="photographs" title={CREDITS_PAGE.photographs.title} wide>
           <PhotoCredits />
+          <ul className="text-ink mt-10 space-y-1 text-sm">
+            {PORTRAIT_CREDITS.map((row) => (
+              <li key={row.key}>
+                <span className="font-display text-base">{row.image}.</span>{" "}
+                {row.credit}.
+              </li>
+            ))}
+            <li className="text-ink-muted">
+              {CREDITS_PAGE.photographs.portraitsNote}
+            </li>
+          </ul>
         </CreditRow>
 
         <CreditRow id="data" title={CREDITS_PAGE.data.title}>

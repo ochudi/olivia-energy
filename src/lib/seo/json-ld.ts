@@ -134,9 +134,7 @@ export function siteGraph(settings: SiteSettings): Graph {
     alternateName: [...FOUNDER.alternateNames],
     jobTitle: FOUNDER.role,
     url: absoluteUrl("/about#founder"),
-    ...(FOUNDER.portrait.src
-      ? { image: absoluteUrl(FOUNDER.portrait.src) }
-      : {}),
+    image: absoluteUrl(FOUNDER.portrait.src),
     worksFor: { "@id": ids.organization },
     hasCredential: FOUNDER.credentials.map((credential) => ({
       "@type": "EducationalOccupationalCredential",

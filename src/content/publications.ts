@@ -3,7 +3,7 @@ import { capitalise, countWords, monthYear } from "@/lib/content/format";
 import { RETRIEVED } from "./home";
 
 /**
- * Research page copy (/research, creative brief 4.6). Journal articles come
+ * Research page copy (/research). Journal articles come
  * from the database (getJournalArticles), op-eds from getOpEds, counts from
  * getCommentaryCounts.
  */

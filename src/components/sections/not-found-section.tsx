@@ -6,7 +6,7 @@ import { Section } from "@/components/ui/section";
 import { NOT_FOUND } from "@/content/errors";
 
 /**
- * NotFoundSection — the 404 body (creative brief 4.8): a green flood at
+ * NotFoundSection — the 404 body: a green flood at
  * least 80svh tall, the ring of the mark left open (a quarter gap, white,
  * 160 px), then the status line, H1, lede and the links as pills. Shared by the
  * root not-found.tsx (unknown top-level URLs) and the (site) not-found.tsx,
@@ -23,7 +23,7 @@ export function NotFoundSection() {
       <Container className="w-full">
         <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-12 lg:items-center lg:gap-x-6">
           {/* From lg the ring's centre sits on the H1's x-height row, not on
-              the middle of the whole text column (client review P2-9). */}
+              the middle of the whole text column. */}
           <div className="text-ink lg:col-span-3 lg:mt-3 lg:self-start">
             <RingMark size={160} gap={0.25} />
           </div>

@@ -9,7 +9,7 @@ import { RESEARCH_PAGE } from "@/content/publications";
 const copy = RESEARCH_PAGE.profiles;
 
 /**
- * Profiles (creative brief 4.6, section 4): paper, one sentence above a row
+ * Profiles (section 4): paper, one sentence above a row
  * of pills (ORCID, Google Scholar) and the membership line. The Scholar URL
  * comes from settings and falls back to the founder's record in content.
  */

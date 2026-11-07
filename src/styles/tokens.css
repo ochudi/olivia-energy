@@ -1,7 +1,7 @@
 /* =====================================================================
    OLIVIA ENERGY — DESIGN TOKENS (single source of truth)
 
-   "Bridging Light" system (October 2026 rebuild, creative brief 2.1–2.8).
+   "Bridging Light" system (October 2026 rebuild).
 
    Consumed two ways:
    1. Tailwind v4 reads this @theme block and generates utilities
@@ -31,7 +31,7 @@
   --ease-*: initial;
 
   /* ---------------------------------------------------------------- */
-  /* Colour · brand and surface (creative brief 2.1). The mark's three  */
+  /* Colour · brand and surface. The mark's three  */
   /* colours are exact (src/lib/brand/mark.ts); the rest are the floods */
   /* and grounds every section is built from. Green is the stage, lime  */
   /* is the evidence, red is the gap, paper is for reading, night is    */
@@ -143,7 +143,7 @@
   --tracking-tight: -0.015em; /* Legacy: small display headings */
   --tracking-caps: 0.14em; /* Legacy alias of tracking-label */
 
-  /* Typography · text scale (fixed sizes for UI and body; brief 2.2) */
+  /* Typography · text scale (fixed sizes for UI and body) */
   --text-xs: 0.75rem; /* Labels (uppercase, 600, tracking-label) and source lines (regular, sentence case) */
   --text-xs--line-height: 1.4;
   --text-sm: 0.9375rem; /* Secondary text, card summaries, captions (15px) */
@@ -198,7 +198,7 @@
   --container-wide: 88rem; /* 1408px: full-bleed data, galleries, chrome */
 
   /* ---------------------------------------------------------------- */
-  /* Shape: the shoulder (brief 2.4; DESIGN.md, Shapes). Three tight    */
+  /* Shape: the shoulder (DESIGN.md, Shapes). Three tight    */
   /* corners (radius-xs) and one large top-right corner that echoes the */
   /* ring of the mark, on the firm's own objects only: photographs,     */
   /* flood panels, covers, flood tiles. Instruments are square (xs).    */

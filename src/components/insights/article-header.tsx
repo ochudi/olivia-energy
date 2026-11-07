@@ -41,7 +41,7 @@ function ArticleMeta({ text }: { text: string }) {
 }
 
 /**
- * Article header (creative brief 4.5): the breadcrumb "Insights /
+ * Article header: the breadcrumb "Insights /
  * {Category}", the format chip (when set) and the category chip, the H1 in
  * display-lg (at most 22 characters a line, never animated), the dek, the
  * meta line, then the cover at the container's width in the large shoulder

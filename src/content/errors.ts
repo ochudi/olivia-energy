@@ -8,7 +8,7 @@
 import type { Cta } from "@/types/contracts";
 import { CONTACT } from "@/content/site";
 
-/** The 404 page (creative brief 4.8): a green flood with an open ring. */
+/** The 404 page: a green flood with an open ring. */
 export const NOT_FOUND: {
   /** The status, as a line of text above the title. */
   code: string;

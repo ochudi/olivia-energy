@@ -1,6 +1,5 @@
 /*
- * The home opening (P1): #hero and #why-olivia, creative brief 2.10 and 4.1
- * sections 1 and 2. Two layouts from one DOM:
+ * The home opening (P1): #hero and #why-olivia. Two layouts from one DOM:
  *
  *   Static (default): phones, tablets, reduced motion, no JavaScript and
  *   browsers without the `scripting` media feature. The hero is a normal
@@ -23,7 +22,7 @@
 }
 
 /* ---------------------------------------------------------------- */
-/* The photograph and its scrims (brief 2.7).                        */
+/* The photograph and its scrims.                        */
 /* ---------------------------------------------------------------- */
 
 .photo {
@@ -56,16 +55,15 @@
   }
 }
 
-/* Night scrims (brief 2.7): top, bottom and left, at the brief's values
-   where they hold the contrast floors (text 4.5:1, H1 and turn 3:1 against
-   the lightest pixel; measured with build/p1/contrast.mjs). Portrait: the
-   copy rises to about a fifth of the screen and spans the full width, so
+/* Night scrims: top, bottom and left, where they hold the contrast floors
+   (text 4.5:1, H1 and turn 3:1 against the lightest pixel; measured).
+   Portrait: the copy rises to about a fifth of the screen and spans the full width, so
    there is no left scrim; the bottom scrim opens a lighter band (37% to
    41% from the foot) where the 9:16 crop's bridge sits, so Lagos reads
    behind the lede, and closes to solid night at the photograph's foot,
-   where the card joins it without a seam. Q3 measured the floors at
+   where the card joins it without a seam. The floors measured at
    375x667, 390x844 and 430x932: eyebrow 5.1:1, H1 6.5:1, turn 6.5:1 and
-   lede 6.2:1 at worst (build/q3/pages/tools/scrim-try.mjs). Landscape: a
+   lede 6.2:1 at worst. Landscape: a
    narrow scrim on the right edge carries the vertical credit. */
 .scrims {
   position: absolute;
@@ -558,7 +556,7 @@
 }
 
 /* ---------------------------------------------------------------- */
-/* Pinned (brief 2.8 and 2.10): desktop, motion allowed, scripting on. */
+/* Pinned: desktop, motion allowed, scripting on. */
 /* ---------------------------------------------------------------- */
 
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 640px) {

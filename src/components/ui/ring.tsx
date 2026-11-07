@@ -13,8 +13,10 @@ export type RingMarkProps = {
    * draw: the ring draws itself from nothing. none: static, with its gap.
    * Both motions are scroll-driven on a view timeline the ring names
    * (DESIGN.md, Motion); server HTML is the finished ring.
+   * once: the ring is closed and the page (PortraitFrame) draws it one time
+   * as it enters the viewport; this component only marks the path.
    */
-  animate?: "close" | "draw" | "none";
+  animate?: "close" | "draw" | "once" | "none";
   /**
    * fill: the ring fills its parent (which sets the size) instead of being
    * `size` px wide; `size` then only sets the drawing's own units.
@@ -33,7 +35,7 @@ function gapRotation(gap: number): number {
 /**
  * RingMark — the ring of the mark as a line: the closing ring on every red
  * close band, the halo, the 404's open ring. Circles appear only where the
- * ring is meant (brief 2.4).
+ * ring is meant.
  */
 export function RingMark({
   size,
@@ -47,6 +49,8 @@ export function RingMark({
   const c = size / 2;
   const d = `M${c} ${c - r}A${r} ${r} 0 1 1 ${c} ${c + r}A${r} ${r} 0 1 1 ${c} ${c - r}`;
   const open = animate === "none" && gap > 0;
+  // A once ring is a closed circle that starts at twelve o'clock.
+  const rotation = animate === "once" ? 0 : gapRotation(gap);
   return (
     <svg
       viewBox={`0 0 ${size} ${size}`}
@@ -58,7 +62,7 @@ export function RingMark({
       className={cn(
         "ring-mark shrink-0",
         fill && "h-full w-full",
-        animate !== "none" && "draw-scope",
+        (animate === "close" || animate === "draw") && "draw-scope",
         className,
       )}
     >
@@ -69,13 +73,15 @@ export function RingMark({
         strokeWidth={stroke}
         strokeLinecap="round"
         strokeDasharray={open ? `${1 - gap} ${gap}` : undefined}
-        transform={`rotate(${gapRotation(gap)} ${c} ${c})`}
+        transform={`rotate(${rotation} ${c} ${c})`}
         className={
           animate === "close"
             ? "ring-close"
             : animate === "draw"
               ? "draw"
-              : undefined
+              : animate === "once"
+                ? "ring-once-path"
+                : undefined
         }
         style={
           animate === "close"

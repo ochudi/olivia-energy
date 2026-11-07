@@ -1,7 +1,7 @@
 /**
  * Formatting helpers for copy that carries a number or a date.
  *
- * House rules (creative brief 3.6): counts in prose are words from one to
+ * House rules: counts in prose are words from one to
  * twenty and en-GB numerals after that ("eleven op-eds", "21 op-eds");
  * dates are "10 September 2026" in prose and "10 Sep 2026" on cards.
  * Month names are written out here rather than taken from Intl, whose

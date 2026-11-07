@@ -18,7 +18,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 /**
- * Colours of the brief's tokens (creative brief 2.1), as literals: the
+ * Colours of the design tokens, as literals: the
  * renderer cannot read CSS custom properties. night = --color-night,
  * ink-night-muted = --color-ink-night-muted, lime = --color-brand-lime.
  */
@@ -76,7 +76,7 @@ function Mark({ height }: { height: number }) {
 }
 
 /**
- * Default social card (creative brief 3.4), on the night ground. The left
+ * Default social card, on the night ground. The left
  * 62%: the lockup, the two tagline lines, the footer line and who founded
  * the firm. The right 38%: the mark, large, running off the edge. Read at
  * thumbnail size in a chat or a feed, so the tagline is set large.

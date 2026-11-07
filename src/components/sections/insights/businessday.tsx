@@ -12,7 +12,7 @@ import {
 import { QuotedIn } from "./quoted-in";
 
 /**
- * In BusinessDay (creative brief 4.4 sections 4 and 5), `#businessday`,
+ * In BusinessDay `#businessday`,
  * the anchor the home page links to: every op-ed as a cover wall in its
  * archive layout (the newest as the lime lead), assembling as the reader
  * arrives at it (the page's signature moment, DESIGN.md Layout), then the

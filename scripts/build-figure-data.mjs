@@ -134,7 +134,7 @@ const facts = JSON.parse(fs.readFileSync(factsJson, "utf8")).facts;
 const lit = (s) => JSON.stringify(s);
 
 /**
- * House style for a printed statement (creative brief 0.9 and F2's rules):
+ * House style for a printed statement (the house rules):
  * no en or em dashes (a numeric range reads "1850 to 1900"), and the source
  * institution stays in the source line, never in the prose. The research
  * claim in facts.json is left as checked; only the printed form changes.

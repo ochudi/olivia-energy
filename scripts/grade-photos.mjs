@@ -8,7 +8,7 @@
  * output. Source folders come from PHOTO_SRC_AFRICA and PHOTO_SRC_FIRST (the
  * original downloads; see /credits for each photograph's source page).
  *
- * Grade (creative brief 2.7), applied once per crop, in this order:
+ * Grade, applied once per crop, in this order:
  *   1. resize to at most 2400 px on the long edge (never enlarged)
  *   2. per-channel linear curve  R 1.05x - 6, G 0.98x + 6, B 0.93x + 2
  *   3. contrast                  1.06x - 7.7
@@ -244,7 +244,7 @@ async function rawOf(pipeline) {
 const asRaw = (b) =>
   sharp(b.data, { raw: { width: b.width, height: b.height, channels: 3 } });
 
-/** Brief 2.7: the grade, one 8-bit step at a time. */
+/** The grade, one 8-bit step at a time. */
 async function grade(buf, { lift }) {
   let cur = buf;
   // 2. per-channel linear curve

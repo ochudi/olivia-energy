@@ -19,7 +19,7 @@ export type EyebrowProps = {
  * the grid; `flame` swaps the rule for the mark's flame; `number` for a
  * numeral.
  *
- * Not used on the public site since the November 2026 craft pass: nothing
+ * Not used on the public site: nothing
  * sits above a heading, and a line that carries information is a sentence
  * in the body face (DESIGN.md, Typography). Kept for the style guide's
  * record of the component.

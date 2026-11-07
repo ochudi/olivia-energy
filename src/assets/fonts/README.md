@@ -1,6 +1,6 @@
 # Fonts
 
-Two kinds of files live here. Budget (creative brief 2.2): fonts on first
+Two kinds of files live here. Budget: fonts on first
 load at most 140 KB; the italic at most 35 KB and preloaded.
 
 ## Site fonts (served through `next/font`)

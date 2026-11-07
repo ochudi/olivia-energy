@@ -32,7 +32,7 @@ const paddings: Record<CardPadding, string> = {
 };
 
 /**
- * Card — a bounded surface in the shoulder shape (brief 2.4). A single 1px
+ * Card — a bounded surface in the shoulder shape. A single 1px
  * line is the only edge treatment; `elevated` takes the stronger line.
  */
 export function Card({

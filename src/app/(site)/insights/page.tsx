@@ -22,13 +22,12 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * Insights (creative brief 4.4): the lime hero with Fig. 1, the op-eds in
+ * Insights: the lime hero with Fig. 1, the op-eds in
  * BusinessDay (#businessday) with the reports that quote him, the articles,
- * the eight formats and the red close. Q3 moved the BusinessDay section up
- * from fourth to second (client review P0-2): the founder's published work
- * comes before the formats that are still "First issue coming". The brief's
- * order was hero, formats, articles, BusinessDay; to restore it, swap the
- * two lines below. Fully static: the topic
+ * the eight formats and the red close. The BusinessDay section comes second:
+ * the founder's published work comes before the formats that are still
+ * "First issue coming". To change the order, reorder the
+ * sections below. Fully static: the topic
  * filter is a set of static routes of its own (/insights/category/[slug]),
  * so this page reads no searchParams.
  */

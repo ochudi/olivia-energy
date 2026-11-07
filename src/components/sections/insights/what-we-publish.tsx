@@ -42,7 +42,7 @@ function statusesFor(
 }
 
 /**
- * "What we publish" (creative brief 4.4 section 2): the eight formats of
+ * "What we publish": the eight formats of
  * Olivia Energy Insights as a 4 x 2 grid of square-cornered tiles
  * (instruments, DESIGN.md Shapes; not a sequence, so not numbered). A
  * format in print has a flood-green edge, the flame and a link to its

@@ -60,7 +60,7 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* Shape utilities: the shoulder (brief 2.4). Three tight corners and   */
+/* Shape utilities: the shoulder. Three tight corners and   */
 /* one large top-right corner. Order: top-left, top-right, bottom-      */
 /* right, bottom-left.                                                  */
 /* ------------------------------------------------------------------ */
@@ -78,7 +78,7 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* Type utilities (brief 2.2).                                          */
+/* Type utilities.                                          */
 /* ------------------------------------------------------------------ */
 @utility label {
   /* 12px uppercase 600, tracked. Two places only (DESIGN.md, Typography):
@@ -228,7 +228,7 @@
   animation: field-error-enter var(--duration-fast) var(--ease-out) both;
 }
 
-/* `settle`: the hero photograph scales 1.06 to 1 once on load (brief 2.8). */
+/* `settle`: the hero photograph scales 1.06 to 1 once on load. */
 @keyframes settle {
   from {
     transform: scale(1.06);
@@ -296,7 +296,7 @@
   }
 
   /* ---------------------------------------------------------------- */
-  /* Surfaces (creative brief 2.1). The paper values are the defaults   */
+  /* Surfaces. The paper values are the defaults   */
   /* in tokens.css; each surface below remaps the semantic tokens, the  */
   /* chart variables, the hatch, the turn colour and the logo variables.*/
   /* The site header mirrors them through data-on="<surface>", which   */
@@ -314,7 +314,7 @@
   /* mark-green|red|lime (true colours or currentColor for mono).       */
   /* Three more semantic colours follow the surface: --color-accent-fg  */
   /* (text on the gap pill), --color-error (form errors) and            */
-  /* --color-glyph (the line glyphs, brief 2.5).                         */
+  /* --color-glyph (the line glyphs).                                  */
   /* ---------------------------------------------------------------- */
   :root {
     --chart-1: var(--color-flood-green);
@@ -886,6 +886,23 @@
     }
   }
 
+  /* The portrait's ring (PortraitFrame): drawn once as the frame enters the
+     viewport, by a transition the script starts, then still. The script arms
+     only a frame that begins below the fold; everything else, reduced motion
+     included, is the finished ring. */
+  .portrait-frame[data-ring="armed"] .ring-once-path {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  .portrait-frame[data-ring="drawn"] .ring-once-path {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 0;
+    transition:
+      stroke-dashoffset var(--duration-draw) var(--ease-in-out),
+      opacity 80ms linear;
+  }
+
   /* The lead figures above the fold on a desktop: once, on load. */
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 48rem) {
     .figure-lead .sweep {
@@ -925,7 +942,7 @@
     transform: scale(0);
   }
 
-  /* The line glyphs take the surface's glyph colour (brief 2.5); a text-*
+  /* The line glyphs take the surface's glyph colour; a text-*
      utility on the glyph still wins. */
   .glyph {
     color: var(--color-glyph);
@@ -1081,7 +1098,7 @@
   /* "page-headline" with the morph class, so one headline hands over to  */
   /* the next; the fixed header is named and pinned so nothing above the */
   /* content moves. Where the View Transitions API is missing the swap   */
-  /* is instant, which is the fallback the brief asks for.               */
+  /* is instant, which is the intended fallback.                       */
   /* ---------------------------------------------------------------- */
   ::view-transition {
     pointer-events: none;

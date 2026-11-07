@@ -9,7 +9,7 @@ import { getCommentaryCounts, getOpEds } from "@/lib/supabase/queries";
 import { HomeSectionHeader } from "./section-header";
 
 /**
- * On the record, in BusinessDay (creative brief 4.1 section 7): the
+ * On the record, in BusinessDay: the
  * founder's op-eds as a cover wall (the newest as the lime lead, then the
  * next four energy op-eds; the wall assembles on Insights, not here), his
  * Dangote line set large in the quotation panel, and the eight Insights

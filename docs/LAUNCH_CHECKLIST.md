@@ -167,7 +167,7 @@ project folder holding the production values.
 - **Vercel Hobby** is free, but its terms limit it to non-commercial use and
   a Hobby project cannot be transferred to a client's team. Pro removes both.
 - **Supabase free** pauses a project after a week without requests and keeps
-  no backups. A shared project that other applications keep busy will not
+  no backups. A project that other applications keep busy will not
   pause; a paused one leaves the public pages up from their last build and
   takes sign-in down.
 - **Turnstile** is free. **Resend** is free for one domain and 3,000 emails

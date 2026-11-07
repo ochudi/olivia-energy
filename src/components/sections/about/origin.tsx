@@ -4,7 +4,7 @@ import { Section } from "@/components/ui/section";
 import { ORIGIN } from "@/content/about";
 
 /**
- * About section 7, "Where we started" (creative brief 4.3): the H2 in cols
+ * About section 7, "Where we started": the H2 in cols
  * 1 to 5; the paragraph and the company facts as a definition list in cols
  * 7 to 12. Facts from the CAC record and the 2020 reports of the two
  * retail outlets (content/about.ts). Static.

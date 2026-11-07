@@ -9,7 +9,7 @@ const RESEARCH: PageSeo = {
 };
 
 /**
- * Per-page search metadata (creative brief 3.5). Titles stay at 60
+ * Per-page search metadata. Titles stay at 60
  * characters or fewer with the suffix, descriptions at 160 or fewer;
  * pageMetadata() in src/lib/seo/metadata.ts drops the suffix from any title
  * it would push over 60. Privacy keeps its own metadata in ./legal.
@@ -50,7 +50,7 @@ export const SEO = {
   suffix: ` | ${SITE.name}`,
   /** Search-facing line for the site as a whole (WebSite, social card alt). */
   tagline: SITE.tagline,
-  /** The social card (creative brief 3.4). */
+  /** The social card. */
   socialCard: {
     footer: "Energy advisory, research and sustainability",
     founder: "Founded by Dr Olugbenga Olaoye",

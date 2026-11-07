@@ -45,7 +45,7 @@ function AboutMark() {
 }
 
 /**
- * About section 1, "Ignition" (creative brief 4.3; the page's signature
+ * About section 1, "Ignition" (the page's signature
  * moment, DESIGN.md Layout): night, the header transparent over it. Copy in cols 1 to 7, the mark
  * (about 340 x 472) in cols 8 to 12, vertically centred; on phones the
  * mark (150 x 208) sits centred above the copy. On eligible desktops

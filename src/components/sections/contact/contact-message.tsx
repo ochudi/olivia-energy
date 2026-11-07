@@ -5,7 +5,7 @@ import { turnstileSiteKey } from "@/lib/contact/turnstile";
 import type { SiteSettings } from "@/lib/supabase/types";
 
 /**
- * Message and details (creative brief 4.7, section 2): the field. The form
+ * Message and details (section 2): the field. The form
  * in a square-cornered card (an instrument that takes input, DESIGN.md
  * Shapes) in cols 1 to 7 (fields, validation and the server action
  * unchanged), the details in cols 9 to 12. Phones: form, then details. The

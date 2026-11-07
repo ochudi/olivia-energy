@@ -5,10 +5,9 @@ const linkClass =
   "hit-area tap text-ink hover:text-primary active:text-primary-hover duration-fast ease-standard underline decoration-line-strong underline-offset-4 transition-colors hover:decoration-current";
 
 /**
- * Share row as text links: LinkedIn, X, Email, Copy link, named as
- * brief 3.6 has it ("Share on LinkedIn, opens in a new tab", "Share by
- * email"). Copy link is
- * the CopyLinkButton in its text form, which swaps its label to "Copied"
+ * Share row as text links: LinkedIn, X, Email, Copy link, named for
+ * assistive technology ("Share on LinkedIn, opens in a new tab", "Share by
+ * email"). Copy link is the CopyLinkButton in its text form, which swaps its label to "Copied"
  * for two seconds and announces it.
  */
 export function ShareLinks({

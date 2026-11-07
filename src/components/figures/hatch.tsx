@@ -1,5 +1,5 @@
 /**
- * The gap hatch (creative brief 2.1): 45 degree lines, 6 px pitch, 1.5 px
+ * The gap hatch: 45 degree lines, 6 px pitch, 1.5 px
  * stroke, in `--hatch-color` (red at 85% on night and paper; solid red
  * with an ink outline on lime, where the shape itself carries
  * `--hatch-outline`). Hatch means "the gap" and nothing else.

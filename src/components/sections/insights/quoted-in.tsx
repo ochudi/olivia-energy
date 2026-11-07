@@ -17,7 +17,7 @@ const LINK =
   "tap text-ink hover:text-primary duration-fast ease-standard decoration-line-strong underline decoration-1 underline-offset-[0.22em] transition-colors hover:decoration-current";
 
 /**
- * Quoted in BusinessDay (creative brief 4.4 section 5), under the cover
+ * Quoted in BusinessDay, under the cover
  * wall: every BusinessDay report that quotes Dr Olaoye, newest first, as a
  * two-column list at 1440 (one column on phones); the syndicated copy is
  * not a row of its own but the footnote's link.

@@ -30,7 +30,7 @@ const EXPECTED: readonly GlyphName[] = [
   "collaboration",
 ];
 
-/** The 48 grid with its 4 unit safe margin (brief 2.5). */
+/** The 48 grid with its 4 unit safe margin. */
 const SAFE_MIN = 4;
 const SAFE_MAX = GLYPH_SIZE - 4;
 
@@ -79,7 +79,7 @@ function pointsOf(d: string): [number, number][] {
   return out;
 }
 
-describe("the glyph family (creative brief 2.5)", () => {
+describe("the glyph family", () => {
   it("has exactly the fourteen names of the contract", () => {
     expect([...GLYPH_NAMES].sort()).toEqual([...EXPECTED].sort());
     expect(GLYPH_NAMES).toHaveLength(14);

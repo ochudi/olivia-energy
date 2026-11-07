@@ -18,8 +18,8 @@ const LINK = cn(
 );
 
 /**
- * The tagline in two lines, split at the first full stop (creative brief
- * 3.2). A tagline without a second sentence keeps one line.
+ * The tagline in two lines, split at the first full stop. A tagline without
+ * a second sentence keeps one line.
  */
 export function splitTagline(tagline: string): [string, string] {
   const text = tagline.trim();
@@ -50,7 +50,7 @@ function Column({
 }
 
 /**
- * SiteFooter — night (creative brief 3.2). Row 1: the tagline from
+ * SiteFooter — night. Row 1: the tagline from
  * settings, the first sentence in display-xl, the second as the lime
  * italic turn in display-lg (with the home hero, the one italic line on the
  * site; DESIGN.md Typography). Row 2: the company, What we do, Company,

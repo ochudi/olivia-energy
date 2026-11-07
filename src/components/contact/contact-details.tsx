@@ -37,7 +37,7 @@ export function placesFrom(settings: SiteSettings): readonly string[] {
 const heading = "text-ink-muted font-sans text-sm font-medium";
 
 /**
- * The details column beside the form (creative brief 4.7): Email (from
+ * The details column beside the form: Email (from
  * settings), Where we are (settings addresses), Company (name and RC
  * number). Each block sits under a 1px rule.
  */

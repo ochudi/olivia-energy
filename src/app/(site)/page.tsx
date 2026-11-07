@@ -22,7 +22,7 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * Home (creative brief 4.1): the opening (hero and Why Olivia in the mark
+ * Home: the opening (hero and Why Olivia in the mark
  * window), the gaps measured, services, who we serve, the founder, the
  * op-eds on the record in BusinessDay, and the red close band. Copy:
  * src/content/home.ts and src/content/brand.ts.

@@ -10,7 +10,7 @@ import {
   type FloodFrame,
 } from "./flood";
 
-/** The pinned layout's gate: the same query as the CSS (brief 2.8). */
+/** The pinned layout's gate: the same query as the CSS. */
 export const PINNED_QUERY =
   "(scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 1024px) and (min-height: 640px)";
 const REDUCE_QUERY = "(prefers-reduced-motion: reduce)";

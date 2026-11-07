@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils/cn";
 import { HATCH_BACKGROUND } from "./hatch";
 
 /* ------------------------------------------------------------------ */
-/* Comparison glyphs for the numeral tiles and cards (brief 4.1 section */
-/* 3 and 4.2 chapters). Bars are HTML so the hatch is pixel-exact; the  */
+/* Comparison glyphs for the numeral tiles and cards (Home and What we */
+/* do chapters). Bars are HTML so the hatch is pixel-exact; the  */
 /* dots are one SVG path. Colour is currentColor: ink on lime, ink on   */
 /* card, white on night. The hatch is red and means the gap. The glyph  */
 /* is what moves on a tile (DESIGN.md, Motion: numerals never count     */

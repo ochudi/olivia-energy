@@ -1,19 +1,13 @@
-import Image from "next/image";
 import type { Counts } from "@/types/contracts";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
 import { cn } from "@/lib/utils/cn";
-import { RingMark } from "@/components/ui/ring";
+import { PortraitFrame } from "@/components/ui/portrait-frame";
 import { Section } from "@/components/ui/section";
 import { FOUNDER } from "@/content/about";
 import { HOME_FOUNDER, type FounderCounter } from "@/content/home";
 import { getCommentaryCounts } from "@/lib/supabase/queries";
-
-/* The halo, centred on the portrait's top-right corner (brief 4.1 section
-   6: about 420 px). 360 px keeps its right edge clear of the text column
-   at 1440; it scales down with the portrait on phones. */
-const HALO = 360;
 
 /**
  * The two counters the band shows (DESIGN.md, Typography: two, not a strip
@@ -42,9 +36,9 @@ function KeepIds({ text }: { text: string }) {
 }
 
 /**
- * Our founder (creative brief 4.1 section 6): a night band with the
- * portrait in the shoulder shape under a lime halo (the ring draws itself
- * as the band scrolls in), the name, the two roles, the credentials set
+ * Our founder: a night band with the
+ * portrait inside a lime ring (the ring draws once as the band scrolls in,
+ * then stays still), the name, the two roles, the credentials set
  * large, two counters as final numerals on a hairline (no paragraph: prose
  * never sits on night, DESIGN.md Colors; the bio lives on About), and the
  * lime button to About.
@@ -63,31 +57,12 @@ export async function HomeFounder() {
       <Container>
         <div className="grid gap-14 lg:grid-cols-12 lg:items-center lg:gap-x-6">
           <div className="flex justify-center pt-10 lg:col-span-5 lg:justify-start lg:pt-16">
-            <div className="relative w-60 lg:w-[300px]">
-              <div
-                aria-hidden
-                className="text-brand-lime pointer-events-none absolute top-0 right-0 z-0 flex translate-x-1/2 -translate-y-1/2 scale-[0.76] items-center justify-center lg:scale-100"
-                style={{ width: HALO, height: HALO }}
-              >
-                <RingMark size={HALO} stroke={2} gap={0} animate="draw" />
-              </div>
-              {portrait.src ? (
-                <div className="photo-scope wipe shoulder-lg relative isolate z-10 aspect-[4/5] overflow-hidden">
-                  {/* The portrait is a PNG on white: multiplied onto the field
-                      inside this box, so its ground reads as the page's. */}
-                  <div className="bg-paper absolute inset-0">
-                    <Image
-                      src={portrait.src}
-                      alt={portrait.alt}
-                      fill
-                      sizes="(min-width: 1024px) 300px, 240px"
-                      quality={75}
-                      className="wipe-inner object-cover object-[50%_18%] mix-blend-multiply"
-                    />
-                  </div>
-                </div>
-              ) : null}
-            </div>
+            <PortraitFrame
+              portrait={portrait}
+              sizes="(min-width: 1024px) 340px, 256px"
+              className="w-64 lg:w-[340px]"
+              ringClassName="text-brand-lime"
+            />
           </div>
 
           <div className="min-w-0 lg:col-span-7 lg:col-start-6">

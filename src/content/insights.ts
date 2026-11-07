@@ -4,7 +4,7 @@ import { capitalise, countWords, formatDateLong } from "@/lib/content/format";
 import { RETRIEVED, type FigureCopy } from "./home";
 
 /**
- * Insights copy (creative brief 4.4 and 4.5). Articles come from the
+ * Insights copy Articles come from the
  * database (src/lib/supabase/queries.ts), op-eds and mentions from the
  * commentary reads; the eight formats are FORMATS in ./brand.
  */
@@ -128,7 +128,7 @@ export const CATEGORY_TOPICS: Record<PostCategory, string> = {
 /**
  * The op-ed topics that belong with each Insights category. A category
  * page and an article close on the founder's newest matching op-eds
- * (Q3, client review P1-4). Only energy op-eds are shown (isEnergyOpEd).
+ * Only energy op-eds are shown (isEnergyOpEd).
  */
 export const CATEGORY_OPED_TOPICS: Record<PostCategory, readonly OpEdTopic[]> =
   {

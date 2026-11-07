@@ -5,7 +5,7 @@ import { dataHref } from "@/lib/figures/table";
 import { LINK } from "./credit-row";
 
 /**
- * Data (creative brief 4.9): each series file and each document behind a
+ * Data: each series file and each document behind a
  * verified figure, with its publisher, licence where one applies, the
  * retrieval date and, for series, the CSV the charts are drawn from.
  */

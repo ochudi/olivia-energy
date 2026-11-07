@@ -54,7 +54,7 @@ function ServiceCard({ service }: { service: Service }) {
 }
 
 /**
- * Our services (creative brief 4.1 section 4): six cards, each a 4:5
+ * Our services: six cards, each a 4:5
  * photograph in the shoulder shape, the service's glyph, the title, the
  * summary and "Explore". A 3 x 2 grid at 1024+, two columns on tablets, and
  * a native snap rail on phones that bleeds to the screen edges with the

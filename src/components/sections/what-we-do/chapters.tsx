@@ -7,7 +7,7 @@ import { ChapterInstalled } from "./chapter-installed";
 import type { Chapter } from "./chapter-parts";
 
 /**
- * What we do, sections 2 to 8 (creative brief 4.2): the chapter bar and
+ * What we do, sections 2 to 8: the chapter bar and
  * the six service chapters, in the order of SERVICES, each joined to its
  * copy in SERVICE_LINES by slug and anchored at `#<slug>`. The bar and the
  * chapters share one wrapper, so the bar sticks under the header for the

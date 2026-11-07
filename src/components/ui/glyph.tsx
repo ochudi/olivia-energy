@@ -30,7 +30,7 @@ export function glyphStrokeWidth(size: number): number {
 }
 
 /**
- * Glyph — one of the fourteen line glyphs (creative brief 2.5). Strokes are
+ * Glyph — one of the fourteen line glyphs. Strokes are
  * `currentColor`, and the `glyph` class sets that to the surface's glyph
  * colour: flood green on the field, white on green, night or red, ink on
  * lime. A text-* utility in `className` overrides it. Stroke only; dots

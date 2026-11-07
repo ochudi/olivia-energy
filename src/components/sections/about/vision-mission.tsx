@@ -37,7 +37,7 @@ const PANELS: readonly Panel[] = [
 ];
 
 /**
- * About section 4, vision and mission (creative brief 4.3): two flood
+ * About section 4, vision and mission: two flood
  * panels side by side, each half the viewport and at least 560 px tall,
  * each with the large shoulder on its top-right corner (a flood panel is
  * one of the firm's own objects, DESIGN.md Shapes); the heading in

@@ -24,7 +24,7 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * About (creative brief 4.3): ignition, our story, who we are, vision and
+ * About: ignition, our story, who we are, vision and
  * mission, values, the founder, where we started, and the close. Copy
  * lives in content/about and content/brand.
  */

@@ -11,7 +11,7 @@ export const generateMetadata = pageMetadata({
 });
 
 /**
- * Privacy (creative brief 4.9): the field, the copy from content/legal on
+ * Privacy: the field, the copy from content/legal on
  * the type scale. The heading block, then one row per section: its heading
  * in cols 1 to 4, its paragraphs in cols 5 to 11 at reading width. The
  * sections are not a sequence, so they are not numbered.

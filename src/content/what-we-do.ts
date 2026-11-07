@@ -1,5 +1,5 @@
 /**
- * What we do page copy (creative brief 4.2): the hero with Fig. 1, the
+ * What we do page copy: the hero with Fig. 1, the
  * chapter bar, six service chapters (Fig. 2 inside chapter 02), what makes
  * us different, the four pillars, who we serve and the close. Service
  * titles, numbers and slugs come from ./site and are joined here by slug;
@@ -77,7 +77,7 @@ export const WWD_HERO: {
 
 /**
  * Accessible name of the sticky chapter navigation (`<nav aria-label>`). The
- * brief gives no wording; approved in the Q2 copy audit (3 Oct 2026).
+ * wording was approved with the rest of the page copy (3 Oct 2026).
  */
 export const CHAPTER_BAR_LABEL: string = "Services on this page";
 
@@ -275,7 +275,7 @@ const CHAPTERS = [
       caption:
         "Debt service costs equalled more than 85% of Africa’s total energy investment in 2025, and that investment was a third lower than in 2015 (IEA estimates).",
       /**
-       * The 85% share is the hatched part. The brief names one label; the
+       * The 85% share is the hatched part. One label is named; the
        * second is left empty for the bar's remainder.
        */
       glyph: {

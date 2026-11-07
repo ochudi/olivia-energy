@@ -24,7 +24,7 @@ function yearAxis() {
 }
 
 /**
- * What we do, section 1 (creative brief 4.2): the green hero. The H1 (a
+ * What we do, section 1: the green hero. The H1 (a
  * sentence, so display-lg; the page's LCP, never animated) and the lede in
  * columns 1 to 6; Fig. 1, the price of solar modules on a log scale, on a
  * night plate in columns 7 to 12. On phones the plate follows the lede with

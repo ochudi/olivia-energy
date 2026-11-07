@@ -41,19 +41,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# agent instructions and locally installed agent skills (Claude-specific,
-# not part of the product; .claude/skills holds third-party skills and a
-# 17 MB detector binary)
-/CLAUDE.md
-/DESIGN.md
-/.claude/
-/.impeccable/
-
 # supabase CLI state
 /supabase/.branches
 /supabase/.temp
-# visual QA output
+# screenshots, Lighthouse reports and other local QA output
 /.screenshots
-
-# Docker-free QA harness state (scripts/harness)
-.harness

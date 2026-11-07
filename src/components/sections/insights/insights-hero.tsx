@@ -9,12 +9,12 @@ import { getCommentaryCounts } from "@/lib/supabase/queries";
 import { PeopleFigure } from "./people-figure";
 
 /**
- * Insights hero (creative brief 4.4 section 1): a lime flood. Cols 1 to 6
+ * Insights hero: a lime flood. Cols 1 to 6
  * carry the H1 (three words, so display-xl; static, never masked) and the
  * lede; cols 7 to 12 carry Fig. 1 on a night plate. On phones the plate
  * follows the text and starts inside the first screen. Under the lede, the
  * wall's count line, a sentence in the body face, links to the op-eds
- * (#businessday) in one tap (client review idea 2).
+ * (#businessday) in one tap.
  */
 export async function InsightsHero() {
   const { title, lede } = INSIGHTS_PAGE.hero;

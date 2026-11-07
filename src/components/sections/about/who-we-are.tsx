@@ -4,7 +4,7 @@ import { Section } from "@/components/ui/section";
 import { NARRATIVE } from "@/content/brand";
 
 /**
- * About section 3, "Who we are" (creative brief 4.3; A Refined Brand
+ * About section 3, "Who we are" (A Refined Brand
  * Narrative): the H2 in cols 1 to 5, the two paragraphs in cols 7 to 12 at
  * text-lg; stacked on phones. Static.
  */

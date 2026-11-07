@@ -1,5 +1,5 @@
 /*
- * The founder's credentials timeline (creative brief 4.3, section 6).
+ * The founder's credentials timeline (section 6).
  * Phones: vertical, the line on the left. From 768 px: horizontal, a 1 px
  * line with a ring node above each dated item. The line draws as the
  * timeline scrolls into view (`.dated` is a draw-scope and names the view

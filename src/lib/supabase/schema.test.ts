@@ -6,7 +6,7 @@ import { DB_SCHEMA } from "./schema";
 /**
  * The generated types name only this site's schema, so a client created
  * without `db.schema` still type-checks; at runtime it would query `public`,
- * which on a shared project is another application's tables. This walks the
+ * which in a project that hosts other applications is their tables. This walks the
  * source and fails on any client that leaves the option out.
  */
 function sourceFiles(dir: string): string[] {

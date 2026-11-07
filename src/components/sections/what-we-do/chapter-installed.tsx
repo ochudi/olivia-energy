@@ -105,7 +105,7 @@ export function ChapterInstalled({ chapter }: { chapter: Chapter }) {
               ratio="4/5"
               // On 3x phones the file is chosen as for 2x (the 2/3 factor) and
               // set at quality 60, so the busiest photograph (Lagos market)
-              // stays under the 120 KB phone budget (Q1, 3 October 2026).
+              // stays under the 120 KB phone budget.
               sizes="(min-width: 1440px) 520px, (min-width: 1024px) 37vw, (min-resolution: 2.5dppx) calc((100vw - 2.5rem) * 2 / 3), calc(100vw - 2.5rem)"
               quality={60}
               reveal="wipe"

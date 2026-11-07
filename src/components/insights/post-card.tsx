@@ -31,7 +31,7 @@ export type PostCardProps = {
 /**
  * Three columns of the 1296 px page at 1440: (1152 − 2 × 24) / 3 = 368 px.
  * On 3x phones the file is chosen as for 2x (the 2/3 factor), which keeps
- * every cover under the 120 KB phone budget (Q1, 3 October 2026).
+ * every cover under the 120 KB phone budget.
  */
 export const POST_CARD_SIZES =
   "(min-width: 81rem) 368px, (min-width: 64rem) 30vw, (min-width: 48rem) 46vw, (min-resolution: 2.5dppx) calc((100vw - 40px) * 2 / 3), calc(100vw - 40px)";
@@ -74,7 +74,7 @@ const LEAD = {
 } as const;
 
 /**
- * Article card (creative brief 4.4 section 3): a 3:2 cover in the shoulder
+ * Article card: a 3:2 cover in the shoulder
  * shape, the format chip (when the post has one) and the topic chip, the
  * title in display-sm, the dek and one meta line. The whole card is one
  * link, stretched from the title; hover lifts the title to the primary

@@ -35,7 +35,7 @@ function axes(series: SeriesId, include: string[]) {
 }
 
 /**
- * Insights Fig. 1 (creative brief 4.4): people without electricity, world
+ * Insights Fig. 1: people without electricity, world
  * and sub-Saharan Africa, on a night plate. The sub-Saharan area is
  * hatched: the share of the world's unlit that the region now holds. The
  * lines sweep in, the hatch follows, the end labels pop. The hatched line

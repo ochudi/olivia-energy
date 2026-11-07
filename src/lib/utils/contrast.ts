@@ -1,6 +1,6 @@
 /**
- * WCAG 2.x contrast, and the surface table from creative brief 2.1 as data,
- * so a test can prove every pair the brief states and /styleguide can show
+ * WCAG 2.x contrast, and the surface table as data,
+ * so a test can prove every pair the design holds to and /styleguide can show
  * the ratios it ships with. Pure functions; no DOM.
  */
 
@@ -100,7 +100,7 @@ export function greyOfLuminance(luminance: number): string {
 }
 
 /**
- * The photo surface (creative brief 2.7): the scrim must bring the lightest
+ * The photo surface: the scrim must bring the lightest
  * pixel behind each kind of text down to these luminances, so the pairs are
  * tested against a grey of exactly that luminance.
  */
@@ -113,7 +113,7 @@ export const SCRIM_FLOORS = {
   turn: 0.22,
 } as const;
 
-/** One foreground on a surface, with the threshold the brief holds it to. */
+/** One foreground on a surface, with the threshold the design holds it to. */
 export type ContrastPair = {
   surface: Surface;
   role: string;
@@ -121,7 +121,7 @@ export type ContrastPair = {
   background: string;
   /** 4.5 for text, 3 for large text (24px+) and graphics. */
   minimum: 4.5 | 3;
-  /** The ratio the brief states, for the record. */
+  /** The ratio the design states, for the record. */
   stated?: number;
 };
 
@@ -146,7 +146,7 @@ export const BRAND = {
 export const ERROR_ON_DARK = "#FFB4AA";
 
 /**
- * The surface table (creative brief 2.1; the ground is the field of
+ * The surface table (the ground is the field of
  * DESIGN.md, Colors, since November 2026), every pair with its threshold.
  * `stated` is the ratio DESIGN.md records for the pair.
  */

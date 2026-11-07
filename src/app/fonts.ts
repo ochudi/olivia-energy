@@ -4,8 +4,8 @@ import localFont from "next/font/local";
 /**
  * TYPEFACE PAIR — decision record
  *
- * Brief: institutional energy advisory (IEA / RMI / McKinsey Energy Insights
- * register). Editorial, authoritative, calm. Not a startup landing page.
+ * Register: institutional energy advisory. Editorial, authoritative, calm.
+ * Not a startup landing page.
  *
  * Display serif — evaluated Fraunces, Newsreader, Source Serif 4.
  *   • Fraunces: beautiful but its "wonk" and soft terminals read as warm,
@@ -43,7 +43,7 @@ import localFont from "next/font/local";
  * only; weight 500 remains for the wordmark in the logo lockup. See
  * src/assets/fonts/README.md and scripts/font-subset.py.
  *
- * First-load font budget (brief 2.2): at most 140 KB. Preloaded today:
+ * First-load font budget: at most 140 KB. Preloaded today:
  * roman 65 KB + italic 23 KB + Instrument Sans roman (Google latin, about
  * 30 KB) = about 118 KB.
  */

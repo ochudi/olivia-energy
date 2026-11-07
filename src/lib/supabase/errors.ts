@@ -42,7 +42,7 @@ export function explain(error: unknown): Error {
   if (!isUnreachable(error)) return error as Error;
   const { url } = getPublicSupabaseEnv();
   return new Error(
-    `Supabase is not reachable at ${url}. Start the local stack with "npm run db:start" (Docker Desktop must be running) or "scripts/harness/start.sh", then reload.`,
+    `Supabase is not reachable at ${url}. Start the local stack with "npm run db:start" (Docker must be running), then reload.`,
   );
 }
 

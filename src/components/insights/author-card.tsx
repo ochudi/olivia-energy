@@ -5,7 +5,7 @@ import { INSIGHTS_PAGE } from "@/content/insights";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * The author card after an article (creative brief 4.5): a deep-field
+ * The author card after an article: a deep-field
  * panel with square corners (an instrument, DESIGN.md Shapes), the
  * founder's portrait at 72 px, one sentence and "About our founder".
  */
@@ -21,18 +21,17 @@ export function AuthorCard({ className }: { className?: string }) {
         className,
       )}
     >
-      {portrait.src ? (
-        <div className="bg-surface relative size-[72px] shrink-0 overflow-hidden rounded-xs">
-          <Image
-            src={portrait.src}
-            alt={portrait.alt}
-            fill
-            sizes="72px"
-            quality={75}
-            className="object-cover object-top"
-          />
-        </div>
-      ) : null}
+      <div className="bg-surface relative size-[72px] shrink-0 overflow-hidden rounded-xs">
+        <Image
+          src={portrait.src}
+          alt={portrait.alt}
+          width={portrait.width}
+          height={portrait.height}
+          sizes="72px"
+          quality={75}
+          className="size-full object-cover"
+        />
+      </div>
       <div className="flex flex-col items-start gap-5">
         <p className="font-display text-display-xs text-ink text-pretty">
           {copy.authorCard}

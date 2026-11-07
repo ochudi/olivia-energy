@@ -14,7 +14,7 @@ function byYear(a: Publication, b: Publication): number {
 }
 
 /**
- * Journal articles (creative brief 4.6, section 2): the deep field, a
+ * Journal articles (section 2): the deep field, a
  * two-column list of square-cornered cards (instruments of the record,
  * DESIGN.md Shapes): journal, year, title, authors, and "Read the article"
  * to the DOI with the external-link ring. An odd count opens with the

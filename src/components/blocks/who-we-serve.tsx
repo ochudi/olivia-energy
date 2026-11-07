@@ -17,8 +17,7 @@ export type WhoWeServeProps = {
 };
 
 /**
- * WhoWeServe — the four kinds of institution (creative brief 4.1 section 5,
- * 4.2 section 11), each on its own flood tile in the shoulder (the firm's
+ * WhoWeServe — the four kinds of institution each on its own flood tile in the shoulder (the firm's
  * own objects, DESIGN.md Shapes): Governments green, Private sector night,
  * Development partners lime, Academia red. Every list is visible; no
  * interaction; nothing animates.

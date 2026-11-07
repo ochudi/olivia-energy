@@ -2,5 +2,9 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": ["scripts/**", "src/lib/supabase/database.types.ts"],
   "ignoreExportsUsedInFile": true,
-  "ignoreBinaries": ["supabase"]
+  "ignoreBinaries": ["supabase"],
+  "ignoreDependencies": ["sharp"],
+  "ignoreIssues": {
+    "src/lib/brand/mark.ts": ["exports"]
+  }
 }

@@ -1,8 +1,7 @@
 /**
- * The client's brand guideline blocks, in their final wording (creative
- * brief, section 4). Page files import from here so a line that appears on
+ * The firm's brand guideline blocks, in their final wording. Page files import from here so a line that appears on
  * two pages (the philosophy lines, the vision, the audiences) is written
- * once. Every string is entered exactly as the brief gives it.
+ * once. Every string is entered exactly as the firm wrote it.
  */
 import type {
   Counts,
@@ -14,7 +13,7 @@ import type {
 } from "@/types/contracts";
 import { formatDateLong, formatDateShort } from "@/lib/content/format";
 
-/** Tagline 1, as one thought in two lines (decision 1). */
+/** Tagline 1, as one thought in two lines (the firm's own wording). */
 export const TAGLINE: { line1: string; line2: string } = {
   line1: "Powering the transition.",
   line2: "Inspiring sustainable futures.",
@@ -167,8 +166,7 @@ export type Audience = {
 };
 
 /**
- * Who We Serve: institution types only, never named organisations
- * (decision 11). Shared by the home compact block and the What we do full
+ * Who We Serve: institution types only, never named organisations. Shared by the home compact block and the What we do full
  * block.
  */
 export const AUDIENCES: {
@@ -222,7 +220,7 @@ export type FormatItem = {
 };
 
 /**
- * The eight Insights formats (decision 10). No cadence words. The home
+ * The eight Insights formats. No cadence words. The home
  * chips use `name`. Status labels: `status.published(n)` when a format has
  * posts; Executive commentaries and Research papers always show their
  * counts from the publication data.
@@ -348,7 +346,7 @@ export type CloseCopy = {
   cta: Cta;
 };
 
-/** The red close band on every page (creative brief 3.3). */
+/** The red close band on every page. */
 export const CLOSES: Record<
   "home" | "whatWeDo" | "about" | "insights" | "research",
   CloseCopy
@@ -379,7 +377,7 @@ export const CLOSES: Record<
 
 /**
  * Op-ed cover and quotation copy, shared by the home cover wall and the
- * Insights archive (creative brief 4.1 section 7).
+ * Insights archive.
  */
 export const COVER_COPY: {
   label: (publishedOn: string) => string;

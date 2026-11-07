@@ -1,14 +1,14 @@
 import type { GlyphName } from "@/types/contracts";
 
 /**
- * The fourteen line glyphs (creative brief 2.5), as path data.
+ * The fourteen line glyphs, as path data.
  *
  * Grammar: a 48 x 48 grid with a 4 px safe margin; stroke 2 px at 48 px,
  * round caps and joins, no fills (a dot is a zero-length stroke with round
  * caps, 3 px across); at most four elements per glyph, built only from
  *
  *   R  the ring: a circle or arc of radius 16 centred at 24,24 (smaller
- *      rings of radius 8 to 12 where the brief says so),
+ *      rings of radius 8 to 12 where a glyph needs them),
  *   T  the flame tongue: the mark's lime tongue simplified to two cubic
  *      curves in a 10 x 22 box,
  *   S  straight strokes at 0, 45 or 90 degrees,
@@ -253,7 +253,7 @@ export const GLYPHS: Record<GlyphName, readonly GlyphElement[]> = {
   /* Pillar: Impact. The upright tongue landing on a surface, with two
      ripples spreading out under it: concentric ring arcs (radius 8 and 15)
      round its base, open above. Replaces a dot with quarter arcs up and
-     right, which read as the feed or Wi-Fi icon (client review P2-8). */
+     right, which read as the feed or Wi-Fi icon. */
   impact: [tongue(19, 5), arc(340, 200, 8, 24, 27), arc(345, 195, 15, 24, 27)],
 
   /* Value: Excellence. Full ring with an upward chevron inside. */

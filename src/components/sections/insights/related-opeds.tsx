@@ -16,8 +16,7 @@ const MAX = 3;
 const COLUMNS = { 2: "md:grid-cols-2", 3: "md:grid-cols-3" } as const;
 
 /**
- * The founder's newest op-eds on a category's topics (client review P1-4
- * and idea 1): every Insights path ends on his BusinessDay work. Up to
+ * The founder's newest op-eds on a category's topics: every Insights path ends on his BusinessDay work. Up to
  * three standard covers under the In BusinessDay heading, with "All
  * commentary" to the full wall. One match sits beside the heading, so no
  * cover is left alone in a row. Renders nothing when no op-ed matches.

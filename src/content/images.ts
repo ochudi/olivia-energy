@@ -330,6 +330,42 @@ export const PHOTOS = {
   },
 } as const satisfies Record<string, SitePhoto | Photo>;
 
+/**
+ * The founder's two portraits, supplied by Dr Olugbenga Olaoye (not stock, so
+ * not in PHOTOS and not graded). scripts/portraits.mjs crops each to a square
+ * with the head centred, for the circle the page frames it in; next/image
+ * serves the AVIF and WebP sizes. The suit portrait is the founder's
+ * everywhere (Home, the article author card, structured data); the academic
+ * one sits beside the credentials on About.
+ */
+export type Portrait = {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  /** The credits line for /credits. */
+  credit: string;
+};
+
+const PORTRAIT_CREDIT = "Portrait supplied by Dr Olugbenga Olaoye";
+
+export const PORTRAITS = {
+  suit: {
+    src: "/founder/olugbenga-olaoye-suit.jpg",
+    width: 1120,
+    height: 1120,
+    alt: "Dr Olugbenga Olaoye in a black suit, white shirt and red tie, with short dark hair and a grey beard, smiling gently at the camera.",
+    credit: PORTRAIT_CREDIT,
+  },
+  academic: {
+    src: "/founder/olugbenga-olaoye-academic.jpg",
+    width: 1120,
+    height: 1120,
+    alt: "Dr Olugbenga Olaoye in doctoral academic dress: a green velvet cap edged in red with a red tassel, and a maroon gown with green and purple facings.",
+    credit: PORTRAIT_CREDIT,
+  },
+} as const satisfies Record<string, Portrait>;
+
 export type PhotoKey = keyof typeof PHOTOS;
 
 /** Fails the typecheck if a key in the shared contract has no entry above. */

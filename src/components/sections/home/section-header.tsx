@@ -16,7 +16,7 @@ export type HomeSectionHeaderProps = {
 };
 
 /**
- * The header row every home body section shares (creative brief 4.1): the
+ * The header row every home body section shares: the
  * H2 in cols 1 to 7, the lede (or the count line) in cols 8 to 12,
  * bottom-aligned. Nothing sits above the heading (DESIGN.md, Typography),
  * and the heading is static.

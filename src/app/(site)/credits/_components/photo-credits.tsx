@@ -13,7 +13,7 @@ const CELL =
   "max-lg:grid max-lg:grid-cols-[6.5rem_1fr] max-lg:gap-x-4 max-lg:py-1 max-lg:before:label max-lg:before:text-ink-muted max-lg:before:pt-[0.2em] max-lg:before:content-[attr(data-label)] lg:px-4 lg:py-4 lg:align-top lg:first:pl-0 lg:last:pr-0";
 
 /**
- * Photographs (creative brief 4.9): every photograph with a thumbnail, what
+ * Photographs: every photograph with a thumbnail, what
  * it shows, the place, the author, the licence (linked), the source page
  * and, where true, "Cropped and colour-graded".
  */

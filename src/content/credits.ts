@@ -4,14 +4,14 @@ import type {
   SeriesId,
   SourceRef,
 } from "@/types/contracts";
-import { PHOTOS } from "./images";
+import { PHOTOS, PORTRAITS } from "./images";
 
 /**
  * Copy and rows for /credits. Photograph rows are built from PHOTOS, so an
  * author, licence or source page is written in one place only.
  */
 
-/** Page copy (creative brief 4.9). */
+/** Page copy. */
 export const CREDITS_PAGE = {
   title: "Credits",
   lede: "The photographs, data and typefaces on this site, with their authors and licences.",
@@ -27,6 +27,8 @@ export const CREDITS_PAGE = {
     },
     sourceLinkLabel: "Source page",
     changed: "Cropped and colour-graded",
+    portraitsNote:
+      "Cropped to a square, resized and lightly sharpened; the colours are as supplied.",
   },
   data: { title: "Data" },
   map: { title: "Map" },
@@ -160,6 +162,16 @@ export const PHOTO_CREDITS: readonly PhotoCredit[] = [
   }),
   ...LEGACY_PHOTO_CREDITS,
 ];
+
+/** The founder's portraits: supplied by him, so no source page or licence row. */
+export const PORTRAIT_CREDITS = [
+  { key: "suit", image: "Dr Olugbenga Olaoye in a suit" },
+  { key: "academic", image: "Dr Olugbenga Olaoye in academic attire" },
+].map(({ key, image }) => ({
+  key,
+  image,
+  credit: PORTRAITS[key as keyof typeof PORTRAITS].credit,
+}));
 
 export type DataCredit =
   | {
@@ -536,7 +548,7 @@ export const DATA_CREDITS: readonly DataCredit[] = [
   },
 ];
 
-/** Map credit (creative brief 4.9). */
+/** Map credit. */
 export const MAP_CREDIT = {
   text: "Africa outline from Natural Earth, public domain",
   source: {

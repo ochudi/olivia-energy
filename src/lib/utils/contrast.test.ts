@@ -82,7 +82,7 @@ describe("contrastRatio", () => {
   });
 });
 
-describe("the surface table (creative brief 2.1)", () => {
+describe("the surface table", () => {
   it("covers every surface", () => {
     const surfaces = new Set(SURFACE_PAIRS.map((p) => p.surface));
     for (const s of [
@@ -110,7 +110,7 @@ describe("the surface table (creative brief 2.1)", () => {
     SURFACE_PAIRS.filter((p) => p.stated !== undefined).map(
       (p) => [p.surface, p.role, p] as const,
     ),
-  )("%s: %s matches the ratio the brief states", (_surface, _role, pair) => {
+  )("%s: %s matches the ratio the design states", (_surface, _role, pair) => {
     const ratio = contrastRatio(pair.foreground, pair.background);
     // DESIGN.md rounds to one decimal below 10:1 and to a whole number above.
     const stated = pair.stated as number;
@@ -135,7 +135,7 @@ describe("the surface table (creative brief 2.1)", () => {
     ).toHaveLength(1);
   });
 
-  it("documents the rules the brief gives as exceptions", () => {
+  it("documents the rules the design gives as exceptions", () => {
     // Subtle ink is only 4.2:1 on paper-deep, so paper-deep uses the muted step.
     expect(contrastRatio("#5E6D63", BRAND.paperDeep)).toBeLessThan(4.5);
     expect(contrastRatio("#4A5A50", BRAND.paperDeep)).toBeGreaterThanOrEqual(

@@ -1,11 +1,10 @@
 import { ArrowUpRight } from "lucide-react";
-import Image from "next/image";
 import type { Counts } from "@/types/contracts";
 import { Chip } from "@/components/ui/chip";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
 import { FlameBullet } from "@/components/ui/flame-bullet";
-import { RingMark } from "@/components/ui/ring";
+import { PortraitFrame } from "@/components/ui/portrait-frame";
 import { Section } from "@/components/ui/section";
 import { FOUNDER, FOUNDER_PAGE } from "@/content/about";
 import { getCommentaryCounts, getSettings } from "@/lib/supabase/queries";
@@ -45,10 +44,9 @@ function profileLinks(scholarUrl: string) {
 }
 
 /**
- * About section 6, "Our founder" (#founder, the JSON-LD Person url;
- * creative brief 4.3): the portrait in the shoulder with a flood-green
- * ring halo (drawing itself) and the profile pills (cols 1 to 5, sticky
- * from 1024 px); then the name, the two roles, the six points with flame
+ * About section 6, "Our founder" (#founder, the JSON-LD Person url): the portrait in academic attire inside a
+ * flood-green ring (drawn once as it enters, then still) and the profile
+ * pills (cols 1 to 5, sticky from 1024 px); then the name, the two roles, the six points with flame
  * bullets, the credentials timeline, four counters as final numerals and
  * the source line (cols 6 to 12). Counts come from getCommentaryCounts();
  * only verified facts, as written in content/about.ts.
@@ -60,7 +58,7 @@ export async function Founder() {
   ]);
   const points = FOUNDER_PAGE.points(counts);
   const profiles = profileLinks(settings.scholar_url);
-  const { portrait } = FOUNDER;
+  const portrait = FOUNDER.academicPortrait;
 
   return (
     <Section
@@ -73,39 +71,11 @@ export async function Founder() {
         <div className="grid grid-cols-1 gap-y-14 lg:grid-cols-12 lg:gap-x-6">
           <div className="lg:col-span-5">
             <div className="lg:sticky lg:top-[calc(var(--spacing-header)+3rem)]">
-              <div className="relative w-68 pt-6 pr-8 md:w-83">
-                {/* The halo: the ring of the mark, drawn round the head. */}
-                <span
-                  aria-hidden="true"
-                  className="text-primary absolute top-0 right-0 hidden md:block"
-                >
-                  <RingMark size={328} animate="draw" />
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="text-primary absolute top-0 right-0 md:hidden"
-                >
-                  <RingMark size={268} animate="draw" />
-                </span>
-                {portrait.src ? (
-                  <div className="photo-scope wipe shoulder-lg relative isolate aspect-4/5 w-full overflow-hidden">
-                    {/* The field sits inside the clip, so the multiply blend
-                        turns the photograph's white into the page's ground
-                        (the clip isolates its own group). */}
-                    <span
-                      aria-hidden="true"
-                      className="bg-paper absolute inset-0"
-                    />
-                    <Image
-                      src={portrait.src}
-                      alt={portrait.alt}
-                      fill
-                      sizes="(min-width: 48rem) 300px, 240px"
-                      className="wipe-inner object-cover object-top mix-blend-multiply"
-                    />
-                  </div>
-                ) : null}
-              </div>
+              <PortraitFrame
+                portrait={portrait}
+                sizes="(min-width: 48rem) 352px, 288px"
+                className="w-72 md:w-88"
+              />
               {profiles.length > 0 ? (
                 <ul className="mt-8 flex flex-wrap gap-2">
                   {profiles.map((profile) => (

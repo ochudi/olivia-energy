@@ -3,7 +3,7 @@ import type { PhotoKey } from "@/types/contracts";
 import { PHOTOS, type Photo } from "@/content/images";
 
 /**
- * Art direction for the opening photograph (creative brief 2.7): the 16:9
+ * Art direction for the opening photograph: the 16:9
  * crop on landscape screens, the 9:16 crop on portrait ones. Both go
  * through next/image so they arrive as WebP at the served width: at 1440 px
  * the desktop crop is about 38 KB (1x) to 65 KB (2x) at quality 75 (measured
@@ -32,7 +32,7 @@ export type HeroSources = {
   focal: { desktop: string; phone: string };
 };
 
-/** Phone focal point from the brief (9:16 crop, 55% / 52%). */
+/** Phone focal point (9:16 crop, 55% / 52%). */
 const PHONE_FOCAL = "55% 52%";
 
 export function heroSources(key: PhotoKey): HeroSources {
@@ -75,8 +75,7 @@ export function heroSources(key: PhotoKey): HeroSources {
  * `preload()` from react-dom: a preload() call becomes a hint in the RSC
  * payload, and a hint is acted on whenever that payload is fetched, so
  * every page that prefetched "/" (the logo link) downloaded the home
- * photograph too (34 KB on a phone, 39 KB on a desktop; Q1 network log,
- * 3 October 2026). A <link> element only takes effect when the home page
+ * photograph too (34 KB on a phone, 39 KB on a desktop). A <link> element only takes effect when the home page
  * is rendered.
  */
 export function HeroPreload({ sources }: { sources: HeroSources }) {

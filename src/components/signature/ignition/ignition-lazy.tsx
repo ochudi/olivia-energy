@@ -35,7 +35,7 @@ function loadPoints(): Promise<ArrayBuffer> {
 type IgnitionState = "running" | "done" | "skipped";
 
 /**
- * Ignition (About hero, creative brief 2.9): on capable desktops, sparks in
+ * Ignition (About hero): on capable desktops, sparks in
  * the three colours of the mark converge into it, then the canvas hands
  * over to the vector mark and stops. Everywhere else it marks its host
  * `skipped` and loads nothing, and the host's own stroke draw-in plays.

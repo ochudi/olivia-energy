@@ -5,7 +5,7 @@ import { Section } from "@/components/ui/section";
 import { HOME_COMMENTARY } from "@/content/home";
 
 /**
- * His Dangote line a second time (client review idea 4): the home page's
+ * His Dangote line a second time: the home page's
  * quotation panel, the same op-ed and attribution, between the print
  * timeline and the journal articles, where a reader checks his record.
  * The hero above already gives the paper its bottom padding, so this band

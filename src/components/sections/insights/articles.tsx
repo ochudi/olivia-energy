@@ -22,7 +22,7 @@ export type ArticlesProps = {
 };
 
 /**
- * Articles (creative brief 4.4 section 3), on the deep field: the heading,
+ * Articles, on the deep field: the heading,
  * the topic filter and a three-column grid of post cards. On /insights it
  * is the third section (H2 "Articles"). A category page opens with it as
  * its hero: the category label as the H1 and what the category covers as

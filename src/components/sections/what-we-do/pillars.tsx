@@ -5,12 +5,11 @@ import { Section } from "@/components/ui/section";
 import { PILLARS } from "@/content/brand";
 
 /**
- * What we do, section 10 (creative brief 4.2): the four pillars on the
+ * What we do, section 10: the four pillars on the
  * field, as one row of their glyphs with their lines: the 64 px glyph
  * (drawing itself), the name in display-md and the line in text-base, on
  * hairlines. Four columns at 1024 px and up, two by two at 768 px, stacked
- * on phones. The four flood tiles belong to Who we serve, which follows;
- * showing two four-colour rows a screen apart was the audit's P1-4.
+ * on phones. The four flood tiles belong to Who we serve, which follows.
  */
 export function Pillars() {
   return (

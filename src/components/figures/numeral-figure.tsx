@@ -40,7 +40,7 @@ const TAG_TONE: Record<FactTag, ChipTone> = {
 
 /**
  * NumeralFigure — a big number with its tag, caption, comparison glyph and
- * source line (creative brief 2.6: numeral cards carry a tag, not a Fig.
+ * source line (numeral cards carry a tag, not a Fig.
  * number). The numeral is final, always; the glyph beside it is what moves
  * as the tile scrolls into view (DESIGN.md, Motion).
  */
@@ -74,7 +74,7 @@ export function NumeralFigure({
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-3">
         <span
           className="font-display numerals text-numeral text-ink"
-          // Inside a card the numeral is capped at 96 px (brief 4.2).
+          // Inside a card the numeral is capped at 96 px.
           style={
             band ? undefined : { fontSize: "min(var(--text-numeral), 6rem)" }
           }

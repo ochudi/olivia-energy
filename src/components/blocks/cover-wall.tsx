@@ -28,7 +28,7 @@ export type CoverWallProps = {
   headingLevel?: 3 | 4;
 };
 
-/** Covers after the lead on the home wall (creative brief 4.1 section 7). */
+/** Covers after the lead on the home wall. */
 const HOME_COUNT = 4;
 
 /**
@@ -48,8 +48,7 @@ function arrival(column: 0 | 1 | 2, lead = false): CSSProperties {
 }
 
 /**
- * CoverWall — the founder's op-eds as a wall of report covers (creative
- * brief 2.9 "On the record"). Only the wall: the section, heading and count
+ * CoverWall — the founder's op-eds as a wall of report covers ("On the record"). Only the wall: the section, heading and count
  * line belong to the page. Colours are assigned so no two covers of one
  * colour touch; every cover's art draws itself as it comes into view.
  */
