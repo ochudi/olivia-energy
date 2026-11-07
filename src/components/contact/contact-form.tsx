@@ -355,7 +355,9 @@ export function ContactForm({ siteKey, contactEmail }: ContactFormProps) {
           {copy.privacy}{" "}
           <Link
             href={copy.privacyLink.href}
-            className="link-underline hover:text-ink"
+            // A standing underline: in 12px fine print the hover-drawn one
+            // read as plain text.
+            className="text-ink underline decoration-current/40 underline-offset-[0.2em] hover:decoration-current"
           >
             {copy.privacyLink.label}
           </Link>

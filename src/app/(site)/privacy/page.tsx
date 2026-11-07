@@ -40,7 +40,7 @@ export default function Page() {
               <h2 className="font-display text-display-sm text-ink lg:col-span-4">
                 {section.heading}
               </h2>
-              <div className="text-ink max-w-text space-y-5 text-base text-pretty lg:col-span-7 lg:col-start-6">
+              <div className="text-ink max-w-[33rem] space-y-5 text-base text-pretty lg:col-span-7 lg:col-start-6">
                 {section.paragraphs.map((paragraph) => (
                   <p key={paragraph.slice(0, 40)}>{paragraph}</p>
                 ))}

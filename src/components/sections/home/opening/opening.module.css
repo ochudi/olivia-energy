@@ -133,9 +133,20 @@
 
 .title {
   margin-top: 1.25rem;
+  /* "Powering the / transition." at every width: at 1280 x 720 the
+     short-screen size let the two words share a line. */
+  max-width: 14ch;
   font-size: var(--text-display-2xl);
   line-height: var(--text-display-2xl--line-height);
   letter-spacing: var(--text-display-2xl--letter-spacing);
+}
+
+/* Below 352px (the Fold's cover screen, a 320px phone) the token's 60px
+   floor leaves "the" alone on a line; 16vw keeps "Powering the" on one. */
+@media (max-width: 22rem) {
+  .title {
+    font-size: min(var(--text-display-2xl), 16vw);
+  }
 }
 
 /* The turn: 30px on phones, display-lg from tablets up. */

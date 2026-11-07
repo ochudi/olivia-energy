@@ -27,7 +27,10 @@ export async function InsightsHero() {
       aria-labelledby="insights-title"
     >
       <Container>
-        <div className="grid grid-cols-1 gap-y-12 lg:grid-cols-12 lg:items-center lg:gap-x-6">
+        <div
+          data-fold-split=""
+          className="grid grid-cols-1 gap-y-12 lg:grid-cols-12 lg:items-center lg:gap-x-6"
+        >
           <div className="@container lg:col-span-6 lg:pr-6">
             <Display
               as="h1"
@@ -44,9 +47,9 @@ export async function InsightsHero() {
             {counts.opeds > 0 ? (
               <a
                 href="#businessday"
-                className="text-ink hit-area tap duration-fast ease-standard hover:text-ink-muted mt-6 inline-flex items-center gap-2 text-sm font-medium transition-colors lg:mt-8"
+                className="text-ink hit-area tap duration-fast ease-standard hover:text-ink-muted mt-6 inline-flex items-start gap-2 text-sm font-medium transition-colors lg:mt-8"
               >
-                <FlameBullet className="h-[1.1em] shrink-0" />
+                <FlameBullet className="mt-[0.2em] h-[1.1em] shrink-0" />
                 <span className="link-underline numerals">
                   {COVER_COPY.countLine(counts)}
                 </span>

@@ -15,11 +15,6 @@
  * (cover 35svh to 43svh of its own travel). No JavaScript.
  */
 
-/* On the night chapter the plate is raised a step so it reads. */
-.plate.plate {
-  background: var(--color-night-raised);
-}
-
 /* The photograph band at the foot of the plate: the bridge under a night
    scrim, so the squares and the caption read over it. A chart is an
    instrument, so its corners are square (DESIGN.md, Shapes). */
@@ -115,6 +110,12 @@
        travel stays under 250svh). */
     .step {
       min-height: 70svh;
+    }
+    /* The last step needs no runway after it: the plate unpins as soon
+       as the reader has had the third state, so the chapter does not end
+       on a screen of empty ground. */
+    .step:last-child {
+      min-height: 45svh;
     }
     .step[data-scene-step="2"] {
       view-timeline: --step-2 block;

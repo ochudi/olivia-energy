@@ -83,7 +83,11 @@ export function CloseBand({ variant }: { variant: CloseBandVariant }) {
             ) : null}
             <Display
               as="h2"
-              size="xl"
+              // display-xl is for statements of six words or fewer
+              // (DESIGN.md, Typography); a longer statement takes display-lg.
+              size={
+                copy.statement.trim().split(/\s+/).length <= 6 ? "xl" : "lg"
+              }
               id={headingId}
               className={
                 lines.length > 0 || copy.heading

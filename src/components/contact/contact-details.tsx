@@ -11,7 +11,8 @@ const copy = CONTACT_PAGE.details;
 
 /**
  * "Where we are" from settings: each office as one line, its address lines
- * then its country ("Fort Worth, Texas, United States"). When no office has
+ * then its country ("Fort Worth, Texas, United States"), unless the last
+ * line already names it ("Southwest Nigeria"). When no office has
  * any lines, the city-level lines in content stand in.
  */
 export function placesFrom(settings: SiteSettings): readonly string[] {
@@ -20,7 +21,14 @@ export function placesFrom(settings: SiteSettings): readonly string[] {
       const lines = address.lines
         .map((line) => line.trim())
         .filter((line) => line && !STAND_IN_LINE.test(line));
-      return lines.length ? [...lines, address.country].join(", ") : null;
+      if (!lines.length) return null;
+      // "Southwest Nigeria" already names its country; "Fort Worth, Texas"
+      // does not.
+      const last = lines[lines.length - 1];
+      const parts = last.includes(address.country)
+        ? lines
+        : [...lines, address.country];
+      return parts.join(", ");
     })
     .filter((place): place is string => place !== null);
   return places.length ? places : copy.whereLines;

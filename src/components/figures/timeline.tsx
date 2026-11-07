@@ -20,7 +20,7 @@ export type PrintTimelineProps = {
   /**
    * How the timeline draws itself (DESIGN.md, Motion). `lead`: the
    * Research page's signature moment, once on load on a desktop where the
-   * plate is in the first screen, scroll-driven below 64rem. `scroll`: as
+   * plate is in the first screen, scroll-driven below 48rem. `scroll`: as
    * it scrolls into view. `none`: finished.
    */
   motion?: "lead" | "scroll" | "none";

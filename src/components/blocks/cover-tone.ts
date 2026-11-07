@@ -3,7 +3,9 @@ import type { CoverTone, OpEd, OpEdTopic } from "@/types/contracts";
 /**
  * Cover colour by topic (build spec 2.8). Topics are listed in order of
  * relevance, so the first topic that maps decides. Climate and ESG is not in
- * the spec's table; it reads as transition, so it takes green.
+ * the spec's table; it reads as transition, so it takes green. Power took
+ * lime in the spec; lime is the lead cover's alone (DESIGN.md, Colors), so
+ * Power takes green too.
  */
 const TOPIC_TONE: Record<OpEdTopic, CoverTone> = {
   "Dangote Refinery": "red",
@@ -11,7 +13,7 @@ const TOPIC_TONE: Record<OpEdTopic, CoverTone> = {
   "Energy transition": "green",
   Downstream: "paper",
   "Oil and gas": "paper",
-  Power: "lime",
+  Power: "green",
   "Climate and ESG": "green",
   Policy: "paper-deep",
   Economy: "paper-deep",

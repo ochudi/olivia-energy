@@ -3,7 +3,6 @@ import type { Counts } from "@/types/contracts";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
-import { Lede } from "@/components/ui/lede";
 import { cn } from "@/lib/utils/cn";
 import { RingMark } from "@/components/ui/ring";
 import { Section } from "@/components/ui/section";
@@ -46,7 +45,8 @@ function KeepIds({ text }: { text: string }) {
  * Our founder (creative brief 4.1 section 6): a night band with the
  * portrait in the shoulder shape under a lime halo (the ring draws itself
  * as the band scrolls in), the name, the two roles, the credentials set
- * large, the lede, two counters as final numerals on a hairline, and the
+ * large, two counters as final numerals on a hairline (no paragraph: prose
+ * never sits on night, DESIGN.md Colors; the bio lives on About), and the
  * lime button to About.
  */
 export async function HomeFounder() {
@@ -104,8 +104,6 @@ export async function HomeFounder() {
               <span aria-hidden>{HOME_FOUNDER.credentials}</span>
               <span className="sr-only">{HOME_FOUNDER.credentialsLong}</span>
             </p>
-
-            <Lede className="mt-6 max-w-[52ch]">{HOME_FOUNDER.lede}</Lede>
 
             <ul className="border-line mt-10 grid grid-cols-2 gap-x-6 gap-y-8 border-t pt-8">
               {counters.map((counter) => (

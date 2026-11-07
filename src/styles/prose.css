@@ -8,7 +8,10 @@
     font-size: var(--text-base);
     line-height: 1.65;
     color: var(--color-ink);
-    max-width: 65ch;
+    /* 68 characters a line at most (DESIGN.md, Layout): Instrument Sans
+       averages 0.45em a character, so 30.5em is about 68 at any size
+       (65ch was 79, because ch measures the wide "0"). */
+    max-width: 30.5em;
     font-variant-numeric: proportional-nums;
   }
   .prose-sm {
@@ -105,8 +108,25 @@
   .prose ol {
     padding-left: 1.4em;
   }
+  /* The flame is the list marker (DESIGN.md, Components): the mark's
+     flame silhouette in the primary colour before each item, as the
+     FlameBullet component draws it elsewhere. */
   .prose ul {
-    list-style: square;
+    list-style: none;
+  }
+  .prose ul > li {
+    position: relative;
+  }
+  .prose ul > li::before {
+    content: "";
+    position: absolute;
+    top: 0.42em;
+    left: -1.35em;
+    width: 0.42em;
+    height: 0.94em;
+    background-color: var(--color-primary);
+    mask: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 41 92'><path d='M30.5 0C38.4 8.6 38.2 16.8 37.5 25.3C38.3 22.8 39.4 20.3 39.9 17.9C41.3 23.5 40.9 29.2 38.9 33.6C39.7 34.1 40.7 34.9 40.7 36C40.7 48.1 15.9 59.1 15.9 79.6C15.9 85.6 16.8 85.8 16.8 91.8C4.9 87.9 .2 71.8 .2 62.8C.2 33.6 28.6 31.1 30.5 0Z'/></svg>")
+      center / contain no-repeat;
   }
   .prose ol {
     list-style: decimal;

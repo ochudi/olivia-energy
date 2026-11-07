@@ -3,7 +3,6 @@ import { Container } from "@/components/ui/container";
 import { Display } from "@/components/ui/display";
 import { Lede } from "@/components/ui/lede";
 import { Section } from "@/components/ui/section";
-import { COVER_COPY } from "@/content/brand";
 import { INSIGHTS_PAGE } from "@/content/insights";
 import {
   getCommentaryCounts,
@@ -46,9 +45,6 @@ export async function BusinessDay() {
           </Display>
           <div className="lg:col-span-5 lg:pb-2">
             <Lede>{copy.lede}</Lede>
-            <p className="text-ink-muted numerals mt-6 text-sm">
-              {COVER_COPY.countLine(counts)}
-            </p>
           </div>
         </div>
 

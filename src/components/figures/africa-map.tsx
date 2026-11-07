@@ -19,7 +19,7 @@ export type AfricaMapProps = {
   region?: MapRegion;
   /**
    * `lead`: the Contact page's signature moment, settling once on load on
-   * a desktop and on scroll below 64rem. `scroll`: on scroll only.
+   * a desktop and on scroll below 48rem. `scroll`: on scroll only.
    * `none`: the settled map.
    */
   motion?: "lead" | "scroll" | "none";

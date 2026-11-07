@@ -56,7 +56,10 @@ export function HomeEvidence() {
           aside={<Lede>{lede}</Lede>}
         />
 
-        <ul className="mt-14 grid grid-cols-1 gap-x-6 gap-y-14 md:mt-20 lg:grid-cols-2 lg:gap-y-20">
+        <ul
+          data-fold-split=""
+          className="mt-14 grid grid-cols-1 gap-x-6 gap-y-14 md:mt-20 lg:grid-cols-2 lg:gap-y-20"
+        >
           {tiles.map((tile) => (
             <li key={tile.fact} className="flex">
               <NumeralFigure {...tile} size="band" className="w-full" />

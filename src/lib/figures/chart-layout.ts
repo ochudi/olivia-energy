@@ -73,7 +73,10 @@ export const VIEWBOX: Record<
     plotRight: 236,
     top: 14,
     bottom: 428,
-    labelGap: 52,
+    // 80 units is 62px on a 278px plate (a half-folded screen), where a
+    // three-line end label would otherwise run into its neighbour, and
+    // 77px at 390; 52 let them collide on the folded screen.
+    labelGap: 80,
   },
 };
 

@@ -50,10 +50,12 @@ export function ContactHero() {
               motion="lead"
               className="mx-auto w-[calc(20rem*72/76)] max-w-full lg:w-full lg:max-w-[34rem]"
             />
-            <p className="text-ink border-line mt-6 flex w-full items-center gap-3 border-t pt-5 text-base lg:mx-auto lg:max-w-[34rem]">
+            <p className="text-ink border-line mt-6 flex w-full items-start gap-3 border-t pt-5 text-base lg:mx-auto lg:max-w-[34rem]">
+              {/* The dot sits on the first line's centre, so a wrapped line
+                  on a narrow phone does not pull it between the lines. */}
               <span
                 aria-hidden="true"
-                className="size-2 shrink-0 rounded-full bg-current"
+                className="mt-[0.55em] size-2 shrink-0 rounded-full bg-current"
               />
               {copy.mapSecondary}
             </p>

@@ -24,6 +24,8 @@ export type PostCardProps = {
    * grid never leaves one card alone on a row).
    */
   lead?: "md" | "lg" | "md-only";
+  /** The category chip; off on a category page, whose H1 already names it. */
+  showCategory?: boolean;
 };
 
 /**
@@ -40,11 +42,14 @@ export const POST_LEAD_SIZES =
 
 /** Static class strings per breakpoint, so Tailwind sees every one. */
 const LEAD = {
+  /* A lead from 768: it spans the tablet's two columns as a stacked card
+     (a split at 768 left the text about 260px wide) and sits beside its
+     cover from 1024. */
   md: {
-    article: "md:grid md:grid-cols-12 md:items-center md:gap-x-6",
-    cover: "md:col-span-7",
-    body: "md:col-span-5 md:pl-4 lg:pl-8",
-    chips: "md:mt-0",
+    article: "lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-6",
+    cover: "lg:col-span-7",
+    body: "lg:col-span-5 lg:pl-8",
+    chips: "lg:mt-0",
     title: "md:text-display-md",
     excerpt: "md:text-base",
   },
@@ -56,12 +61,13 @@ const LEAD = {
     title: "lg:text-display-md",
     excerpt: "lg:text-base",
   },
-  /* Tablets only: a lead beside its cover; from lg it is a plain card. */
+  /* Tablets only: a lead across both columns, stacked; from lg a plain
+     card. */
   "md-only": {
-    article: "md:grid md:grid-cols-12 md:items-center md:gap-x-6 lg:flex",
-    cover: "md:col-span-7",
-    body: "md:col-span-5 md:pl-4 lg:pl-0",
-    chips: "md:mt-0 lg:mt-5",
+    article: "",
+    cover: "",
+    body: "",
+    chips: "",
     title: "md:text-display-md lg:text-display-sm",
     excerpt: "md:text-base lg:text-sm",
   },
@@ -79,6 +85,7 @@ export function PostCard({
   headingLevel = "h3",
   sizes,
   lead,
+  showCategory = true,
 }: PostCardProps) {
   const Heading = headingLevel;
   const format = postFormatOf(post);
@@ -99,7 +106,9 @@ export function PostCard({
           {format ? (
             <Chip tone="solid">{POST_FORMAT_LABELS[format]}</Chip>
           ) : null}
-          <Chip>{postCategoryLabel(post.category)}</Chip>
+          {showCategory ? (
+            <Chip>{postCategoryLabel(post.category)}</Chip>
+          ) : null}
         </p>
         <Heading
           className={cn(

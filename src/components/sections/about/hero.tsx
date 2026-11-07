@@ -56,8 +56,14 @@ export function AboutHero() {
   return (
     <Section surface="night" hero="dark" aria-labelledby="about-title">
       <Container>
-        <div className="grid grid-cols-1 gap-y-10 md:gap-y-14 lg:grid-cols-12 lg:items-center lg:gap-x-6">
-          <div className="flex justify-center lg:order-2 lg:col-span-5 lg:col-start-8">
+        <div
+          data-fold-split=""
+          className="grid grid-cols-1 gap-y-10 md:gap-y-14 lg:grid-cols-12 lg:items-center lg:gap-x-6"
+        >
+          <div
+            data-fold-col="2"
+            className="flex justify-center lg:order-2 lg:col-span-4 lg:col-start-9 xl:col-span-5 xl:col-start-8"
+          >
             <div
               data-ignition-host
               className={cn(
@@ -69,13 +75,22 @@ export function AboutHero() {
               <IgnitionLazy className="absolute inset-0" />
             </div>
           </div>
-          <div className="lg:order-1 lg:col-span-7">
+          <div
+            data-fold-col="1"
+            className="lg:order-1 lg:col-span-8 xl:col-span-7"
+          >
             <Display
               as="h1"
               size="lg"
               headline
               id="about-title"
-              className="max-w-[15ch]"
+              // Below 368px the size steps down to 11vw so the sentence sets
+              // in six lines or fewer, where text-balance still applies.
+              // From 1024 to 1279 the sentence takes a wider measure (and
+              // the mark one column less), so it sets in five lines rather
+              // than seven: text-balance gives up beyond six lines and the
+              // rag showed ("through" alone on a line at 1024).
+              className="max-w-[15ch] max-[23rem]:text-[min(var(--text-display-lg),11vw)] lg:max-w-[18ch] xl:max-w-[15ch]"
             >
               {ABOUT_HERO.title}
             </Display>

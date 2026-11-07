@@ -22,7 +22,14 @@ import { RETRIEVED, type FigureCopy } from "./home";
 
 export const WWD_HERO: {
   title: string;
+  /** The lede: the first sentence of the positioning statement. */
   lede: string;
+  /**
+   * The second sentence, shown from 768px. On phones the first screen is
+   * the headline, one sentence and the figure rather than twelve lines of
+   * text on green; the sentence restates the positioning the lede holds.
+   */
+  ledeMore: string;
   figure: FigureCopy & { labels: { start: string; end: string }; pill: string };
 } = {
   title: "Research, strategic advice and practical solutions.",
@@ -31,7 +38,9 @@ export const WWD_HERO: {
    * guideline document (his instruction of 3 October 2026): same meaning,
    * no new claims. The home hero carries the shorter reframe (POSITIONING).
    */
-  lede: "Olivia Energy is a strategic energy advisory, research and sustainability consultancy, committed to accelerating the move to a cleaner, more secure and more inclusive energy future. We partner with governments, businesses, investors and development organisations on evidence-based solutions in energy transition, climate policy, ESG, sustainable infrastructure and the transformation of energy markets.",
+  lede: "Olivia Energy is a strategic energy advisory, research and sustainability consultancy, committed to accelerating the move to a cleaner, more secure and more inclusive energy future.",
+  ledeMore:
+    "We partner with governments, businesses, investors and development organisations on evidence-based solutions in energy transition, climate policy, ESG, sustainable infrastructure and the transformation of energy markets.",
   figure: {
     n: 1,
     title: "The price of solar modules, 1975 to 2024",
@@ -140,7 +149,10 @@ const CHAPTERS = [
       "Tariff analysis",
       "Policy development",
     ],
-    surface: "night",
+    // The deep field, not night: the chapter carries a lede, a list and
+    // three step paragraphs, and prose never sits on night (DESIGN.md,
+    // Colors). Fig. 2's plate is the night object on it.
+    surface: "paper-deep",
     photoSide: "left",
     figure: "installed-not-delivered",
   },
@@ -309,17 +321,17 @@ export const INSTALLED_FIGURE: {
   note: "Squares are rounded to the nearest 100 MW.",
   steps: [
     {
-      label: "01 Installed",
+      label: "Step 1",
       heading: "Installed: 13,625 MW",
       body: "Nigeria’s 28 grid-connected power plants have 13,625 MW of installed capacity. Each square is 100 MW.",
     },
     {
-      label: "02 Available",
+      label: "Step 2",
       heading: "Available: 4,458 MW",
       body: "On average in the quarter, less than a third of it could run: a plant availability factor of 32.7%.",
     },
     {
-      label: "03 Delivered",
+      label: "Step 3",
       heading: "Delivered: 4,113 MWh an hour",
       body: "That is what the grid actually generated, on average, each hour of the quarter: 8,883 GWh in total. The red squares were available but not generated.",
     },

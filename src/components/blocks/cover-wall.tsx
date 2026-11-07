@@ -80,7 +80,7 @@ export function CoverWall({
         data-fold-split=""
         className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-12"
       >
-        <div className="lg:col-span-6">
+        <div data-fold-span="" className="lg:col-span-6">
           <OpEdCover
             oped={lead}
             size="lead"

@@ -183,6 +183,21 @@
     grid-column: auto;
     grid-row: auto;
   }
+  /* A cell may name its side of the hinge (the About hero: headline
+     left, mark right, as on a desktop). */
+  [data-fold-split] > [data-fold-col="1"] {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  [data-fold-split] > [data-fold-col="2"] {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  /* A sentence H1 in a half-width cell: one size the half can set in
+     five or six lines, not one word a line. */
+  [data-fold-split] > [data-fold-col="1"] h1 {
+    font-size: min(var(--text-display-lg), 5.2vw);
+  }
   /* The Fig. 2 plate holds its segment under the chapter bar while the
      steps scroll past in the other, as it does on a desktop. */
   [data-fold-split] > [data-fold-sticky] {
@@ -190,10 +205,16 @@
     top: calc(var(--spacing-header) + 3.375rem + 1rem);
     align-self: start;
   }
+  /* A cell may take the whole width (the home wall's lead cover), and a
+     phone rail inside the grid unrolls two-up, one column each side. */
+  [data-fold-split] > [data-fold-span] {
+    grid-column: 1 / -1;
+  }
   [data-fold-split] [data-scroll-rail] {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem var(--hinge-gap);
     margin-inline: 0;
     padding-inline: 0;
     overflow: visible;
@@ -866,7 +887,7 @@
   }
 
   /* The lead figures above the fold on a desktop: once, on load. */
-  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 64rem) {
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) and (min-width: 48rem) {
     .figure-lead .sweep {
       animation: sweep var(--duration-draw) var(--ease-in-out)
         var(--load-delay, 300ms) both;

@@ -55,6 +55,12 @@ export function WhatWeDoHero() {
               {WWD_HERO.title}
             </Display>
             <Lede className="mt-8 lg:mt-10">{WWD_HERO.lede}</Lede>
+            {/* The second sentence from 768px only: on a phone the first
+                screen is the headline, one sentence and the figure, and a
+                paragraph stranded under the plate read worse than none. */}
+            <p className="text-ink mt-5 hidden max-w-[48ch] text-lg text-pretty md:block">
+              {WWD_HERO.ledeMore}
+            </p>
           </div>
 
           <div className="lg:col-span-6 lg:col-start-7">
@@ -80,7 +86,11 @@ export function WhatWeDoHero() {
                   scale: "log",
                   format: "usd",
                 }}
-                colors={{ [LINE]: "chart-1" }}
+                // One series on a night plate is paper white: lime is the
+                // lead line only beside a white series or the red hatch,
+                // never alone on night (DESIGN.md, Colors). The pill stays
+                // the lime accent beside it.
+                colors={{ [LINE]: "chart-2" }}
                 endLabels={{ [LINE]: f.labels.end }}
                 startLabels={{ [LINE]: f.labels.start }}
                 pill={{ text: f.pill, tone: "opening", at: 0.55 }}

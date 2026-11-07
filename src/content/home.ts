@@ -234,6 +234,11 @@ export const HOME_FOUNDER: {
   credentials: string;
   /** Visually hidden expansion of `credentials`. */
   credentialsLong: string;
+  /**
+   * Not rendered on the band since the November 2026 device QA: prose
+   * never sits on night (DESIGN.md, Colors). Kept for the client's record;
+   * the bio is on About.
+   */
   lede: string;
   counters: readonly FounderCounter[];
   cta: Cta;

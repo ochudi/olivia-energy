@@ -6,12 +6,13 @@
  */
 
 .body {
-  /* 19 px Instrument Sans at about 68 characters a line (the `ch` unit is
-     the width of a zero, wider than an average letter, so 68ch would run to
-     about a hundred characters). */
+  /* 19 px Instrument Sans at 68 characters a line (DESIGN.md, Layout):
+     the face averages 0.45em a character, so 30.5em. Neither 68ch (the
+     ch unit is the width of a zero) nor the text container token (79
+     characters here) gives that. */
   font-size: var(--text-lg);
   line-height: var(--text-lg--line-height);
-  max-width: var(--container-text);
+  max-width: 30.5em;
   text-wrap: pretty;
 }
 

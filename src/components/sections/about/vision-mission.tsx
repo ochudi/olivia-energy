@@ -42,7 +42,8 @@ const PANELS: readonly Panel[] = [
  * each with the large shoulder on its top-right corner (a flood panel is
  * one of the firm's own objects, DESIGN.md Shapes); the heading in
  * Newsreader at display-xs, the statement in display-md, at most 520 px
- * wide. Stacked on phones. Static.
+ * wide, at the same distance below the heading in both panels. Stacked on
+ * phones. Static.
  */
 export function VisionMission() {
   return (
@@ -65,7 +66,10 @@ export function VisionMission() {
             id={panel.id}
             data-surface={panel.surface}
             className={cn(
-              "bg-canvas text-ink shoulder-lg px-gutter py-section-sm flex min-h-104 flex-col justify-between gap-16 lg:min-h-140",
+              // Heading, then the statement at a fixed distance below it, so the two
+              // panels align whatever their statements' lengths (justify-between
+              // sat the shorter one at the foot and the longer one at the head).
+              "bg-canvas text-ink shoulder-lg px-gutter py-section-sm flex min-h-104 flex-col justify-start gap-14 lg:min-h-140",
               panel.pad,
             )}
           >

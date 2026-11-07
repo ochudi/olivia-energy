@@ -83,6 +83,7 @@ export function Articles({ posts, active }: ArticlesProps) {
                     headingLevel={isPage ? "h2" : "h3"}
                     lead={cell.lead}
                     sizes={cell.sizes}
+                    showCategory={!isPage}
                   />
                 </li>
               );

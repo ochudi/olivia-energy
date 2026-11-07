@@ -27,7 +27,7 @@ export function PhotoCredits() {
             <th
               key={label}
               scope="col"
-              className="px-4 pb-3 font-semibold first:pl-0 last:pr-0"
+              className="px-4 pb-3 font-semibold whitespace-nowrap first:pl-0 last:pr-0"
             >
               {label}
             </th>

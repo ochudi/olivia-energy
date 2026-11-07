@@ -90,9 +90,14 @@ export function AboutStoryBand() {
           </figcaption>
         </figure>
 
-        <div className="lg:absolute lg:inset-x-0 lg:bottom-0">
+        {/* From 1024px the text sits on the photograph's scrim, bottom
+            left. Below it the photograph is 4:5 and the text follows, on
+            the field: prose never sits on night (DESIGN.md, Colors), so
+            the narrow copy carries its own surface. One of the two is
+            ever displayed. */}
+        <div className="hidden lg:absolute lg:inset-x-0 lg:bottom-0 lg:block">
           <Container>
-            <div className="py-section-sm lg:grid lg:grid-cols-12 lg:gap-x-6 lg:pt-0 lg:pb-[clamp(3rem,1rem+4vw,6rem)]">
+            <div className="lg:grid lg:grid-cols-12 lg:gap-x-6 lg:pb-[clamp(3rem,1rem+4vw,6rem)]">
               <div className="lg:col-span-7">
                 <h2
                   id="story-title"
@@ -110,6 +115,24 @@ export function AboutStoryBand() {
             </div>
           </Container>
         </div>
+      </div>
+      <div data-surface="paper" className="bg-canvas text-ink lg:hidden">
+        <Container>
+          <div className="py-section-sm">
+            <h2
+              id="story-title-narrow"
+              className="font-display text-display-xs text-ink"
+            >
+              {ABOUT_STORY.heading}
+            </h2>
+            <p className="text-ink mt-6 max-w-[38rem] font-sans text-lg text-pretty">
+              {ABOUT_STORY.paragraph}
+            </p>
+            <Display as="p" size="sm" className="mt-8 max-w-[38rem]">
+              {ABOUT_STORY.statement}
+            </Display>
+          </div>
+        </Container>
       </div>
     </Section>
   );

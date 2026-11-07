@@ -25,7 +25,8 @@ export type ChapterBarProps = {
  * scroll-margin clears the header and this bar), each with its service's
  * glyph and short name (the services are not a sequence, so no numbers;
  * DESIGN.md, Typography), and the current chapter is the last one whose top
- * has passed under the bar. The current link gets `aria-current="true"` and
+ * has crossed the line 40% down the viewport (the bar's foot on a short
+ * screen). The current link gets `aria-current="true"` and
  * the flood-green 2 px underline. On phones the row scrolls sideways and
  * keeps the current link in view.
  *
@@ -52,7 +53,13 @@ export function ChapterBar({ items, label, className }: ChapterBarProps) {
     let current: string | null | undefined;
     const update = () => {
       frame = 0;
-      const threshold = nav.getBoundingClientRect().bottom + 2;
+      // The current line: 40% down the viewport, or the bar's foot on a
+      // short screen, so a chapter takes the underline once it owns most of
+      // the screen rather than the moment its top slides under the bar.
+      const threshold = Math.max(
+        nav.getBoundingClientRect().bottom + 2,
+        window.innerHeight * 0.4,
+      );
       let next: string | null = null;
       for (const el of targets) {
         if (el.getBoundingClientRect().top <= threshold) next = el.id;
@@ -107,7 +114,7 @@ export function ChapterBar({ items, label, className }: ChapterBarProps) {
           // Below 1024 the bar is a rail: its right edge fades so the cut
           // item reads as "more", and the rail ends with enough padding that
           // the last item clears the fade when scrolled to the end.
-          className="-mx-gutter px-gutter flex [scrollbar-width:none] overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,#000_calc(100%-3rem),transparent)] pr-12 lg:mx-0 lg:justify-between lg:overflow-visible lg:[mask-image:none] lg:px-0 [&::-webkit-scrollbar]:hidden"
+          className="-mx-gutter px-gutter flex [scrollbar-width:none] overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,#000_calc(100%-4.5rem),transparent)] pr-12 lg:mx-0 lg:justify-between lg:overflow-visible lg:[mask-image:none] lg:px-0 [&::-webkit-scrollbar]:hidden"
         >
           {items.map((item) => (
             <li key={item.slug} className="shrink-0">

@@ -62,8 +62,8 @@ function InstalledPlate() {
 }
 
 /**
- * Chapter two, Energy Economics & Policy, on night: the page's signature
- * moment (DESIGN.md, Layout). The head, lede, body and list open the
+ * Chapter two, Energy Economics & Policy, on the deep field with Fig. 2 as
+ * its night plate: the page's signature moment (DESIGN.md, Layout). The head, lede, body and list open the
  * chapter across the grid; below them the City Gate photograph and the
  * three steps run in columns 1 to 5 while Fig. 2 holds in columns 7 to 12
  * under the chapter bar, stepping from installed to available to
@@ -118,7 +118,7 @@ export function ChapterInstalled({ chapter }: { chapter: Chapter }) {
                   data-scene-step={i + 1}
                   className={cn(styles.step, "pl-6")}
                 >
-                  <p className="text-primary numerals font-sans text-sm font-medium">
+                  <p className="text-ink-muted numerals font-sans text-sm font-medium">
                     {step.label}
                   </p>
                   <h3

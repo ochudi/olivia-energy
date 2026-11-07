@@ -62,7 +62,7 @@ export function CategoryFilter({
         className,
       )}
     >
-      <ul className="-mx-gutter px-gutter duration-fast flex [scrollbar-width:none] flex-nowrap gap-2 overflow-x-auto transition-opacity has-data-[pending=true]:opacity-60 md:mx-0 md:flex-wrap md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
+      <ul className="-mx-gutter px-gutter duration-fast flex [scrollbar-width:none] flex-nowrap gap-2 overflow-x-auto [mask-image:linear-gradient(to_right,#000_calc(100%-4.5rem),transparent)] pr-12 transition-opacity has-data-[pending=true]:opacity-60 md:mx-0 md:flex-wrap md:overflow-visible md:[mask-image:none] md:px-0 [&::-webkit-scrollbar]:hidden">
         {items.map((item) => (
           <li key={item.href} className="shrink-0">
             <Link
