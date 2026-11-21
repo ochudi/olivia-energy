@@ -72,13 +72,23 @@ const CORNERS = {
  * The caption under a photograph. The rebuild's entries carry the credit
  * inside the caption ("Third Mainland Bridge, Lagos, at sunset. Photo:
  * Solasly, CC BY-SA 4.0"); a legacy entry has a bare caption and a
- * photographer string, which are joined the same way.
+ * photographer string, which are joined the same way. A Creative Commons
+ * licence name is kept on one line, so a narrow column never breaks
+ * "CC BY-SA 4.0" at its hyphen.
  */
 export function photoCaption(entry: Pick<PhotoEntry, "caption" | "credit">) {
-  if (typeof entry.credit !== "string" || /\bPhoto:/.test(entry.caption)) {
-    return entry.caption;
-  }
-  return `${entry.caption}. Photo: ${entry.credit}`;
+  const text =
+    typeof entry.credit !== "string" || /\bPhoto:/.test(entry.caption)
+      ? entry.caption
+      : `${entry.caption}. Photo: ${entry.credit}`;
+  return keepLicenceTogether(text);
+}
+
+/** No-break spaces, and a word joiner after each hyphen, inside "CC BY-SA 4.0". */
+function keepLicenceTogether(text: string) {
+  return text.replace(/\bCC BY(?:-[A-Z]{2})* \d\.\d\b/g, (licence) =>
+    licence.replaceAll(" ", " ").replaceAll("-", "-⁠"),
+  );
 }
 
 /**

@@ -74,7 +74,7 @@ export type NewPhotoKey =
   | "abuja-city-gate"
   | "bayelsa-flare"
   | "lagos-market"
-  | "lecture-hall"
+  | "nsukka-workshop"
   | "ethiopia-lineman"
   | "lagos-lekki-night"
   | "abuja-lightpoles"

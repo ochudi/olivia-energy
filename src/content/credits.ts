@@ -4,7 +4,7 @@ import type {
   SeriesId,
   SourceRef,
 } from "@/types/contracts";
-import { PHOTOS, PORTRAITS } from "./images";
+import { HERITAGE_PHOTOS, PHOTOS, PORTRAITS } from "./images";
 
 /**
  * Copy and rows for /credits. Photograph rows are built from PHOTOS, so an
@@ -29,6 +29,8 @@ export const CREDITS_PAGE = {
     changed: "Cropped and colour-graded",
     portraitsNote:
       "Cropped to a square, resized and lightly sharpened; the colours are as supplied.",
+    heritageNote:
+      "Shown whole, at the size supplied. The photograph of the team has its exposure and white balance corrected; the others are as supplied.",
   },
   data: { title: "Data" },
   map: { title: "Map" },
@@ -68,7 +70,10 @@ const NEW_PHOTO_ROWS: Record<NewPhotoKey, { image: string; place: string }> = {
     image: "Street market from above",
     place: "Lagos, Nigeria",
   },
-  "lecture-hall": { image: "Lecture hall", place: "Not stated by the source" },
+  "nsukka-workshop": {
+    image: "Wikipedia training workshop",
+    place: "University of Nigeria, Nsukka",
+  },
   "ethiopia-lineman": {
     image: "Lineman on the Ethiopia to Kenya interconnector",
     place: "Ethiopia",
@@ -171,6 +176,20 @@ export const PORTRAIT_CREDITS = [
   key,
   image,
   credit: PORTRAITS[key as keyof typeof PORTRAITS].credit,
+}));
+
+/** The firm's own photographs of its first station (About, "Where we started"). */
+export const HERITAGE_CREDIT =
+  "Photographs supplied by Olivia Energy and Power";
+
+export const HERITAGE_CREDITS = [
+  { key: "station", image: "The station forecourt at night" },
+  { key: "sign", image: "The station sign" },
+  { key: "team", image: "The founder with the retail team" },
+].map(({ key, image }) => ({
+  key,
+  image,
+  corrected: HERITAGE_PHOTOS[key as keyof typeof HERITAGE_PHOTOS].corrected,
 }));
 
 export type DataCredit =

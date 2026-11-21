@@ -17,7 +17,7 @@
 import type { Counts, PhotoKey } from "@/types/contracts";
 import { countWords } from "@/lib/content/format";
 import { BRAND_STORY, VALUES_LIST } from "./brand";
-import { PORTRAITS } from "./images";
+import { PORTRAITS, type HeritageKey } from "./images";
 
 export const ABOUT_HERO: { title: string; lede: string } = {
   title: BRAND_STORY.headline,
@@ -105,6 +105,10 @@ export const ORIGIN: {
   title: string;
   paragraph: string;
   facts: readonly { term: string; detail: string }[];
+  /** The firm's own photographs, in reading order, with a short caption each. */
+  photos: readonly { key: HeritageKey; caption: string }[];
+  /** Under the three photographs. */
+  photosCaption: string;
 } = {
   title: "Real-world operations, since 2020.",
   paragraph:
@@ -123,6 +127,12 @@ export const ORIGIN: {
     },
     { term: "Locations", detail: "Fort Worth, Texas, and Southwest Nigeria" },
   ],
+  photos: [
+    { key: "station", caption: "The forecourt at night" },
+    { key: "sign", caption: "The station sign" },
+    { key: "team", caption: "The founder with the retail team" },
+  ],
+  photosCaption: "Where Olivia started, Southwest Nigeria, 2020.",
 };
 
 /** "Our values" (About section 5): header plus the five rows of VALUES_LIST. */

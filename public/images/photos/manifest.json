@@ -100,21 +100,21 @@
         }
       }
     },
-    "lecture-hall": {
-      "source": "capacity-auditorium.jpg",
+    "nsukka-workshop": {
+      "source": "capacity-nsukka-workshop.jpg",
       "sourceSize": [
         2400,
-        1609
+        1600
       ],
       "crops": {
         "4x5": {
-          "file": "/images/photos/lecture-hall-4x5.jpg",
-          "width": 1287,
-          "height": 1609,
-          "focal": "70% 50%",
-          "bytes": 384435,
-          "md5": "63664fb8da88c50949577ccd44101f89",
-          "blurDataURL": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAACwAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JbACsABsBiDEiOASggAD+HrT1UmGsZfLVvGZskAujydX1vyVijAZZEwWXsqbMx+D7X1rvrhGM/SIBZVsyzQbl4NxJ0JHYAAA="
+          "file": "/images/photos/nsukka-workshop-4x5.jpg",
+          "width": 1280,
+          "height": 1600,
+          "focal": "64% 50%",
+          "bytes": 325074,
+          "md5": "39704534e6dfe72b30db647b418fa758",
+          "blurDataURL": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAwBACdASoQABQAPu1iqU2ppaOiMAgBMB2JYwCo9dwAoc7UYvf2OS+9CgAA/t8leypzWEst0NDra1oCzSDfjbG3bO90QXBUs7U6KoFQvz0WV/yw0c1B+oDc+7arOdCVi8teWQpnX+HcZK5NL78Te1Hg6Yi7OyoiSoAAAA=="
         }
       }
     },

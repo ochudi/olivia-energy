@@ -2,7 +2,7 @@
 /**
  * Grades and crops the twelve photographs for the "Bridging Light" rebuild.
  *
- *   node scripts/grade-photos.mjs [--sheet=<contact-sheet.jpg>]
+ *   node scripts/grade-photos.mjs [--sheet=<contact-sheet.jpg>] [--only=<key>,<key>]
  *
  * Deterministic and re-runnable: the same source files give byte-identical
  * output. Source folders come from PHOTO_SRC_AFRICA and PHOTO_SRC_FIRST (the
@@ -22,10 +22,14 @@
  * Output: public/images/photos/<key>-<ratio>.jpg, the two hero WebPs, and
  * public/images/photos/manifest.json (sizes, focal points, blur placeholders)
  * which src/content/images.ts is written from.
+ *
+ * --only=<key> grades just those rows and merges them into the existing
+ * manifest (rows no longer listed below are dropped from it), so a single
+ * photograph can be replaced when only its own source folder is at hand.
  */
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -34,17 +38,15 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = path.join(ROOT, "public/images/photos");
 const AFRICA = process.env.PHOTO_SRC_AFRICA ?? "";
 const FIRST = process.env.PHOTO_SRC_FIRST ?? "";
-if (!AFRICA || !FIRST || !existsSync(AFRICA) || !existsSync(FIRST)) {
-  console.error(
-    "Set PHOTO_SRC_AFRICA and PHOTO_SRC_FIRST to the folders holding the original photographs.",
-  );
-  process.exit(1);
-}
 
 const MAX_EDGE = 2400;
 const JPEG_QUALITY = 82;
-const sheetArg = process.argv.find((a) => a.startsWith("--sheet="));
-const SHEET = sheetArg ? sheetArg.slice("--sheet=".length) : null;
+const argValue = (name) => {
+  const arg = process.argv.find((a) => a.startsWith(`--${name}=`));
+  return arg ? arg.slice(name.length + 3) : null;
+};
+const SHEET = argValue("sheet");
+const ONLY = argValue("only")?.split(",").filter(Boolean) ?? null;
 
 /**
  * One row per delivered crop. `ratio` is "w:h". `region` limits the crop to a
@@ -87,17 +89,12 @@ const CROPS = [
     outputs: [{ ratio: "4:5", name: "4x5", focal: [50, 0] }],
   },
   {
-    key: "lecture-hall",
-    file: [[FIRST, "capacity-auditorium.jpg"]],
-    // The right 60% only: the seated woman in profile at the left is cropped out.
-    outputs: [
-      {
-        ratio: "4:5",
-        name: "4x5",
-        focal: [70, 50],
-        region: { x: 0.4, y: 0, w: 0.6, h: 1 },
-      },
-    ],
+    key: "nsukka-workshop",
+    // Commons, Ngozi Osadebe, CC BY-SA 4.0, 2400 x 1600.
+    file: [[FIRST, "capacity-nsukka-workshop.jpg"]],
+    // Focal x 64% starts the crop just right of the banner on the left wall
+    // and ends it before the facilitator standing at the right edge.
+    outputs: [{ ratio: "4:5", name: "4x5", focal: [64, 50] }],
   },
   {
     key: "ethiopia-lineman",
@@ -310,16 +307,40 @@ async function webpUnderCap(srcJpeg, width, cap) {
 const md5 = (b) => createHash("md5").update(b).digest("hex");
 
 async function main() {
+  const unknown = (ONLY ?? []).filter((k) => !CROPS.some((c) => c.key === k));
+  if (unknown.length) {
+    console.error(`Unknown --only key: ${unknown.join(", ")}`);
+    process.exit(1);
+  }
+  const rows = ONLY ? CROPS.filter((c) => ONLY.includes(c.key)) : CROPS;
+  const folders = new Set(rows.flatMap((c) => c.file.map(([dir]) => dir)));
+  if ([...folders].some((dir) => !dir || !existsSync(dir))) {
+    console.error(
+      "Set PHOTO_SRC_AFRICA and PHOTO_SRC_FIRST to the folders holding the original photographs.",
+    );
+    process.exit(1);
+  }
+
   await mkdir(OUT, { recursive: true });
   const manifest = {
     generator: "scripts/grade-photos.mjs",
     photos: {},
     heroes: {},
   };
+  if (ONLY) {
+    const previous = JSON.parse(
+      await readFile(path.join(OUT, "manifest.json"), "utf8"),
+    );
+    for (const crop of CROPS) {
+      const kept = previous.photos[crop.key];
+      if (kept && !ONLY.includes(crop.key)) manifest.photos[crop.key] = kept;
+    }
+    manifest.heroes = previous.heroes;
+  }
   const sheetRows = [];
   const jpegs = {};
 
-  for (const crop of CROPS) {
+  for (const crop of rows) {
     const src = await loadSource(crop.file);
     const original = {
       data: Buffer.from(src.data),
@@ -379,6 +400,7 @@ async function main() {
 
   for (const hero of HEROES) {
     const jpg = jpegs[`lagos-third-mainland-${hero.from}.jpg`];
+    if (!jpg) continue; // --only without the hero row keeps its files
     const w = await webpUnderCap(jpg, hero.width, hero.cap);
     await writeFile(path.join(OUT, hero.name), w.buf);
     manifest.heroes[hero.name] = {
@@ -392,6 +414,13 @@ async function main() {
     };
   }
 
+  // Rows in the order of CROPS, whichever of them were graded this run.
+  manifest.photos = Object.fromEntries(
+    CROPS.filter((c) => manifest.photos[c.key]).map((c) => [
+      c.key,
+      manifest.photos[c.key],
+    ]),
+  );
   await writeFile(
     path.join(OUT, "manifest.json"),
     `${JSON.stringify(manifest, null, 2)}\n`,

@@ -107,7 +107,7 @@ export const SERVICES: readonly Service[] = [
     summary:
       "Executive training, energy transition workshops, ESG education, leadership development and public policy seminars.",
     glyph: "capacity",
-    photo: "lecture-hall",
+    photo: "nsukka-workshop",
   },
   {
     slug: "project-advisory",
@@ -196,7 +196,7 @@ export const FOOTER: {
   copyright: (year) =>
     `© ${year} Olivia Energy and Power Company Limited. Incorporated in Nigeria.`,
   photoCredits: {
-    text: "Photographs by Solasly, Rod Waddington, OgbuefiPascal, TEDxTarfaya, Baqeer Gashua, Fahd Aminu, Henry Storck, Habila Mazawaje and Opeyemi Adisa.",
+    text: "Photographs by Solasly, Rod Waddington, OgbuefiPascal, TEDxTarfaya, Baqeer Gashua, Fahd Aminu, Ngozi Osadebe, Habila Mazawaje and Opeyemi Adisa.",
     link: { label: "Full credits", href: "/credits" },
   },
 };

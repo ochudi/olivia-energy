@@ -190,22 +190,24 @@ export const PHOTOS = {
     },
     focal: "50% 0%",
   },
-  "lecture-hall": {
-    src: "/images/photos/lecture-hall-4x5.jpg",
-    width: 1287,
-    height: 1609,
-    alt: "A lecture hall seen from the side, with an audience in the rows and a warm red-brown wall behind the stage.",
+  "nsukka-workshop": {
+    src: "/images/photos/nsukka-workshop-4x5.jpg",
+    width: 1280,
+    height: 1600,
+    alt: "A workshop hall full of participants at desks with laptops and blue lanyards under ceiling fans. In the front row, a woman in a patterned dress and a man in glasses and a white shirt look towards the front.",
     blurDataURL:
-      "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAACwAwCdASoQABQAPu1iqU2ppaOiMAgBMB2JbACsABsBiDEiOASggAD+HrT1UmGsZfLVvGZskAujydX1vyVijAZZEwWXsqbMx+D7X1rvrhGM/SIBZVsyzQbl4NxJ0JHYAAA=",
-    caption: "Lecture hall. Photo: Henry Storck, Unsplash",
+      "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAwBACdASoQABQAPu1iqU2ppaOiMAgBMB2JYwCo9dwAoc7UYvf2OS+9CgAA/t8leypzWEst0NDra1oCzSDfjbG3bO90QXBUs7U6KoFQvz0WV/yw0c1B+oDc+7arOdCVi8teWQpnX+HcZK5NL78Te1Hg6Yi7OyoiSoAAAA==",
+    caption:
+      "Wikipedia training workshop, University of Nigeria, Nsukka, 2023. Photo: Ngozi Osadebe, CC BY-SA 4.0",
     credit: {
-      author: "Henry Storck",
-      licence: "Unsplash License",
-      licenceUrl: "https://unsplash.com/license",
-      sourceUrl: "https://unsplash.com/photos/xJdnmZgczfA",
+      author: "Ngozi Osadebe",
+      licence: "CC BY-SA 4.0",
+      licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+      sourceUrl:
+        "https://commons.wikimedia.org/wiki/File:Deforestation_in_Nigeria_training_workshop_session_03.jpg",
       adapted: true,
     },
-    focal: "70% 50%",
+    focal: "64% 50%",
   },
   "ethiopia-lineman": {
     src: "/images/photos/ethiopia-lineman-4x5.jpg",
@@ -365,6 +367,48 @@ export const PORTRAITS = {
     credit: PORTRAIT_CREDIT,
   },
 } as const satisfies Record<string, Portrait>;
+
+/**
+ * The firm's own photographs of its first retail station, supplied by Olivia
+ * Energy and Power (not stock, so not in PHOTOS and not graded).
+ * scripts/heritage-photos.mjs corrects exposure and white balance only;
+ * each file keeps the full frame at its supplied size. next/image serves the
+ * AVIF and WebP sizes.
+ */
+export type HeritagePhoto = {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  /** Exposure or white balance changed (credits note). */
+  corrected: boolean;
+};
+
+export const HERITAGE_PHOTOS = {
+  station: {
+    src: "/images/heritage/station-night.jpg",
+    width: 1152,
+    height: 864,
+    alt: "An Olivia fuel station forecourt at night: a lit canopy with the Olivia sign over four pumps, a single-storey building and a parked car behind, and a green folding barrier in the foreground.",
+    corrected: false,
+  },
+  sign: {
+    src: "/images/heritage/station-sign.jpg",
+    width: 650,
+    height: 1080,
+    alt: "The station's tall Olivia Energy sign, with price boards for petrol, kerosene and diesel and a list of services: lubricants, restaurant, Olivia Mart, hot bread, car wash and ATM.",
+    corrected: false,
+  },
+  team: {
+    src: "/images/heritage/retail-team.jpg",
+    width: 1047,
+    height: 694,
+    alt: "The founder, in a dark suit, with ten members of staff in green Olivia T-shirts outside the station's Supermart.",
+    corrected: true,
+  },
+} as const satisfies Record<string, HeritagePhoto>;
+
+export type HeritageKey = keyof typeof HERITAGE_PHOTOS;
 
 export type PhotoKey = keyof typeof PHOTOS;
 

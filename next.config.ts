@@ -127,6 +127,9 @@ const nextConfig: NextConfig = {
     // Photographs are served at 60 or 75 (CoverImage, ShoulderImage, the
     // home hero); 75 is also the default for anything that passes none.
     qualities: [60, 75],
+    // AVIF first (smaller at the same quality), WebP for browsers without
+    // it; the original format is the last fallback.
+    formats: ["image/avif", "image/webp"],
   },
 };
 

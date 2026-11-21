@@ -6,6 +6,8 @@ import { Section } from "@/components/ui/section";
 import {
   CREDITS_PAGE,
   FONT_CREDITS,
+  HERITAGE_CREDIT,
+  HERITAGE_CREDITS,
   MAP_CREDIT,
   PORTRAIT_CREDITS,
 } from "@/content/credits";
@@ -49,6 +51,17 @@ export default function Page() {
             ))}
             <li className="text-ink-muted">
               {CREDITS_PAGE.photographs.portraitsNote}
+            </li>
+          </ul>
+          <ul className="text-ink mt-8 space-y-1 text-sm">
+            {HERITAGE_CREDITS.map((row) => (
+              <li key={row.key}>
+                <span className="font-display text-base">{row.image}.</span>{" "}
+                {HERITAGE_CREDIT}.
+              </li>
+            ))}
+            <li className="text-ink-muted">
+              {CREDITS_PAGE.photographs.heritageNote}
             </li>
           </ul>
         </CreditRow>
